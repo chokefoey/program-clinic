@@ -1,0 +1,193 @@
+<div class="col d-none" id="drugs_view">
+  
+
+  <center><h3 class="mt-4">หน้าการจัดการยา</h3></center>
+    <div class="row">
+        
+        <nav class="mt-4">
+            <div class="nav nav-tabs" id="nav-tab-setting" role="tablist">
+                <button class="nav-link active" id="nav-drug-catalog-tab" data-bs-toggle="tab" data-bs-target="#nav-drug-catalog-setting" type="button" role="tab" aria-controls="nav-drug-catalog-setting" aria-selected="true" >รายการยาทั้งหมด</button>
+                <button class="nav-link" id="nav-drug-set-tab" data-bs-toggle="tab" data-bs-target="#nav-drug-set-setting" type="button" role="tab" aria-controls="nav-drug-set-setting" aria-selected="true" >รายการยาชุด</button>
+
+            </div>
+        </nav>
+
+        <div class="tab-content" >
+            <div class="tab-pane fade show active" id="nav-drug-catalog-setting" role="tabpanel" aria-labelledby="nav-drug-catalog-tab" tabindex="0">
+                <div class="d-none row mt-2 justify-content-center" >
+                    <div class="col-sm-10 mb-3 mb-sm-0 ">
+                        <div class="col-md-4 mt-2">
+                        <div>
+                            <button type="button" class="btn btn-secondary shadow my-btn" id="show_drugs_catalog_btn">แสดงรายการยา</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-none" id="drug_catalog_content">
+                
+                    <div class="row mt-4 justify-content-center">
+                        <div class="col-sm-10 mb-3 mb-sm-0 ">
+                            <div class="card bg-secondary bg-opacity-10 shadow">
+                                <div class="card-body">
+                                    
+                                    <div class="row g-2 d-none" id="drugcatalog_dashboard">
+                                        <div class="col">
+                                        <div class="pointer box card mb-1" style="max-width: 540px;" onclick="filterDrugsTotal();" >  
+                                            <div class="row g-0">
+                                                <div class="col-md-4">
+                                                    <h1 class="p-3"><i class="bi bi-capsule-pill"></i></h1>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="card-body">
+                                                    <h5 class="card-title">ทั้งหมด</h5>
+                                                    <p class="card-text" id="total_drugs_catalog"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div class="col" >
+                                        <div class="pointer box card mb-1" style="max-width: 540px;" onclick="filterDrugsExp();" >
+                                            <div class="row g-0" >
+                                                <div class="col-md-4">
+                                                    <h1 class="p-3"><i class="bi bi-calendar-minus"></i></h1>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="card-body">
+                                                    <h5 class="card-title">หมดอายุ</h5>
+                                                    <p class="card-text" id="exp_drugs_catalog"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div class="col">
+                                        <div class="pointer box card mb-1" style="max-width: 540px;"  onclick="filterDrugsLowAmount();" >
+                                            <div class="row g-0">
+                                                <div class="col-md-4">
+                                                    <h1 class="p-3"><i class="bi bi-graph-down-arrow"></i></h1>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="card-body">
+                                                    <h5 class="card-title">เหลือน้อย</h5>
+                                                    <p class="card-text"  id="low_drugs_catalog"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div class="col">
+                                        <div class="pointer box card mb-1" style="max-width: 540px;" onclick="filterDrugsFewUse();" >
+                                            <div class="row g-0">
+                                                <div class="col-md-4">
+                                                    <h1 class="p-3"><i class="bi bi-cart-x"></i></h1>
+                                                </div>
+                                                <div class="col-md-8">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">ใช้น้อย</h5>
+                                                    <p class="card-text" id="few_drugs_catalog"></p>
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        </div>
+
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 justify-content-center">
+                        <div class="col-sm-10 mb-0 mb-sm-0 ">
+                            <div class="card bg-secondary bg-opacity-10 shadow">
+                                <div class="card-body">
+                                <p id="drug_amount_alert"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 justify-content-center" >
+                        <div class="col-sm-5 mb-2 mb-sm-0 ">
+                            <div class="col-md-4 mt-2">
+                                <div>
+                                    <button type="button" class="btn btn-secondary shadow my-btn" id="open_modal_add_drug_btn" >เพิ่มยา</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 mb-2 mb-sm-0 ">
+                            <div class="col-md mt-2">
+                                <input type="search" class="form-control" id="search_input_table_drugscatalog" placeholder="ค้นชื่อยา" >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 justify-content-center">
+                        <div class="col-sm-10 mb-3 mb-sm-0 ">
+                            <div class="card bg-secondary bg-opacity-10 shadow">
+                                <div class="card-body">
+                                    
+                                    <div class="col-12"  id="drugs_catalog_table">
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+            <div class="tab-pane fade" id="nav-drug-set-setting" role="tabpanel" aria-labelledby="nav-set-catalog-tab" tabindex="0">
+                 
+                <div class="row mt-2 justify-content-center" >
+                    <div class="col-sm-5 mb-2 mb-sm-0 ">
+                        <div class="col-md mt-2">
+                            <div>
+                                <button type="button" class="btn btn-secondary" id="openmodal_add_drugset_btn">เพิ่มยาชุด</button>
+                                <!-- <button type="button" class="btn btn-secondary" id="openmodal_drugsset_btn">ดูยาชุด</button> -->
+                                <!-- <button type="button" class="btn btn-danger" id="delete_drugset_btn">ลบยาชุด</button> -->
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-5 mb-2 mb-sm-0 ">
+                        <div class="col-md mt-2">
+                            <input type="search" class="form-control" id="search_input_drugset" placeholder="ค้นชื่อ..." >
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-2 justify-content-center">
+                    <div class="col-sm-10 mb-3 mb-sm-0 ">
+                        <div class="card bg-secondary bg-opacity-10 shadow">
+                            <div class="card-body">
+                                
+                                <div class="col-12"  id="drugs_sets_table">
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    
+
+    <div class="row mt-4 mb-3 justify-content-center">
+        <center><div class="col-10">golfguitar@gmail.com</div></center>
+    </div>
+
+</div>

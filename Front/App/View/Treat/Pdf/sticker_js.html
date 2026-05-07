@@ -1,0 +1,857 @@
+
+
+<script>
+
+
+
+
+function makePdfStickerDrug(){
+  // console.log("fgfgfgfg")
+  // console.log(clinicInfo) // global var
+
+  const providerInfo = {}
+    providerInfo.fullName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
+    providerInfo.license = document.getElementById('user_license_config').textContent 
+
+  // console.log(providerInfo)
+
+  const patientId = document.getElementById('patient_id_treat').textContent
+  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();  
+  // console.log(patientRegistInfo)
+
+  const opdVisitId = document.getElementById('opd_visitid_treat').textContent
+
+  const piObj = {}
+    piObj.wt = document.getElementById('wt_treat').value
+    piObj.ht = document.getElementById('ht_treat').value
+    piObj.bt = document.getElementById('bt_treat').value
+    piObj.o2sat = document.getElementById('o2sat_treat').value
+    piObj.sbp = document.getElementById('sbp_treat').value
+    piObj.dbp = document.getElementById('dbp_treat').value
+    piObj.pr = document.getElementById('pr_treat').value
+    piObj.rr = document.getElementById('rr_treat').value
+    piObj.cc = document.getElementById('cc_treat').value
+    piObj.pi = document.getElementById('pi_treat').value
+    piObj.ph = document.getElementById('ph_treat').value
+
+  const peObj = {}
+    peObj.pe = document.getElementById('pe_treat').value
+    peObj.oe = document.getElementById('oe_treat').value
+
+  const ixObj = {}
+    ixObj.lab = document.getElementById('lab_treat').value
+    ixObj.xray = document.getElementById('xray_treat').value
+    ixObj.us = document.getElementById('us_treat').value
+  
+  const dxObj = createObjDataDxTreat();
+  // console.log(dxObj)
+  // console.log(JSON.stringify(dxObj))
+
+  const txObj = createObjDataTxTreat(); 
+  // console.log(txObj)
+
+  const hmObj = createObjDataHmTreat();
+  // console.log(hmObj)
+
+  const summaryObj = {}
+    summaryObj.sumProcedurePrice = document.getElementById('sum_procedure_price_treat').value
+    summaryObj.sumHomemedPrice = document.getElementById('sum_homemed_price_treat').value
+    summaryObj.totalPrice = document.getElementById('total_price_sum_treat').value
+
+    summaryObj.payType = document.getElementById('pay_type_treat').value
+    summaryObj.payRemain = document.getElementById('pay_remain_treat').value
+    summaryObj.payChannel = document.getElementById('pay_channel_treat').value
+    summaryObj.socialSecurity = document.getElementById('social_security_treat').value
+    summaryObj.doctorNote = document.getElementById('doctor_note_treat').value
+    summaryObj.txPlan = document.getElementById('tx_plan_treat').value
+    summaryObj.doctorName = document.getElementById('user_fullname_status').textContent 
+    summaryObj.doctorId = document.getElementById('user_id_status').textContent  
+
+  // console.log(summaryObj)
+
+  const opdStatus = document.getElementById('pay_type_treat').value == "" ? "ตรวจแล้ว": "จ่ายแล้ว"
+
+  // ส่งไปตารางหน้าบ้าน ส่งเป็น obj
+  const opdVisitInfo = {}
+    opdVisitInfo.opdVisitId = opdVisitId
+    opdVisitInfo.opdStatus = opdStatus
+    opdVisitInfo.piData = piObj
+    opdVisitInfo.peData = peObj
+    opdVisitInfo.ixData = ixObj
+    opdVisitInfo.dxData = dxObj
+    opdVisitInfo.txData = txObj
+    opdVisitInfo.hmData = hmObj
+    opdVisitInfo.summaryData = summaryObj
+    
+
+  console.log(opdVisitInfo)
+
+  // const drugNo = 3
+
+
+  // prevent split method error 
+  const homeMedInfo = {}
+  homeMedInfo.hm1 = (hmObj.hm1 && hmObj.hm1.split) ? hmObj.hm1.split('/')[0] : "";
+  homeMedInfo.type1 = (hmObj.hm1 && hmObj.hm1.split) ? hmObj.hm1.split('/')[1] : "";
+  homeMedInfo.indication1 = (hmObj.hm1 && hmObj.hm1.split) ? hmObj.hm1.split('/')[3] : "";
+  homeMedInfo.dose1 = (hmObj.dose1 && hmObj.dose1.split) ? hmObj.dose1.split('/')[1] : "";
+  homeMedInfo.amount1 = hmObj.amount1;
+
+  homeMedInfo.hm2 = (hmObj.hm2 && hmObj.hm2.split) ? hmObj.hm2.split('/')[0] : "";
+  homeMedInfo.type2 = (hmObj.hm2 && hmObj.hm2.split) ? hmObj.hm2.split('/')[1] : "";
+  homeMedInfo.indication2 = (hmObj.hm2 && hmObj.hm2.split) ? hmObj.hm2.split('/')[3] : "";
+  homeMedInfo.dose2 = (hmObj.dose2 && hmObj.dose2.split) ? hmObj.dose2.split('/')[1] : "";
+  homeMedInfo.amount2 = hmObj.amount2;
+
+  homeMedInfo.hm3 = (hmObj.hm3 && hmObj.hm3.split) ? hmObj.hm3.split('/')[0] : "";
+  homeMedInfo.type3 = (hmObj.hm3 && hmObj.hm3.split) ? hmObj.hm3.split('/')[1] : "";
+  homeMedInfo.indication3 = (hmObj.hm3 && hmObj.hm3.split) ? hmObj.hm3.split('/')[3] : "";
+  homeMedInfo.dose3 = (hmObj.dose3 && hmObj.dose3.split) ? hmObj.dose3.split('/')[1] : "";
+  homeMedInfo.amount3 = hmObj.amount3;
+
+  homeMedInfo.hm4 = (hmObj.hm4 && hmObj.hm4.split) ? hmObj.hm4.split('/')[0] : "";
+  homeMedInfo.type4 = (hmObj.hm4 && hmObj.hm4.split) ? hmObj.hm4.split('/')[1] : "";
+  homeMedInfo.indication4 = (hmObj.hm4 && hmObj.hm4.split) ? hmObj.hm4.split('/')[3] : "";
+  homeMedInfo.dose4 = (hmObj.dose4 && hmObj.dose4.split) ? hmObj.dose4.split('/')[1] : "";
+  homeMedInfo.amount4 = hmObj.amount4;
+
+  homeMedInfo.hm5 = (hmObj.hm5 && hmObj.hm5.split) ? hmObj.hm5.split('/')[0] : "";
+  homeMedInfo.type5 = (hmObj.hm5 && hmObj.hm5.split) ? hmObj.hm5.split('/')[1] : "";
+  homeMedInfo.indication5 = (hmObj.hm5 && hmObj.hm5.split) ? hmObj.hm5.split('/')[3] : "";
+  homeMedInfo.dose5 = (hmObj.dose5 && hmObj.dose5.split) ? hmObj.dose5.split('/')[1] : "";
+  homeMedInfo.amount5 = hmObj.amount5;
+
+  homeMedInfo.hm6 = (hmObj.hm6 && hmObj.hm6.split) ? hmObj.hm6.split('/')[0] : "";
+  homeMedInfo.type6 = (hmObj.hm6 && hmObj.hm6.split) ? hmObj.hm6.split('/')[1] : "";
+  homeMedInfo.indication6 = (hmObj.hm6 && hmObj.hm6.split) ? hmObj.hm6.split('/')[3] : "";
+  homeMedInfo.dose6 = (hmObj.dose6 && hmObj.dose6.split) ? hmObj.dose6.split('/')[1] : "";
+  homeMedInfo.amount6 = hmObj.amount6;
+
+  homeMedInfo.hm7 = (hmObj.hm7 && hmObj.hm7.split) ? hmObj.hm7.split('/')[0] : "";
+  homeMedInfo.type7 = (hmObj.hm7 && hmObj.hm7.split) ? hmObj.hm7.split('/')[1] : "";
+  homeMedInfo.indication7 = (hmObj.hm7 && hmObj.hm7.split) ? hmObj.hm7.split('/')[3] : "";
+  homeMedInfo.dose7 = (hmObj.dose7 && hmObj.dose7.split) ? hmObj.dose7.split('/')[1] : "";
+  homeMedInfo.amount7 = hmObj.amount7;
+
+  homeMedInfo.hm8 = (hmObj.hm8 && hmObj.hm8.split) ? hmObj.hm8.split('/')[0] : "";
+  homeMedInfo.type8 = (hmObj.hm8 && hmObj.hm8.split) ? hmObj.hm8.split('/')[1] : "";
+  homeMedInfo.indication8 = (hmObj.hm8 && hmObj.hm8.split) ? hmObj.hm8.split('/')[3] : "";
+  homeMedInfo.dose8 = (hmObj.dose8 && hmObj.dose8.split) ? hmObj.dose8.split('/')[1] : "";
+  homeMedInfo.amount8 = hmObj.amount8;
+
+  homeMedInfo.hm9 = (hmObj.hm9 && hmObj.hm9.split) ? hmObj.hm9.split('/')[0] : "";
+  homeMedInfo.type9 = (hmObj.hm9 && hmObj.hm9.split) ? hmObj.hm9.split('/')[1] : "";
+  homeMedInfo.indication9 = (hmObj.hm9 && hmObj.hm9.split) ? hmObj.hm9.split('/')[3] : "";
+  homeMedInfo.dose9 = (hmObj.dose9 && hmObj.dose9.split) ? hmObj.dose9.split('/')[1] : "";
+  homeMedInfo.amount9 = hmObj.amount9;
+
+  homeMedInfo.hm10 = (hmObj.hm10 && hmObj.hm10.split) ? hmObj.hm10.split('/')[0] : "";
+  homeMedInfo.type10 = (hmObj.hm10 && hmObj.hm10.split) ? hmObj.hm10.split('/')[1] : "";
+  homeMedInfo.indication10 = (hmObj.hm10 && hmObj.hm10.split) ? hmObj.hm10.split('/')[3] : "";
+  homeMedInfo.dose10 = (hmObj.dose10 && hmObj.dose10.split) ? hmObj.dose10.split('/')[1] : "";
+  homeMedInfo.amount10 = hmObj.amount10;
+
+
+  runPdfMakeStickerDrug(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,homeMedInfo)
+
+  
+
+};
+
+
+
+
+
+// ตัดคำตามความยาว และตามที่มีเว้นช่องว่าง 
+function wrapTextByLength(text) {
+  let result = [];
+  let words = text.split(' '); // Split the text by spaces
+  let currentLine = '';
+  let maxLength = 25 ;
+  
+  words.forEach(word => {
+      // Check if adding the word would exceed the maxLength
+      if ((currentLine + word).length > maxLength) {
+          // Push the current line to result and reset the line
+          result.push(currentLine.trim());
+          currentLine = word + ' '; // Start a new line with the current word
+      } else {
+          // Add the word to the current line
+          currentLine += word + ' ';
+      }
+  });
+
+  // Push the last line to result
+  if (currentLine.length > 0) {
+      result.push(currentLine.trim());
+  }
+  
+  return result.join('\n'); // Join the lines with a newline to force wrap
+  
+};
+
+
+
+
+
+async function runPdfMakeStickerDrug(clinicInfo, providerInfo, patientRegistInfo, opdVisitInfo, homeMedInfo) {
+    const dateStamp = toThaiDateString(new Date());
+    const timeStamp = getCurrentTime();
+    const fileName = `${patientRegistInfo.identityData.firstName} ${patientRegistInfo.identityData.lastName} CID ${patientRegistInfo.identityData.cid}`;
+    const medCerId = generateUniqueId();
+    const patientAge = calculateAge(patientRegistInfo.identityData.birthDay); // Calculate age, returns an object
+
+    pdfMake.fonts = {
+        THSarabunNew: {
+            normal: "https://Pichit-Raetai.github.io/font/THSarabunNew.ttf",
+            bold: "https://Pichit-Raetai.github.io/font/THSarabunNew Bold.ttf",
+            italics: "https://Pichit-Raetai.github.io/font/THSarabunNew Italic.ttf",
+            bolditalics: "https://Pichit-Raetai.github.io/font/THSarabunNew BoldItalic.ttf",
+        }
+    };
+
+    const numberOfKeys = Object.keys(opdVisitInfo.hmData).length;
+    // console.log(numberOfKeys);  // Output: 4
+    const numberOfdrug = numberOfKeys / 4;
+    // const numberOfdrug = 3
+    console.log('มียา ' + numberOfdrug + ' รายการ');
+
+
+
+    const template = {
+      
+      1: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              // pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm1) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount1 + ' ' + homeMedInfo.type1 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose1) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication1) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+        ],
+
+
+      2: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm2) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount2 + ' ' + homeMedInfo.type2 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose2) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication2) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+      3: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm3) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount3 + ' ' + homeMedInfo.type3 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose3) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication3) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+      4: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm4) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount4 + ' ' + homeMedInfo.type4 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose4) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication4) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+      5: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm5) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount5 + ' ' + homeMedInfo.type5 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose5) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication5) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+      6: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm6) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount6 + ' ' + homeMedInfo.type6 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose6) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication6) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+      7: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm7) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount7 + ' ' + homeMedInfo.type7 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose7) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication7) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+      8: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm8) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount8 + ' ' + homeMedInfo.type8 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose8) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication8) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+      9: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm9) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount9 + ' ' + homeMedInfo.type9 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose9) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication9) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+      10: [
+            {
+              columns: [
+                  {
+                    image: 'logo',
+                    width: 30,
+                    height: 30,
+                    margin: [0, 0, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                    alignment: 'left',
+                  },
+                  {
+                    text: [
+                      { text: clinicInfo.hosName + '\n', fontSize: 8 },
+                      // { text: clinicInfo.hosAddress + '\n', fontSize: 9 },
+                      { text: 'โทร: ' + clinicInfo.hosPhone, fontSize: 8 },
+                    ],
+                    alignment: 'left',
+                    margin: [0, 5, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+                  },
+              ],
+              margin: [-5, 2, 0, 0], // [ซ้าย,บน,ขวา,ล่าง]
+              pageBreak: 'before',   // เปิดใช้กรณีแผ่นที่ 2 เป็นต้นไป
+            },
+            
+            {
+              text: [
+                { text: 'วันที่: ', },
+                { text: dateStamp, style:"textinput" },
+
+                { text: ' HN: ' },
+                { text: patientRegistInfo.incrementHn + '\n', style:"textinput"},
+
+                { text: 'ผู้ป่วย: ', },
+                { text: wrapTextByLength(patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName) + '\n', style:"textinput" },
+                
+                { text: 'ยา: '},
+                { text: wrapTextByLength(homeMedInfo.hm10) + '\n', style:"textinput" },
+
+                { text: ' จำนวน ' },
+                { text: homeMedInfo.amount10 + ' ' + homeMedInfo.type10 + '\n', style:"textinput" },
+
+                { text: 'วิธีใช้: ' },
+                { text: wrapTextByLength(homeMedInfo.dose10) + '\n', style:"textinput" },
+
+                { text: 'ข้อบ่งชี้: '},
+                { text: wrapTextByLength(homeMedInfo.indication10) + '\n', style:"textinput" },
+                
+
+                { text: 'หมายเหตุ: '     },
+              ],
+              margin: [0, 0, 0, 0],  // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+      ],
+
+        
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+      // Add more entries if needed
+    };
+
+    const contents = [];
+
+    for (let i = 1; i <= numberOfdrug; i++) {
+        if (template[i]) {
+            contents.push(...template[i]); // Spread operator to push all items in template[i] to contents
+        }
+    }
+
+
+
+    const docDefinition = {
+        content: contents,  // Use the dynamically created content array
+
+        // footer: function (currentPage, pageCount) {
+        //     return {
+        //         text: 'รายการที่ ' + currentPage + ' / ' + pageCount,
+        //         alignment: 'center',
+        //         margin: [0, 20, 0, -30],// [ซ้าย,บน,ขวา,ล่าง]
+        //     };
+        // },
+
+        pageSize: { width: 200, height: 150 },  // กระดาษ 8 cm * 6 cm
+        // ตั้งค่า xprinter 4x4 , พอดีกับพื้นที่พิมพ์ได้ , แนวตั้ง
+        // pageSize: 'A4',  // Temporarily switch to A4 for testing
+
+        // pageOrientation: 'portrait',
+
+        pageMargins: [ 10, 0, 0, 0 ], // [ซ้าย,บน,ขวา,ล่าง]
+
+        defaultStyle: {
+          font: "THSarabunNew",
+          fontSize: 9,
+        },
+        styles: {
+          textinput: {
+            fontSize: 9,
+            bold: true,
+          },
+        },
+        images: {
+          logo: {
+              url: logo_clinic,
+          },
+        },
+    };
+
+    
+
+    // Create and open the PDF directly in the print dialog
+    pdfMake.createPdf(docDefinition).print();
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+</script>

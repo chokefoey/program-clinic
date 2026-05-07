@@ -1,0 +1,140 @@
+<script>
+
+
+
+  function showTableUsers(dataReturn){
+    // document.getElementById('users_table_placeholder').classList.add('d-none')
+    // document.getElementById('users_table').classList.remove('d-none')
+
+    // document.getElementById('users_dashboard_placeholder').classList.add('d-none')
+    document.getElementById('users_dashboard').classList.remove('d-none')
+
+    // Define the custom formatter function
+    let mergeNameFormatter = (cell, formatterParams, onRendered)=>{
+      var data = cell.getRow().getData();
+      return data.firstName + " " + data.lastName; // Merge name and surname
+    };
+
+    //initialize table
+    elements.tableUserRegist = new Tabulator("#users_table", {
+      data:dataReturn,           //load row data from array
+      index:"userId",
+      layout:"fitColumns",      //fit columns to width of table
+      selectableRows:1,
+      responsiveLayout:"hide",  //hide columns that don't fit on the table
+      pagination:"local",       //paginate the data
+      paginationSize:7,         //allow 7 rows per page of data
+      paginationCounter:"rows", //display count of paginated rows in footer
+      
+      
+      columns:[                //define the table columns
+          // {title:"userId", field:"userId" },
+          // {title:"ภาพ", field:"userPic" },
+          { 
+              title: "",
+              field: "userPic",
+              hozAlign:"center", width:50,
+              formatter: function(cell, formatterParams, onRendered) {
+                  // Get the image URL from the cell data
+                  var imageURL = cell.getValue();
+                  
+                  // Create an img element with the imageURL as src
+                  var img = document.createElement('img');
+                  img.src = imageURL;
+                  img.style.height = "30px"; // Set the height of the image
+                  img.style.width = "30px"; // Set the width of the image
+                  
+                  // Return the img element
+                  return img;
+              }
+          },
+          {title:"ชื่อ", field:"firstName" , visible: false},
+          {title:"นามสกุล", field:"lastName",visible: false },
+          {title:"ชื่อ-สกุล", field:"fullName", formatter:mergeNameFormatter, download:false, responsive:0,}, // Display the merged result
+
+          {title:"ตำแหน่ง", field:"userPosition" },
+
+          {title:"หน่วยงาน", field:"userHos" },
+          {title:"ระดับ", field:"userLevel" },
+
+          
+          {title:"สถานะ", field:"statusAppr"},
+          
+          
+      ],
+      
+    })
+
+    elements.tableUserRegist.on("rowClick", function(e, row){
+      //e - the click event object
+      //row - row component
+      console.log(row._row.data)
+      // console.log(row._row.data.userId)
+      const userInfo = row._row.data
+
+      const currentUserId = document.getElementById('user_id_status').textContent
+      // console.log(currentUserId)
+      
+      // Create HTML content with the image and message
+      const htmlContent = '<div><img src="' + userInfo.userPic + '" style="width: 140px; height: auto;"> <p>' + userInfo.firstName + " " + userInfo.lastName + '</p></div>';
+
+      if ( currentUserId == row._row.data.userId){
+        Swal.fire({
+          title: "ไม่สามารถอนุมัติตัวเองได้",
+          html:  htmlContent ,
+        }) 
+
+      } else {
+        Swal.fire({
+          title: "ต้องการอนุมัติรายชื่อต่อไปนี้?",
+          html:  htmlContent ,
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "อนุมัติ",
+          denyButtonText: `ไม่อนุมัติ`
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            const status = 'Approved'
+            const level = 'user_a'
+            editUserRegistStatus(userInfo,status,level)
+            
+          } else if (result.isDenied) {
+            const status = 'Rejected'
+            const level = 'user_a'
+            editUserRegistStatus(userInfo,status,level)
+            
+          }
+        })
+
+      }
+        
+    })
+
+  };
+
+
+
+  function filterUserTotal(){
+    elements.tableUserRegist.clearFilter();
+  };
+
+  function filterUserApprove(){
+    elements.tableUserRegist.setFilter("statusAppr", "=", "Approved");
+  };
+
+  function filterUserPending(){
+    elements.tableUserRegist.setFilter("statusAppr", "=", "Pending");
+  };
+
+  function filterUserReject(){
+    elements.tableUserRegist.setFilter("statusAppr", "=", "Rejected");
+  };
+
+
+
+
+
+
+
+</script>

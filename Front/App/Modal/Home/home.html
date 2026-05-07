@@ -1,0 +1,149 @@
+
+
+
+  <!-- Modal Cancer -->
+ 
+  <div class="modal fade" id="home_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"   data-bs-focus="false" >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-info bg-opacity-50">
+          <h1 class="modal-title fs-5">คัดกรองมะเร็ง</h1>
+          <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row mt-2 p-3">
+              <form id="patient_add_form">
+                <div class="row justify-content-md-center d-none">
+                  <div class="col-md mt-2">
+                    <label class="form-label">ID</label>
+                    <input type="text" class="form-control" id="id_home" > 
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-md mt-2">
+                    <label class="form-label">อำเภอ</label>
+                    <input type="search" class="form-control" list="datalistOptions_amphoe" id="amphoe_address" required>
+                    <datalist id="datalistOptions_amphoe">
+                      
+                    </datalist>
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">หน่วยบริการ</label>
+                    <input type="search" class="form-control" list="datalistOptions_service_unit" id="service_unit" required>
+                    <datalist id="datalistOptions_service_unit">
+                      
+                    </datalist>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-md mt-2">
+                    <label class="form-label">ชื่อ-สกุล</label>
+                    <input type="text" class="form-control" id="full_name" required> 
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">เลขที่บัตรประชาชน</label>
+                    <input type="text" class="form-control" id="cid_number" required>
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">เบอร์โทร</label>
+                    <input type="text" class="form-control" id="phone_number" required>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-md mt-2">
+                    <label class="form-label">วันที่ตรวจ FIT test +ve</label>
+                    <input type="date" class="form-control" id="fittest_date">
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">ส่งต่อไปยัง</label>
+                    <input type="search" class="form-control" list="datalistOptions_refer_in" id="refer_in">
+                    <datalist id="datalistOptions_refer_in">
+                      
+                    </datalist>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-md mt-2">
+                    <label class="form-label">Colonoscopy Date </label>
+                    <input type="date" class="form-control" id="colono_date">
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">Colonoscopy Result </label>
+                    <input type="text" class="form-control" id="colono_result">
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-md mt-2">
+                    <label class="form-label">Surgery Date</label>
+                    <input type="date" class="form-control" id="surgery_date">
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">Surgery Result</label>
+                    <input type="text" class="form-control" id="surgery_result">
+                  </div>
+                </div>
+
+                <div class="row justify-content-md-center">
+                  <div class="col-md mt-2">
+                    <label class="form-label">Chemotherapy Date</label>
+                    <input type="date" class="form-control" id="chemo_date">
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">Chemotherapy Protocal</label>
+                    <input type="text" class="form-control" id="chemo_protocal">
+                  </div>
+                </div>
+
+                <div class="row justify-content-md-center">
+                  <div class="col-md mt-2">
+                    <label class="form-label">Radiation Date</label>
+                    <input type="date" class="form-control" id="radiation_date">
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">Radiation Fx.</label>
+                    <input type="text" class="form-control" id="radiation_fx">
+                  </div>
+                </div>
+
+                <div class="row justify-content-md-center">
+                  <div class="col-md mt-2">
+                    <label class="form-label">Palliative care Date</label>
+                    <input type="date" class="form-control" id="palliative_date">
+                  </div>
+                  <div class="col-md mt-2">
+                    <label class="form-label">Appoint Date</label>
+                    <input type="date" class="form-control" id="appoint_date">
+                  </div>
+                    
+                </div>
+
+              </form>
+            </div>
+
+            <div class="row mb-3">
+              <center>
+                <div class="col mb-3">
+                  <button type="button" class="d-none btn btn-secondary shadow my-btn" id="add_home_btn">บันทึกข้อมูล</button>
+                  <button type="button" class="d-none btn btn-secondary shadow my-btn" id="edit_home_btn">แก้ไขข้อมูล</button>
+                  <button type="button" class="d-none btn btn-warning shadow my-btn" id="delete_home_btn">ลบข้อมูล</button>
+
+                </div>
+              </center>
+            </div>
+             
+             
+          </div>
+
+
+        </div>
+        
+      </div>
+       
+    </div>
+  </div>
+
+
+
+
+

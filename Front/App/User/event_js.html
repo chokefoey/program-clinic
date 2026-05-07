@@ -1,0 +1,171 @@
+<script>
+
+ 
+
+
+
+function clickEventHandlerUserInfoModal(e){
+  if (e.target.matches("#user_edit_btn") ){
+    // console.log("user_edit_btn")
+    Swal.fire({
+      title: "Do you want to save?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`
+
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        editUser()
+
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info")
+
+      }
+    })
+    
+  }
+  if (e.target.matches("#user_add_btn") ){
+    // console.log("user_add_btn")
+    const emailInput = document.getElementById("email_address_user").value;
+
+    if (!isValidEmail(emailInput)) {
+        alert("Invalid email!");
+
+    } else {
+      Swal.fire({
+        title: "Do you want to save?",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        denyButtonText: `Don't save`
+
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          addNewUserByAdmin()
+
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info")
+
+        }
+      })
+
+    }
+    
+    
+  }
+
+    
+};
+
+
+
+
+
+
+function clickEventHandlerUserPicModal(e){
+  if (e.target.matches("#edit_user_pic_btn") ){
+    // console.log("edit_user_pic_btn")
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        editUserPic()
+
+        // console.log()
+        
+        // Swal.fire("Saved!", "", "success");
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    })
+  }
+    
+};
+
+
+
+
+function changeEventHandlerUserPicModal(e){
+  if (e.target.matches("#file_upload_user_pic") ){
+    console.log("file_upload_user_pic")
+     
+    // document.getElementById("user_pic_large").src = URL.createObjectURL(document.getElementById(e.target.id).files[0])
+    if ( e.target.value.length != 0){
+      // console.log(e.target.value.length)
+      const output = checkFileTypeAndSize(e)
+      if( checkFileTypeAndSize(e)[0].result == "Correct" ){
+        console.log(output)
+        createBase64Data(e);
+
+        checkFileTypeAndSize(e)[0].fileTypeInput == "application/pdf" ? 
+          document.getElementById("user_pic_large").src = urlPdfLogo : 
+          document.getElementById("user_pic_large").src = URL.createObjectURL(document.getElementById(e.target.id).files[0])
+
+      } else if( checkFileTypeAndSize(e)[0].result == "Incorrect" ) {
+        cancelFile(e)
+        document.getElementById("user_pic_large").src = ""
+        Swal.fire({icon: 'error',title:"ไม่ถูกต้อง", html: "<h5 align='center'>" + output[0].detail + "</h5>" })
+        // console.log(output)
+        // console.log("file1 canceled")
+        
+      }
+    } else if ( e.target.value.length == 0){
+      // console.log(e.target.value.length)
+      cancelFile(e);
+      document.getElementById("user_pic_large").src = ""
+      // console.log("file1 canceled")
+      // console.log(fileInfo) 
+      
+    }
+
+  }
+    
+};
+
+
+
+// function clickEventHandlerUserRegistModal(e){
+//   if (e.target.matches("#user_regist_approve_card") ){
+//     console.log("ssdd")
+//   }
+    
+// };
+
+function clickEventHandlerUserSwitchModal(e){
+  if (e.target.matches("#switch_user_btn") ){
+    console.log("switch_user_btn")
+    if( document.getElementById('username_switch_input').value.trim() === "" || document.getElementById('password_switch_input').value.trim() === "" ){
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณากรอกให้ครบทุกช่อง</h5>"});
+      
+    } else {
+      checkLogout()
+
+    }
+    
+  }
+    
+};
+
+
+
+
+document.getElementById('user_info_modal').addEventListener("click", clickEventHandlerUserInfoModal)
+document.getElementById('user_pic_modal').addEventListener("click", clickEventHandlerUserPicModal)
+document.getElementById('user_pic_modal').addEventListener("change", changeEventHandlerUserPicModal)
+document.getElementById('user_switch_modal').addEventListener("click", clickEventHandlerUserSwitchModal)
+
+
+
+
+// document.getElementById('user_regist_modal').addEventListener("click", clickEventHandlerUserRegistModal)
+
+
+</script>

@@ -1,0 +1,534 @@
+<script>
+
+
+
+
+  
+
+ 
+
+
+ 
+
+// Function to handle key press
+function handleKeyPressTableDx(event) {
+  if (event.key === 'Enter') {
+    // Call your function here
+    // console.log('Enter key pressed!')
+    const rowInput = document.getElementsByClassName('input-dx-row-treat').length + 1
+    // console.log("rowInput " + rowInput)
+
+    if( rowInput > 5){
+      // alert("จำกัด 5 รายการ")
+      Swal.fire({ icon: 'error',title: 'จำกัด 5 รายการ',})
+      
+    } else {
+      addRowInputDxTreat();
+
+
+
+    }
+    
+  }
+};
+
+
+function handleKeyPressTableTx(event) {
+  if (event.key === 'Enter') {
+    // Call your function here
+    // console.log('Enter key pressed!')
+    const rowInput = document.getElementsByClassName('input-tx-row-treat').length + 1
+    // console.log("rowInput " + rowInput)
+
+    if( rowInput > 10){
+      // alert("จำกัด 10 รายการ")
+      Swal.fire({ icon: 'error',title: 'จำกัด 10 รายการ',})
+      
+    } else {
+      addRowInputTxTreat()
+      
+    }
+    
+  }
+};
+
+
+
+function handleKeyPressTableHm(event) {
+  if (event.key === 'Enter') {
+    // Call your function here
+    console.log('Enter key pressed!')
+    const rowInput = document.getElementsByClassName('input-hm-row-treat').length + 1 
+    // console.log("rowInput " + rowInput)
+
+    if( rowInput > 10){
+      // alert("จำกัด 10 รายการ")
+      Swal.fire({ icon: 'error',title: 'จำกัด 10 รายการ',})
+      
+    } else {
+      addRowInputHmTreat()
+      
+    }
+    
+  }
+};
+
+
+
+
+function addRowInputDxTreat(){
+  // Get all elements with the class '.icd10-options'
+  const icd10Options = document.querySelectorAll('.icd10-options');
+
+  // Check if there are any elements with the class
+  if (icd10Options.length > 0) {
+    // Get the last element with the class '.icd10-options'
+    const lastIcd10Option = icd10Options[icd10Options.length - 1];
+
+    // Check if Choices.js is initialized on the last element
+    if (lastIcd10Option.choicesInstance) {
+      // Get the current value from the Choices.js instance
+      const selectedValue = lastIcd10Option.choicesInstance.getValue(true); 
+
+      // Check if the selected value is empty or undefined
+      if (!selectedValue) {
+          console.log('The last .icd10-options element has no value.');
+          Swal.fire({ icon: 'error',title: 'กรุณากรอกแถวสุดท้ายก่อน',})
+
+      } else {
+          console.log('The last .icd10-options value is:', selectedValue);
+          addRowDx("", "")
+
+          clickLastIcd10Option()
+      }
+    } else {
+      console.log('Choices.js is not initialized on the last .icd10-options element.');
+
+    }
+  } else {
+    console.log('No elements found with the class .icd10-options.');
+  }
+
+
+  addEventHandlerEnterTreatView();
+
+
+};
+
+
+
+function addRowInputTxTreat() {
+  // Get all elements with the class '.procedure-options'
+  const procedureOptions = document.querySelectorAll('.procedure-options');
+
+  // Check if there are any procedure options
+  if (procedureOptions.length === 0) {
+      console.log('No elements found with the class .procedure-options.');
+      return;
+  }
+
+  // Get the last element with the class '.procedure-options'
+  const lastProcedureOptions = procedureOptions[procedureOptions.length - 1];
+
+  // Select all elements with the class '.input-price-procedure'
+  const inputs = document.querySelectorAll('.input-price-procedure');
+
+  // Check if there are any inputs
+  if (inputs.length === 0) {
+      console.warn('No elements found with the class .input-price-procedure');
+      return;
+  }
+
+  // Get the last input element and check if its value is empty
+  const lastInput = inputs[inputs.length - 1];
+  const isEmpty = !lastInput.value.trim();
+
+  // Check if Choices.js is initialized on the last element
+  if (!lastProcedureOptions.choicesInstance) {
+      console.log('Choices.js is not initialized on the last .procedure-options element.');
+      return;
+  }
+
+  // Get the current value from the Choices.js instance
+  const selectedValue = lastProcedureOptions.choicesInstance.getValue(true);
+
+  // Validate selected value and input value
+  if (!selectedValue) {
+      console.log('The last .procedure-options element has no value.');
+      Swal.fire({ icon: 'error', title: 'กรุณากรอกแถวสุดท้ายก่อน' });
+
+  } else if (isEmpty) {
+      console.log('The last input with the class .input-price-procedure is empty.');
+      Swal.fire({ icon: 'error', title: 'กรุณาระบุราคา' });
+      
+  } else {
+      console.log('The last .procedure-options value is:', selectedValue);
+      addRowTx("", "", "");
+
+      clickLastProcedureOption()
+  }
+
+
+  addEventHandlerEnterTreatView();
+
+};
+
+
+
+
+
+function addRowInputHmTreat() {
+  // Get all elements with the class '.dose-options' and '.drug-options'
+  const drugOptions = document.querySelectorAll('.drug-options');
+  const doseOptions = document.querySelectorAll('.dose-options');
+
+  // Check if there are any drug or dose options
+  if (drugOptions.length === 0) {
+      console.log('No elements found with the class .drug-options.');
+      return;
+  }
+
+  if (doseOptions.length === 0) {
+      console.log('No elements found with the class .dose-options.');
+      return;
+  }
+
+  // Get the last element with the class '.drug-options' and '.dose-options'
+  const lastDrugOptions = drugOptions[drugOptions.length - 1];
+  const lastDoseOptions = doseOptions[doseOptions.length - 1];
+
+  // Select all elements with the class '.input-price-homemed'
+  const inputs = document.querySelectorAll('.input-price-homemed'); 
+
+  // Check if there are any inputs
+  if (inputs.length === 0) {
+      console.warn('No elements found with the class .input-price-homemed');
+      return;
+  }
+
+  // Get the last input element and check if its value is empty
+  const lastInput = inputs[inputs.length - 1];
+  const isEmpty = !lastInput.value.trim();
+
+  // Check if Choices.js is initialized on the last element
+  if (!lastDrugOptions.choicesInstance) {
+      console.log('Choices.js is not initialized on the last .drug-options element.');
+      return;
+  }
+  if (!lastDoseOptions.choicesInstance) {
+      console.log('Choices.js is not initialized on the last .dose-options element.');
+      return;
+  }
+
+  // Get the current value from the Choices.js instance
+  const selectedDrugValue = lastDrugOptions.choicesInstance.getValue(true);
+  const selectedDoseValue = lastDoseOptions.choicesInstance.getValue(true);
+
+  // Validate selected value and input value
+  if (!selectedDrugValue) {
+      console.log('The last .drug-options element has no value.'); 
+      Swal.fire({ icon: 'error', title: 'กรุณากรอกชื่อยา' });
+      return;
+  }
+  if (!selectedDoseValue) {
+      console.log('The last .dose-options element has no value.');
+      Swal.fire({ icon: 'error', title: 'กรุณากรอกวิธีใช้ยา' });
+      return;
+  }
+  if (isEmpty) {
+      console.log('The last input with the class .input-price-dose is empty.');
+      Swal.fire({ icon: 'error', title: 'กรุณาระบุจำนวน' });
+      return;
+  }
+
+  // If all validations pass, proceed to add a new row
+  console.log('The last .dose-options value is:', selectedDoseValue);
+  addRowHm("", "", "", "");
+  
+
+  clickLastDrugOption()
+
+
+  addEventHandlerEnterTreatView();
+  
+};
+
+
+  
+
+
+
+
+
+
+
+
+
+
+function setHomemedType(targetInputClass, outputClass) {
+  // console.log("Displaying medication types แสดงชนิดของยา");
+
+  // Get all input elements based on the provided class
+  const inputs = document.querySelectorAll(`.${targetInputClass}`);
+  const data = inputs.length === 0 ? [] : Array.prototype.map.call(inputs, (n) => n.value);
+
+  // Initialize an array to store all the extracted types
+  let totals = [];
+
+  // Loop through the data array with a step of 4 to process each medication block
+  for (let i = 0; i < data.length; i += 4) {
+    let item = data[i]; // Example: Simvastatin 20mg/เม็ด/1/ลดไขมันในเลือด
+
+    if (item) {
+      let type = item.split('/')[1]; // Extract the type (e.g., เม็ด)
+      totals.push(type);
+    }
+  }
+
+  // Output the extracted types to elements with the provided output class
+  const outputs = document.querySelectorAll(`.${outputClass}`);
+  const values = totals;
+
+  outputs.forEach((output, index) => {
+    if (index < values.length) {
+      output.textContent = values[index];
+    }
+  });
+
+};
+
+
+
+
+
+
+
+  // แบ่ง arr เป็นกลุ่มๆ กลุ่มละเท่าไหร่ split arr
+  function splitArrayIntoChunks(arr, chunkSize) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+      chunks.push([arr.slice(i, i + chunkSize).join(', ')]);
+    }
+    return chunks;
+  };
+
+
+
+ 
+
+
+// focus Dx input แถวสุดท้ายที่ไม่ใช่ icd 10
+function focusLastInputDx(){
+  const inputsAll = document.querySelectorAll('.input-dx-treat')
+  const lastInput = inputsAll[inputsAll.length -2]; // Get the last input element is -1
+  lastInput.focus(); // Focus on the last input element
+
+};
+
+function focusLastInputTx(){
+  const inputsAll = document.querySelectorAll('.input-tx-treat')
+  const lastInput = inputsAll[inputsAll.length -3]; // Get the last input element is -1
+  lastInput.focus(); // Focus on the last input element
+
+};
+
+function focusLastInputHm(){
+  const inputsAll = document.querySelectorAll('.input-hm-treat')
+  const lastInput = inputsAll[inputsAll.length -4]; // Get the last input element is -1
+  lastInput.focus(); // Focus on the last input element
+
+};
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+function closeTreatView(){ 
+  showViewById("pending_view_btn");
+
+  document.getElementById("selected_patient_view_treat").classList.add('d-none')
+  document.getElementById("non_selected_patient_view_treat").classList.remove('d-none')
+
+  document.getElementById("sidebar_menu").classList.add('d-none')
+  document.getElementById("sidebar_menu").classList.add('d-lg-block')
+
+  // reset treatment form
+
+  // form ซักประวัติ
+  document.getElementById('ccpi_form_treat').reset();
+  
+  // form ตรวจร่างกาย
+  document.getElementById('pe_form_treat').reset();
+  
+  // form Investigation
+  document.getElementById('ix_form_treat').reset();
+
+  // form resetFormDx วินิจฉัย
+  const tbodyDx = document.getElementById('input_dx_treat');
+  while (tbodyDx.firstChild) {
+      tbodyDx.removeChild(tbodyDx.firstChild);
+  }
+
+  const tbodyTx = document.getElementById('input_tx_treat');
+  while (tbodyTx.firstChild) {
+      tbodyTx.removeChild(tbodyTx.firstChild);
+  }
+
+  const tbodyHm = document.getElementById('input_hm_treat');
+  while (tbodyHm.firstChild) {
+      tbodyHm.removeChild(tbodyHm.firstChild);
+  }
+
+  // form summary
+  document.getElementById('summary_form_treat').reset();
+
+  document.getElementById('appointment_form_treat').reset();
+
+
+  // เพื่อให้มีการ update refresh table ให้ตรงกับสถานะ
+  // document.querySelectorAll('.inlineRadioOptionsPending').forEach(radio => {
+  //   // Check if the radio button is already checked and trigger a click event
+  //   if (radio.checked) {
+  //       radio.click();
+  //   }
+  // });
+
+
+};
+
+
+
+// สร้าง function นี้แยกหลังจาก refresh หน้าจอใหม่ 
+function closeTreatView_afterpageload(){
+  showViewById("pending_view_btn");
+
+
+};
+
+
+
+function deleteOpdVisit(){
+  loadingStart()
+  const opdVisitId = document.getElementById('opd_visitid_treat').textContent
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res) 
+    // resetTableDx();
+    
+    // เปลี่ยนสถานะในตาราง ว่าตรวจเสร็จแล้ว update data
+    // elements.tablePending.updateData([opdVisitInfo]); 
+    // elements.tableAppointment.updateData([opdVisitInfo]);  
+
+    elements.tablePending.deleteRow(opdVisitId); //delete row with an id of 15
+    elements.tableAppointment.deleteRow(opdVisitId); //delete row with an id of 15
+
+    // loadingEnd();
+    closeTreatView()
+    workingEnd()
+
+  }).deleteOpdVisitById(opdVisitId);
+
+};
+
+ 
+
+async function showAlertBeforeSaveTreatView() {
+  let oldValue = document.getElementById("discharge_type_treat").value;
+  let defaultValue = document.getElementById("discharge_type_treat").value;
+  
+  if ( document.getElementById("discharge_type_treat").value == "" ){
+    document.getElementById("discharge_type_treat").value = "จำหน่าย"
+    defaultValue = "จำหน่าย"
+
+  }
+
+  await Swal.fire({
+    title: "เลือกสถานะ",
+    input: "select",
+    inputOptions: {
+      // "": "",
+      "ส่งห้องตรวจ": "ส่งห้องตรวจ",
+      "ส่งห้องยา": "ส่งห้องยา",
+      "ส่งการเงิน": "ส่งการเงิน",
+      "ส่งนัดหมาย": "ส่งนัดหมาย",
+      "จำหน่าย": "จำหน่าย",
+    },
+    // inputPlaceholder: "Select a fruit",
+    inputValue: defaultValue, // Set the default value
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: "Save&Close",
+    denyButtonText: `Save Only`,
+    denyButtonColor: "#9F8383",
+    didOpen: () => {
+      // Add a change event listener to the input field
+      const selectElement = Swal.getInput();
+      if (selectElement) {
+        selectElement.addEventListener("change", (e) => {
+          const selectedValue = e.target.value;
+          console.log("Selected value:", selectedValue);
+
+          // Call your custom callback function here
+          document.getElementById("discharge_type_treat").value = selectedValue
+          // handleInputChange(selectedValue);
+        });
+      }
+    },
+    didClose: () => {
+      // Code to execute when the alert is closed
+      console.log("Swal alert has been closed.");
+      document.getElementById("discharge_type_treat").value = oldValue
+    },
+   
+
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      console.log("กำลังบันทึก...")
+      saveDataTreatView();
+
+      // ตั้งเวลาให้ 2 วินาทีแล้วปิดหน้าต่าง
+      const myTimeout = setTimeout(()=>{
+        closeTreatView()
+        loadingEnd()
+
+      }, 2000); 
+
+    } else if (result.isDenied) {
+      // Swal.fire("Changes are not saved", "", "info");
+      console.log("กำลังบันทึก...")
+      saveDataTreatView();
+      
+    }
+  });
+
+  
+};
+
+ 
+
+
+
+
+
+ 
+
+
+
+  
+
+
+
+
+
+
+</script>

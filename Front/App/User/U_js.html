@@ -1,0 +1,105 @@
+<script>
+
+
+
+function editUser(){
+  loadingStart()
+
+  const userId = document.getElementById('user_id_status').textContent
+  console.log(userId)
+
+  const userInfo = getFormDataById("user_form")
+  console.log(userInfo)
+
+  google.script.run.withSuccessHandler( (res)=>{
+    console.log(res)
+    loadingEnd()
+
+    if ( res[0].result == "Correct"){
+      Swal.fire({ icon:'success',title:'บันทึกสำเร็จ'})
+
+    } else if ( res[0].result == "Incorrect") {
+      Swal.fire({ icon:'error',title:'ไม่สำเร็จ', html:"<h5 align='center'>"+ res[0].detail +"</h5>"})
+      
+
+    }
+
+    
+  }).editUser(userId,userInfo) 
+
+
+};
+
+
+
+
+// ***************************************************************************
+// SIGNATURE PAD
+// ***************************************************************************
+
+
+// const canvas = document.getElementById('signature_pad');
+
+// const signaturePad = new SignaturePad(canvas, {
+//   minWidth: 1.0,
+//   maxWidth: 2.0,
+//   // penColor: "rgb(66, 133, 244)",
+//   backgroundColor: 'rgba(255, 255, 255, 0)',
+//   penColor: 'rgb(0, 0, 0)'
+// });
+
+
+// function clearPad() {
+//   if (event) {
+//     event.stopPropagation(); // Stop the event from propagating further
+//     event.preventDefault(); // Prevent default behavior, if any
+//   }
+//   // Clears the canvas
+//   signaturePad.clear();
+// }
+
+// function saveSignature() {
+//   const dataUrl = canvas.toDataURL('image/png').split(',')[1]; // Base64 data
+//   console.log(dataUrl)
+//   if (event) {
+//     event.stopPropagation(); // Stop the event from propagating further
+//     event.preventDefault(); // Prevent default behavior, if any
+//   }
+//   // const fileName = `signature_${new Date().toISOString()}.png`;
+//   // google.script.run.withSuccessHandler((url) => {
+//   //   alert('Signature saved! File URL: ' + url);
+//   // }).uploadSignature(dataUrl, fileName);
+// }
+
+
+
+function openModalUserSign(){
+  new bootstrap.Modal(document.getElementById('user_sign_modal'), {keyboard: false }).show()
+
+  let signaturePad = new SignaturePad(document.getElementById('signature_pad'), {
+    backgroundColor: 'rgba(255, 255, 255, 0)',
+    penColor: 'rgb(0, 0, 0)'
+  });
+  let saveButton = document.getElementById('save');
+  let cancelButton = document.getElementById('clear');
+
+  saveButton.addEventListener('click', function (event) {
+    let data = signaturePad.toDataURL('image/png');
+
+  // Send data to server instead...
+    window.open(data);
+  });
+
+  cancelButton.addEventListener('click', function (event) {
+    signaturePad.clear();
+  });
+
+   
+};
+
+
+
+
+
+
+</script>

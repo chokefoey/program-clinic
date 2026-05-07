@@ -1,0 +1,357 @@
+
+ 
+<script>
+
+
+  
+ 
+
+function loadDashboardView(){
+  loadView({id: "chart1_view", func: "loadDashboardView" });
+  // loadView({func: "loadDashboardView" , callback: setDataForSearch });
+};
+
+
+
+// downloadexcel download excel downloadtabulator download tabulator
+
+function flattenObject(obj, parent = '', res = {}) {
+  for (let key in obj) {
+      const propName = parent ? parent + '.' + key : key;
+      if (typeof obj[key] == 'object') {
+          flattenObject(obj[key], propName, res);
+      } else {
+          res[propName] = obj[key];
+      }
+  }
+  return res;
+};
+
+
+
+async function getDataReportPatientRegist() {
+  // กรณีดึข้อมูลงจาก tabulator โดยตรง
+  const data = elements.tablePatientRegist.getData();
+  console.log(data)
+
+  const selectKey = [
+    'patientId', 'dateStamp', 'timeStamp', 'incrementHn', 'dateRegist',
+    'identityData', 'contactData','addressData','medicalData','otherData','userStamp', 
+  ];
+
+  // Map the filtered data to only include the keys in selectKey
+  const filteredAndMappedData = data.map(item => {
+    let filteredItem = {};
+    selectKey.forEach(key => {
+      if (item.hasOwnProperty(key)) {
+        filteredItem[key] = item[key];
+      }
+    });
+    return filteredItem;
+  });
+
+  console.log(filteredAndMappedData);
+
+  // Flatten JSON data
+  const flattenedData = filteredAndMappedData.map(item => {
+    const flattenedItem = flattenObject(item);
+
+    // Destructure to remove the specific key (e.g., 'piData') from the flattened item
+    const { identityData,contactData,addressData,medicalData,otherData,userStamp, ...newFlattenedItem } = flattenedItem;
+
+    return newFlattenedItem;
+  });
+
+
+
+
+  const fileName = 'ข้อมูลผู้ป่วยลงทะเบียน'
+
+  const XLSX = await import("https://cdn.sheetjs.com/xlsx-0.19.2/package/xlsx.mjs");
+
+    
+
+  const worksheet = XLSX.utils.json_to_sheet(flattenedData)
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
+
+  XLSX.writeFile(workbook, fileName + '.xlsx', { compression: true });
+
+};
+
+
+
+
+
+
+
+// *******************************************************************************
+// Export OPD VIST DATA
+// *******************************************************************************
+
+
+async function downloadReportOpdVisitByDate(){
+  // console.log("dsdsdsd")
+
+  // Assuming dateStart and dateEnd are in 'YYYY-MM-DD' format
+  const dateStart = new Date(document.getElementById("date_start_report").value);
+  const dateEnd = new Date(document.getElementById("date_end_report").value);
+
+  // Select all checkboxes with the class 'check-input-report'
+  const checkboxes = document.querySelectorAll('.check-input-report');
+  
+  // Initialize an array to store checked values
+  let checkedValues = [];
+
+  // Loop through checkboxes and get the value of checked ones
+  checkboxes.forEach((checkbox) => {
+    if (checkbox.checked) {
+      checkedValues.push(checkbox.value);
+    }
+  });
+
+  // Output the checked values
+  // console.log('Checked values: ', checkedValues);
+
+  // Get the data from Tabulator
+  // const data = elements.tablePending.getData(); // json
+
+  const dataTablePending = elements.tablePending.getData(); // json
+
+  // รวม 2 ตาราง ตาราง patientRegist กับ opdVisit
+  const data = mergeTwoObj(dataTablePending);
+  console.log("merge2tableData",data);
+
+  // ระบุ key ที่ต้องการ
+  const mainKey = [
+    'identityData', 'contactData', 'addressData', 'medicalData', 'otherData',
+    'opdVisitId', 'dateStamp', 'timeStamp', 'visitDate', 'visitTime',
+    // 'firstName','lastName','hn','patientId','cid', // ซ้ำกับใน sheet PatientRegist เลือกแสดงแค่ตารางเดียว
+    'roomName', 'doctorName','opdStatus',
+  ]
+
+
+
+  //spread operator
+  const allKeysSelect = [...mainKey, ...checkedValues];
+  console.log(allKeysSelect)
+
+
+  let allKeysSelect2 = [...mainKey, ...checkedValues];
+  // console.log(allKeysSelect2)
+
+  // let array = ['a', 'b', 'c', 'd', 'e'];
+  // let itemsToRemove = ['piData', 'peData','ixData', 'dxData','txData', 'hmData','summaryData' ];
+  // ลบ key ที่มีค่าว่าง เลือก key ตอนส่งออกเป็น excel
+  let itemsToRemove = [
+    'identityData', 'contactData', 'addressData', 'medicalData', 'otherData',
+    'piData', 'peData','ixData', 'dxData','txData', 'hmData','summaryData' 
+  ];
+
+  allKeysSelect2 = allKeysSelect2.filter(item => !itemsToRemove.includes(item));
+  console.log(allKeysSelect2); // Output: ['a', 'c', 'd']
+
+
+  
+  // Filter the data between dateStart and dateEnd
+  const filteredData = data.filter(item => {
+    const itemDate = new Date(item.visitDate); // Assuming 'visitDate' is the key for the date field in your data
+    return itemDate >= dateStart && itemDate <= dateEnd;
+  });
+
+
+  // Map the filtered data to only include the keys in allKeysSelect
+  const filteredAndMappedData = filteredData.map(item => {
+    let filteredItem = {};
+    allKeysSelect.forEach(key => {
+      if (item.hasOwnProperty(key)) {
+        filteredItem[key] = item[key];
+      }
+    });
+    return filteredItem;
+  });
+
+  console.log("filteredAndMappedData",filteredAndMappedData);
+
+
+  const fileName = 'ข้อมูลผู้ป่วยมารับบริการ'
+
+  const XLSX = await import("https://cdn.sheetjs.com/xlsx-0.19.2/package/xlsx.mjs");
+
+  // Flatten JSON data
+
+  const flattenedData = filteredAndMappedData.map(item => {
+    const flattenedItem = flattenObject(item);
+
+    // Destructure to remove the specific key (e.g., 'piData') from the flattened item
+    const { 
+      piData,peData,ixData,dxData,txData,hmData,summaryData,appointmentData, ...newFlattenedItem 
+      
+      } = flattenedItem;
+
+    return newFlattenedItem;
+  });
+
+
+  console.log("flattenedData",flattenedData)
+
+
+  // Convert JSON data to worksheet
+  let ws = XLSX.utils.json_to_sheet(flattenedData, {
+    header: allKeysSelect2  // Arrange columns in this order
+  });
+
+
+  // const ws = XLSX.utils.json_to_sheet(flattenedData)
+
+  const workbook = XLSX.utils.book_new();
+
+
+  XLSX.utils.book_append_sheet(workbook, ws, fileName);
+
+  XLSX.writeFile(workbook, fileName + '.xlsx', { compression: true });
+
+
+  // document.getElementById("date_start_report").value = "";
+  // document.getElementById("date_end_report").value = "";
+
+  loadingEnd()
+
+
+
+
+};
+
+
+
+
+
+// *******************************************************************************
+// รวม 2 ตาราง MergeTwoTableData
+// *******************************************************************************
+
+function mergeTwoObj(opdVisitInfo){
+  // const obj1 = [
+  //   { patientId: "PA241020_305278", firstName: "aaa", lastName: "aaa" },
+  //   { patientId: "PA241020_124563", firstName: "bbb", lastName: "bbb" },
+  //   { patientId: "PA241020_357721", firstName: "ccc", lastName: "ccc" },
+  // ];
+
+  const obj1 =  opdVisitInfo
+  // console.log(obj1)
+
+  // const obj2 = [
+  //   { patientId: "PA241020_305278", address: "xxx1", phone: "xxx2" },
+  //   { patientId: "PA241020_124563", address: "yyy1", phone: "yyy2" },
+  //   { patientId: "PA241020_357721", address: "zzz1", phone: "zzz2" },
+  // ];
+
+  
+  const obj2 = elements.tablePatientRegist.getData();
+  // console.log(obj2)
+
+  const obj3 = obj1.map((item1) => {
+    // Find the matching object in obj2 based on patientId
+    const match = obj2.find((item2) => item2.patientId === item1.patientId);
+    // Merge the properties of obj1 and obj2
+    return { ...item1, ...match };
+  });
+
+  // console.log(obj3);
+
+  return obj3
+
+}
+
+
+
+
+
+// *******************************************************************************
+// TABLE INCOME BY DOCTOR
+// *******************************************************************************
+
+function showTableIncome(tabledata){
+  // Define the custom formatter function
+  let mergeFormatter = function(cell, formatterParams, onRendered){
+      const data = cell.getRow().getData();
+      return data.firstName + " " + data.lastName; // Merge name and surname
+  };
+
+
+  elements.tableIncome = new Tabulator("#table_income_report", {
+    data:tabledata,           //load row data from array
+    // data: [],  // Empty array as initial data
+    index:"opdVisitId", //set the index field to the "age" field.
+    layout:"fitColumns",      //fit columns to width of table
+    // layout:"fitDataStretch",
+    // layout:"fitDataFill",
+    responsiveLayout:"hide",  //hide columns that don't fit on the table
+    addRowPos:"top",          //when adding a new row, add it to the top of the table
+    
+    pagination:"local",       //paginate the data
+    paginationSize:10,         //allow 7 rows per page of data
+    paginationCounter:"rows", //display count of paginated rows in footer
+    // movableColumns:true,      //allow column order to be changed
+    // initialSort:[             //set the initial sort order of the data
+    //     {column:"appointDate", dir:"dsc"},
+    // ],
+
+    placeholder:"ไม่พบข้อมูล", //display message to user on empty table
+
+    // initialFilter:[
+    //     {field:"appointDate", type:"like", value:currentDay}
+    // ],
+
+    columns:[
+      {formatter:"rownum", hozAlign:"center", width:40},
+
+      {title:"VID", field:"opdVisitId", visible:false,download:true},
+      {title:"PID", field:"patientId",visible:false, download:true },
+      {title:"วันที่มา", field:"visitDate", width:90, headerFilter:true, formatter:thaiDateFormatterTabu,download:true}, 
+      
+      {title:"เวลา", field:"visitTime" , width:80, formatter:timeFormatterTabu,download:true},
+      
+      {title:"ชื่อผู้ป่วย", field:"firstName", visible:false,download:true },
+      {title:"สกุลผู้ป่วย", field:"lastName", visible:false,download:true },
+      
+      {title:"ผู้ป่วย", field:"fullName",responsive:0,minWidth:120, formatter:mergeFormatter,download:false}, // Display the merged result
+      // {title:"HN", field:"hn",download:true },
+      {title:"CID", field:"cid",download:true },
+
+      {title:"ค่าหัตถการ", field:"summaryData.sumProcedurePrice",download:true },
+      {title:"ค่าแพทย์", field:"summaryData.sumDfPrice",download:true },
+      {title:"ค่ายา", field:"summaryData.sumHomemedPrice",download:true },
+      {title:"รวมรายรับ", field:"summaryData.totalPrice",download:true },
+
+      // {title:"ห้องตรวจ", field:"roomName",download:true }, 
+      {title:"แพทย์", field:"doctorName",download:true },
+            
+    ],
+
+
+  });
+
+    
+
+
+
+};
+
+
+
+
+
+ 
+
+
+
+
+  
+
+
+</script>
+
+
+

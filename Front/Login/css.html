@@ -1,0 +1,250 @@
+<style>
+
+ 
+
+
+.pointer {
+    cursor: pointer;
+}
+
+
+body {
+  font-family: 'Sarabun', serif;
+  /* height: 90vh !important; */
+  /* display: flex; */
+  /* align-items: center !important; */
+  /* justify-content: center; */
+  background-color: DimGrey;
+}
+
+#login_view {
+  height: 90vh ; 
+  /* width: 60% !important;  */
+  display: flex;
+  align-items: center ;
+  justify-content: center;
+
+}
+
+/* ************************************************************************************** */
+/* OTP INPUT MODAL *************** */
+/* ************************************************************************************** */
+
+*{
+  box-sizing: border-box;
+}
+body{
+  margin: 0;
+}
+.title{
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  h3{
+    font-weight: bold;
+  }
+  p{
+    font-size: 12px;
+    color: #118a44;
+    &.msg{
+      color: initial;
+      text-align: initial;
+      font-weight: bold;
+    }
+  }
+}
+
+.otp-input-fields{
+  margin: auto;
+  background-color: white;
+  box-shadow: 0px 0px 8px 0px #02025044;
+  max-width: 400px;
+  width: auto;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px;
+  
+  input{
+    height: 40px;
+    width: 40px;
+    background-color: transparent;
+    border-radius: 4px;
+    border: 1px solid #2f8f1f;
+    text-align: center;
+    outline: none;
+    font-size: 16px;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    &[type=number] {
+      -moz-appearance: textfield;
+    }
+    &:focus{
+      border-width: 2px;
+      border-color: darken(#2f8f1f, 5%);
+      font-size: 20px;
+    }
+  }
+}
+
+.result{
+  max-width: 400px;
+  margin: auto;
+  padding: 24px;
+  text-align: center;
+  p{
+    font-size: 24px;
+    font-family: 'Antonio', sans-serif;
+    opacity: 1;
+    transition: color 0.5s ease;
+    &._ok{
+      color: green;
+    }
+    &._notok{
+      color: red;
+      border-radius: 3px;
+    }
+  }
+}
+
+.timer {
+  font-weight: bold;
+  font-size: 30px;
+  font-style: italic;
+}
+
+
+/* ************************************************************************************** */
+/* ************************************************************************************** */
+
+/* sweetalert css  */
+.swal2-progress-bar {
+    background-color: #f6c23e;
+    height: 20px;
+    border-radius: 5px;
+}
+
+
+
+/* ************************************************************************************** */
+/* flip  */
+/* ************************************************************************************** */
+
+
+.flip-container {
+  perspective: 1000px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%; /* Makes the container circular */
+  overflow: hidden; /* Ensures any overflow is clipped */
+}
+
+.flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: flip 20s infinite; /* Total duration is 20 seconds */
+}
+
+.front,
+.back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%; /* Makes both sides circular */
+}
+
+.front {
+  background-color: #fff; /* Background color for the front */
+}
+
+.back {
+  transform: rotateY(180deg);
+  background-color: #333; /* Background color for the back side */
+  color: #fff; /* Text color */
+}
+
+/* Keyframes for the flip animation */
+@keyframes flip {
+  0%, 39% {
+    transform: rotateY(0deg); /* Hold front for 4 seconds */
+  }
+  40%, 55% {
+    transform: rotateY(180deg); /* Flip to back (1 second) */
+  }
+  56%, 85% {
+    transform: rotateY(180deg); /* Hold back for 4 seconds */
+  }
+  86%, 99% {
+    transform: rotateY(0deg); /* Flip back to front (1 second) */
+  }
+  100% {
+    transform: rotateY(0deg); /* Ensure the front is visible at the end of the cycle */
+  }
+}
+
+
+
+ 
+
+
+/* ************************************************************************************** */
+/* line แสดง การทำงานอยู่เบื้องหลัง auto refresh  working */
+/* ************************************************************************************** */
+
+.line{
+  position: fixed;
+  top: 0px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #2F4F4F;
+  z-index: 99999;
+  overflow: hidden;
+}
+.dot{
+  position: absolute;
+  height: 100%;
+  width: 5px;
+  background: #fff;
+  animation: dotleft 2s cubic-bezier(.72,.03,.75,.54) infinite;
+}
+.dot1{
+}
+.dot2{
+  animation-delay: .4s;
+}
+.dot3{
+  animation-delay: .8s;
+}
+.dot4{
+  animation-delay: 1.2s;
+}
+.dot5{
+  animation-delay: 1.6s;
+}
+@keyframes dotleft {
+  0% {
+      left: 0%;
+  }
+  100% {
+      left: 100%;
+  }
+}
+
+  
+
+      
+      
+</style>

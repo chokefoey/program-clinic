@@ -1,0 +1,475 @@
+<script>
+
+
+
+
+
+function setDataForCalendar(res){
+  const result = res
+  .filter(item => item.appointmentData && item.appointmentData.description)
+  .map(item => {
+      item.appointmentData.description.opdVisitId = item.opdVisitId;
+      return item.appointmentData;
+  });
+
+  // console.log(result);
+
+  createCalendar1(result);
+  createCalendar2(result)
+
+};
+
+
+
+ 
+
+// คลิ๊กมาจาก fullcalendar 
+function openModalCalendarEventEdit(eventInfo){ 
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal')) // Returns a Bootstrap modal instance
+  // Show or hide:
+  modal.show();
+  // modal.hide();
+  document.getElementById('calendar_event_addedit_form').reset()
+
+  // console.log(eventInfo)
+
+  const patientId = eventInfo.extendedProps.description.patientId
+  const opdVisitId = ""   // เพราะเลือกจากหน้า calendar ไม่ได้มาตรวจ
+  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();
+  // console.log(patientRegistInfo)
+  
+  document.getElementById('patientid_calendar').value = patientId
+  document.getElementById('opd_visitid_calendar').value = eventInfo.extendedProps.description.opdVisitId 
+  document.getElementById('fn_pt_calendar').value = patientRegistInfo.identityData.firstName
+  document.getElementById('ln_pt_calendar').value = patientRegistInfo.identityData.lastName
+  document.getElementById('hn_pt_calendar').value = patientRegistInfo.incrementHn
+
+
+  document.getElementById('fullname_pt_show_calendar').textContent = patientRegistInfo.identityData.firstName + " " + patientRegistInfo.identityData.lastName
+  document.getElementById('hn_pt_show_calendar').textContent = patientRegistInfo.incrementHn
+
+
+  document.getElementById('appointmentid_calendar').value = eventInfo.publicId
+
+  document.getElementById('start_date_calendar').value = eventInfo.extendedProps.description.startDate
+  document.getElementById('start_time_calendar').value = eventInfo.extendedProps.description.startTime
+  document.getElementById('purpose_calendar').value = eventInfo.extendedProps.description.purpose
+
+  document.getElementById('room_name_calendar').value = eventInfo.extendedProps.description.roomName
+
+
+  elements["room_name_calendar"].setChoiceByValue(eventInfo.extendedProps.description.roomName); // set ค่าของ choice js
+  elements["doctor_appoint_calendar"].setChoiceByValue(eventInfo.extendedProps.description.doctorName); // set ค่าของ choice js
+
+
+  document.getElementById('comment_calendar').value = eventInfo.extendedProps.description.comment
+
+};
+
+
+
+
+
+
+
+
+function createEventInfo(){
+  const event = {};
+    event.id = generateUniqueId();
+    event.start = document.getElementById('start_date_calendar').value + " " + document.getElementById('start_time_calendar').value
+    event.title = document.getElementById('fn_pt_calendar').value + " " + document.getElementById('ln_pt_calendar').value;
+
+  // // Initialize the description object before assigning properties to it
+  event.description = {};
+    event.description.startDate = document.getElementById('start_date_calendar').value;
+    event.description.startTime = document.getElementById('start_time_calendar').value;
+
+    event.description.opdVisitId = document.getElementById('opd_visitid_calendar').value;
+    event.description.patientId = document.getElementById('patientid_calendar').value;
+    
+    event.description.firstName = document.getElementById('fn_pt_calendar').value;
+    event.description.lastName = document.getElementById('ln_pt_calendar').value;
+    event.description.purpose = document.getElementById('purpose_calendar').value === '' ? 'ไม่ทราบ' : document.getElementById('purpose_calendar').value;
+    event.description.doctorName = document.getElementById('doctor_appoint_calendar').value;
+
+    event.description.roomName = document.getElementById('room_name_calendar').value;
+    event.description.comment = document.getElementById('comment_calendar').value;
+    event.description.sign = document.getElementById('user_fullname_status').textContent;
+
+  console.log(event)
+
+  // ให้ไปเพิ่ม new visit id และให้ ระบุ status เป็นเพื่อนัดหมาย
+  // const eventTest = {
+  //   title: 'Event1',
+  //   start: '2024-06-04 08:00',
+  //   description: {
+  //     vid: '334343',
+  //     firstName: 'ไม่ทราบ',
+  //     lastName: 'ไม่ทราบ'
+  //     purpose: 'ไม่ทราบ'
+  //   }
+
+  // }
+
+  return event
+
+};
+
+
+
+
+
+
+function addAppointmentDataByVid(){
+  loadingStart();
+  
+  const event = createEventInfo(); // obj
+
+  const patientId = document.getElementById('patientid_calendar').value
+  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();
+  console.log(patientRegistInfo)
+
+  // ส่งไปหลังบ้าน และหน้าบ้าน
+  const dataObj = {
+    patientId: document.getElementById('patientid_calendar').value,
+    firstName:document.getElementById('fn_pt_calendar').value,
+    lastName: document.getElementById('ln_pt_calendar').value,
+    hn: patientRegistInfo.incrementHn,
+
+    // cid: patientRegistInfo.identityData.cid,
+
+    opdStatus: 'นัดแล้ว',
+    appointDate: document.getElementById('start_date_calendar').value,
+    appointTime: document.getElementById('start_time_calendar').value,
+    // roomName: document.getElementById('room_name_calendar').value,  //  ไม่ต้องส่งไปเพราะเพทย์นัดกับแพทย์ตรวจอาจคนละคน
+    // doctorName: document.getElementById('doctor_appoint_calendar').value, // ไม่ต้องส่งไปเพราะเพทย์นัดกับแพทย์ตรวจอาจคนละคน
+    appointmentData: event,
+    userStamp: {
+      userId: document.getElementById("user_id_status").textContent,
+      userName: document.getElementById("user_fullname_status").textContent,
+
+    }
+  }
+
+  const opdVisitId = document.getElementById('opd_visitid_calendar').value
+  // console.log(opdVisitId)
+
+  google.script.run.withSuccessHandler((res)=>{ 
+    // console.log(res)
+
+    elements.calendar1.addEvent(event)
+    elements.calendar2.addEvent(event)
+    
+    elements.calendar1.render();  // ใส่ไว้ เพื่อให้ calendar2 render ใหม่ แต่ calendar1 ดีแล้ว
+    elements.calendar2.render();  // ใส่ไว้ เพื่อให้ calendar2 render ใหม่ แต่ calendar1 ดีแล้ว
+
+    //update data หน้าบ้าน
+    elements.tablePending.updateData([{
+      opdVisitId: event.description.opdVisitId, 
+      opdStatus: 'นัดแล้ว',
+      appointmentData: event,
+      appointDate: event.description.startDate,
+      appointTime: event.description.startTime,
+      // roomName: dataObj.roomName,
+      // doctorName: dataObj.doctorName,
+
+    }]); 
+
+    //update data หน้าบ้าน
+    elements.tableAppointment.updateData([{
+      opdVisitId: event.description.opdVisitId, 
+      appointmentData: event,
+      appointDate: event.description.startDate,
+      appointTime: event.description.startTime,
+      roomName: document.getElementById('room_name_calendar').value,
+      doctorName: document.getElementById('doctor_appoint_calendar').value,
+
+    }]); 
+
+    searchTableAppointment();
+
+    document.getElementById('calendar_event_addedit_form').reset()
+    closeModalCalendarEventEdit()
+
+
+    // To check if a div element with a specific id includes the class d-none
+    const element = document.getElementById('treat_view'); // Replace 'yourDivId' with your actual div id
+
+    if (element.classList.contains('d-none')) {
+      console.log("The class 'd-none' is present.");
+        
+    } else {
+      console.log("The class 'd-none' is not present.");
+      showAppointDayInTreatView()
+        
+    }
+
+ 
+    // loadingEnd();
+
+    workingEnd("สำเร็จ")
+
+  }).addAppointmentDataByVid(opdVisitId,dataObj)
+
+
+};
+
+
+
+
+
+
+ 
+
+
+// uuid
+function generateUniqueId() {
+  // Create a timestamp-based component
+  const timestamp = Date.now().toString(36); // Convert to base-36 string
+
+  // Create a random component
+  const randomPart = Math.random().toString(36).substring(2, 8); // Random base-36 string
+
+  // Combine both parts
+  return timestamp + randomPart;
+};
+
+// Example usage
+// const fastID = generateUniqueId();
+// console.log(fastID); // Output: a unique ID string, e.g., "kpzv9a8bcx"
+
+
+
+
+
+
+
+//*************************************************************************************
+// DAYOFFF DAY OFF วันหยุด
+//*************************************************************************************
+
+
+
+function addDayOff(dateSelect){
+  // console.log("addDayOff")
+
+  loadingStart();
+
+
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res)
+
+    const dayOffEvent = {
+      id: res[0].newId , //  
+      title: 'หยุด',
+      start: dateSelect,
+      // borderColor: 'red', // Set the border color
+      color: 'white',   // an option!
+      textColor: 'yellow', // an option!
+      // display: 'inverse-background',
+      display: 'background',
+      backgroundColor: 'red',
+      description: {
+        purpose: 'ทดสอบ',
+      }
+
+    }
+
+
+    elements.calendar1.addEventSource(dayOffEvent);
+    elements.calendar2.addEventSource(dayOffEvent);
+
+
+
+    document.getElementById('dayoff_calendar').value = "";
+
+    if (dateSelect && !disabledDays.includes(dateSelect)) {
+      disabledDays.push(dateSelect);
+      // alert('Date added: ' + dateSelect);
+
+      console.log('Date added: ' + dateSelect)
+      console.log(disabledDays)
+
+      // Refresh the calendar to apply the new disabled date
+      elements.calendar1.refetchEvents(); // Optional for dynamic event sources
+      elements.calendar1.destroy(); // Destroy and recreate to apply dayCellDidMount
+      elements.calendar1.render();
+
+
+    }
+
+
+    loadingEnd()
+    
+  }).addDayOffToSheet(dateSelect)
+
+
+};
+
+
+
+
+function findDayOffId(date) {
+  // dayOffInfo Global var
+  const found = dayOffInfo.find(event => event.dayOff === date);
+  return found ? found.dayOffId : null; // Return null if not found
+};
+
+// Example usage:
+// console.log(findDayOffId("2025-02-07")); // Output: DO250209_193427
+
+
+
+function deleteDayOff(dateSelect){
+  loadingStart();
+
+  const dayOffId = findDayOffId(dateSelect);
+  
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res)
+
+    document.getElementById('dayoff_calendar').value = "";
+
+    const valueToRemove = dateSelect;
+
+    // Use filter to remove all occurrences of the value
+    const updatedDisabledDays = disabledDays.filter(day => day !== valueToRemove);
+
+    console.log(updatedDisabledDays);
+
+    console.log('Date deleted: ' + dateSelect)
+    console.log(updatedDisabledDays)
+
+    disabledDays = updatedDisabledDays  // disabledDays Global var
+
+    // Refresh the calendar to apply the new disabled date
+    elements.calendar1.refetchEvents(); // Optional for dynamic event sources
+    elements.calendar1.destroy(); // Destroy and recreate to apply dayCellDidMount
+    elements.calendar1.render();
+
+    elements.calendar2.refetchEvents(); // Optional for dynamic event sources
+    elements.calendar2.destroy(); // Destroy and recreate to apply dayCellDidMount
+    elements.calendar2.render();
+
+
+    elements.calendar1.getEventById(dayOffId).remove()
+    elements.calendar2.getEventById(dayOffId).remove()
+
+    loadingEnd()
+    
+  }).deleteDayOffFromSheet(dayOffId)
+
+
+};
+
+
+
+
+// ดึงข้อมูลจาก sheet DayOff นำไปใส่ปฎิทิน
+
+function getDayOffToCalendar(){
+  google.script.run.withSuccessHandler((res)=>{
+    // console.log("getDayOffToCalendar",res)
+
+    addDayOffArrToCalendar(res);
+
+    dayOffInfo = res // dayOffInfo Global var
+
+    document.getElementById('loading_calendar_sb').classList.add("d-none")
+    document.getElementById('loading_calendar_oc').classList.add("d-none")
+     
+    document.getElementById('show_calendar_count_sb').textContent = "✔️"
+    document.getElementById('show_calendar_count_oc').textContent = "✔️"
+
+  }).getDayOffFromSheet()
+
+
+};
+
+
+
+
+
+ 
+
+function addDayOffArrToCalendar(dayOffArrReturn) {
+  // รูปแบบ data ที่ได้มาจาก sheet
+  // const dayOffArrReturn = [
+  //   {
+  //     "dayOff": "2025-02-06",
+  //     "dayOffTitle": "หยุด",
+  //   },
+  //   {
+  //     "dayOff": "2025-02-07",
+  //     "dayOffTitle": "หยุด",
+  //   },
+  //   {
+  //     "dayOff": "", // Invalid entry
+  //     "dayOffTitle": "Invalid Event"
+  //   }
+  // ];
+
+  
+  if (!elements.calendar1) {
+    console.error("Calendar is not initialized yet");
+    return;
+  }
+
+  const validDaysOff = dayOffArrReturn.filter(event => event.dayOff  !== "");
+  // console.log(validDaysOff);
+
+  // disabledDays = dayOffArrOnly
+  // const eventId = generateUniqueId();
+
+  const dayOffEvents = validDaysOff.map(event => ({
+    id: event.dayOffId, //  
+    title: event.dayOffTitle,
+    start: event.dayOff,
+    // borderColor: 'red', // Set the border color
+    color: 'white',   // an option!
+    textColor: 'yellow', // an option!
+    // display: 'inverse-background',
+    display: 'background',
+    backgroundColor: 'red',
+    description: {
+      purpose: 'ทดสอบ',
+    }
+    
+  }));
+
+
+  elements.calendar1.addEventSource(dayOffEvents);
+  elements.calendar2.addEventSource(dayOffEvents);
+
+
+  const dayOffArrOnly = dayOffArrReturn.map(item => item.dayOff).filter(dayOff => dayOff);
+  // console.log("dayOffArrOnly",dayOffArrOnly);
+
+  dayOffArrOnly.forEach((newDate) => {
+    disabledDays.push(newDate);    // disabledDays Global var
+    // console.log('Date added: ' + newDate);
+
+    // Check if the calendar object exists before calling its methods
+    if (elements.calendar1) {
+      elements.calendar1.refetchEvents(); // Optional for dynamic event sources
+      elements.calendar1.destroy(); // Destroy and recreate to apply dayCellDidMount
+      elements.calendar1.render();
+    } else {
+      console.error("Unable to access calendar instance.");
+    }
+  });
+
+};
+
+
+
+
+
+
+ 
+
+
+
+
+
+</script>

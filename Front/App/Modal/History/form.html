@@ -1,0 +1,559 @@
+
+
+<div class="modal fade" tabindex="-1"  id="history_modal">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary bg-opacity-10">
+        <h5 class="modal-title">ประวัติการรักษา(Medical history): 
+          <span id="fullname_history"></span>
+          <span>HN: </span>
+          <span id="hn_history"></span>
+        </h5>
+        
+       
+
+        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        <button type="button" class="btn btn-danger shadow my-btn" data-bs-dismiss="modal" ><i class="bi bi-x-lg"></i> ปิดหน้าต่าง</button>
+
+        
+        <!-- <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">Close</button> -->
+      </div>
+      <div class="modal-body bg-secondary bg-opacity-10">
+        <div class="row">
+          <div class="col-md">
+            <center class="d-none" id="devmodeshow_referenceid_history_modal">
+              <h6>
+                <span >PID: </span>
+                <span id="patient_id_history"></span>
+                <span>VID: </span>
+                <span id="opdvisit_id_history"></span>
+              </h6>
+            </center>
+             
+          </div>
+        </div>
+        
+        <div class="row g-2">
+          <div class="col-sm-2 mb-2 mb-sm-0 mt-2">
+            <div class="card fixed-card bg-secondary bg-opacity-10 shadow">
+              <div class="card-body p-1">
+                <center>
+                  <h6 class="mt-2">
+                    <span>เลือกวันที่</span>
+                  </h6>
+                </center>
+                <center><div class="col"  id="history_table"></div></center>
+
+              </div>
+            </div>
+          </div>
+           
+          <div class="col-sm-10 mb-2 mb-sm-0 mt-2">
+              <div class="card scrollable-card bg-secondary bg-opacity-25 shadow">
+                  <div class="card-body">
+                    <div class="row mt-2 text-center">
+                      <h5 class="modal-title fs-5">
+                        <!-- <span >ประวัติ:</span> -->
+                        <span>วันที่ </span>
+                        <span id="datetime_selected_history"></span>
+                      </h5>
+                    </div>
+                    <div class="row mt-2">
+                      <div>
+                        <button type="button" class="btn btn-secondary invisible" onclick="reDx()" id="re_dx_history_btn" disabled ><i class="bi bi-arrow-repeat"></i> Re-Dx</button>
+                        <button type="button" class="btn btn-secondary invisible" onclick="reTx()" id="re_tx_history_btn" disabled ><i class="bi bi-arrow-repeat"></i> Re-Tx</button>
+                        <button type="button" class="btn btn-secondary invisible" onclick="reHm()" id="re_hm_history_btn" disabled ><i class="bi bi-arrow-repeat"></i> Re-Hm</button>
+
+                      </div>
+                    </div>
+
+                    <div class="row">
+
+                      <!-- เมนู ---------------------->
+                      <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link active" id="ccpi-history-tab" data-bs-toggle="tab" data-bs-target="#ccpi-history-tab-pane" type="button" role="tab" aria-controls="ccpi-history-tab-pane" aria-selected="true"><i class="bi bi-chat-dots-fill"></i> Present Ill</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="pe-history-tab" data-bs-toggle="tab" data-bs-target="#pe-history-tab-pane" type="button" role="tab" aria-controls="pe-history-tab-pane" aria-selected="false"><i class="bi bi-universal-access"></i> Physical Ex</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="ix-history-tab" data-bs-toggle="tab" data-bs-target="#ix-history-tab-pane" type="button" role="tab" aria-controls="ix-history-tab-pane" aria-selected="false"><i class="bi bi-lungs-fill"></i> Investigate</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="dx-history-tab" data-bs-toggle="tab" data-bs-target="#dx-history-tab-pane" type="button" role="tab" aria-controls="dx-history-tab-pane" aria-selected="false"><i class="bi bi-heart-pulse-fill"></i> Diagnosis</button>
+                        </li>
+                        
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="tx-history-tab" data-bs-toggle="tab" data-bs-target="#tx-history-tab-pane" type="button" role="tab" aria-controls="tx-history-tab-pane" aria-selected="false"><i class="bi bi-tools"></i> Procedure</button>
+                        </li>
+
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="hmhistory--tab" data-bs-toggle="tab" data-bs-target="#hm-history-tab-pane" type="button" role="tab" aria-controls="hm-history-tab-pane" aria-selected="false"><i class="bi bi-capsule"></i> HomeMed</button>
+                        </li>
+                        
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="summary-history-tab" data-bs-toggle="tab" data-bs-target="#summary-history-tab-pane" type="button" role="tab" aria-controls="summary-history-tab-pane" aria-selected="false"><i class="bi bi-receipt"></i> Summary</button>
+                        </li>
+
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="appointment-history-tab" data-bs-toggle="tab" data-bs-target="#appointment-history-tab-pane" type="button" role="tab" aria-controls="appointment-history-tab-pane" aria-selected="false"><i class="bi bi-calendar-plus"></i> Appointment</button>
+                        </li>
+                        
+                        
+                      </ul>
+
+                      <!-- content ------------- -->
+                      <div class="tab-content mb-5 rounded"  >
+
+                        <!-- ซักประวัติ ---------------------->
+                        <div class="tab-pane fade show active " id="ccpi-history-tab-pane" role="tabpanel" aria-labelledby="ccpi-history-tab" tabindex="0">
+                          <form id="ccpi_form_history">
+                            <div class="row mt-1">
+                                <div class="col-md">
+                                    <label class="form-label">น้ำหนัก(kg)</label>
+                                    <input type="number" max="200" class="form-control" id="wt_history" disabled>
+                                </div>
+                                <div class="col-md">
+                                    <label class="form-label">ส่วนสูง(cm)</label>
+                                    <input type="number" max="200" class="form-control" id="ht_history" disabled>
+                                </div>
+                                <div class="col-md">
+                                    <label class="form-label">BMI</label>
+                                    <input type="number" max="200" class="form-control" id="bmi_history" disabled>
+                                </div>
+                                <div class="col-md">
+                                  <label class="form-label">O2Sat</label>
+                                  <input type="number" max="300" class="form-control" id="o2sat_history" disabled>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                              <div class="col-md">
+                                <label class="form-label">อุณหภูมิ</label> 
+                                <input type="number" max="50" class="form-control" id="bt_history" disabled>
+                              </div>
+                              <div class="col-md">
+                                <label class="form-label">SBP</label>
+                                <input type="number" max="300" class="form-control" id="sbp_history" disabled>
+                              </div>
+                              <div class="col-md">
+                                <label class="form-label">DBP</label>
+                                <input type="number" max="200" class="form-control" id="dbp_history" disabled>
+                              </div>
+                              <div class="col-md">
+                                <label class="form-label">ชีพจร</label>
+                                <input type="number" max="300" class="form-control" id="pr_history" disabled>
+                              </div>
+                              <div class="col-md">
+                                <label class="form-label">หายใจ</label>
+                                <input type="number" max="60" class="form-control" id="rr_history" disabled>
+                              </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-md">
+                                  <label class="form-label">อาการสำคัญ</label>
+                                  <input type="text" class="form-control" id="cc_history"  disabled>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                              <div class="col-md-6">
+                                <label class="form-label">อาการ</label>
+                                <textarea class="form-control" id="pi_history" style="height: 120px" disabled></textarea>
+                              </div>
+                              <div class="col-md-6">
+                                <label class="form-label">ประวัติอดีต</label>
+                                <textarea class="form-control" id="ph_history" style="height: 120px" disabled></textarea>
+                              </div>
+                            </div>
+
+                            <div class="row mt-1">
+                              <div class="col-md">
+                                <label class="form-label">การรักษาก่อนหน้า</label>
+                                <input type="text" class="form-control" id="previous_hosp_history"  disabled>
+                              </div>
+                              <div class="col-md">
+                                <label class="form-label">ยาที่ใช้ปัจจุบัน</label>
+                                <input type="text" class="form-control" id="current_drug_history"  disabled>
+                              </div>
+                            </div>
+                            <div class="row mt-3">
+                              <div class="col-md">
+                                <p>กรณีเด็กอายุ 0-12 ปี</p>
+                              </div>
+                            </div>
+
+                            <div class="row ">
+                              <div class="col-md" >
+                                <label class="form-label">การเจริญเติบโต</label>
+                                <input type="text" class="form-control" id="growth_history"  disabled>
+                              </div>
+                              <div class="col-md" >
+                                <label class="form-label">พัฒนาการ</label>
+                                <input type="text" class="form-control" id="development_history"  disabled>
+                              </div>
+                              <div class="col-md" >
+                                <label class="form-label">ประวัติการรับวัคซีน</label>
+                                <input type="text" class="form-control" id="vaccine_history"  disabled>
+                              </div>
+                              <div class="col-md" >
+                                <label class="form-label">กรณีไม่ครบ ระบุ..</label>
+                                <input type="text" class="form-control" id="vaccine_incomplete_cause_history"  disabled>
+                              </div>
+
+                            </div>
+
+
+                          </form>
+                          
+                        </div>
+
+                        <!-- ตรวจร่างกาย -------------------->
+                        <div class="tab-pane fade" id="pe-history-tab-pane" role="tabpanel" aria-labelledby="pe-history-tab" tabindex="0">
+                          <form id="pe_form_history">
+                            <div class="row mt-1">
+                                <div class="col-md-6">
+                                  <label class="form-label">ตรวจร่างกาย</label>
+                                  <textarea class="form-control" id="pe_history" style="height: 200px" disabled>
+                                  </textarea> 
+                                </div>
+                                <div class="col-md-6">
+                                  <label class="form-label">ตรวจช่องปาก(Oral exam)</label>
+                                  <textarea class="form-control" id="oe_history" style="height: 200px" disabled>
+
+                                  </textarea>
+                                </div>
+                            </div>
+                          </form>
+                        </div>
+
+                        <!-- Investigation --------------->
+                        <div class="tab-pane fade" id="ix-history-tab-pane" role="tabpanel" aria-labelledby="ix-history-tab" tabindex="0">
+                          <form id="ix_form_history">
+                            <div class="row mt-1">
+                              <div class="col">
+                                <label class="form-label">ผล LAB</label>
+                                <textarea class="form-control" id="lab_history" style="height: 90px" disabled>
+
+                                </textarea>
+                              </div>
+                            </div>
+                            <div class="row mt-1">
+                              <div class="col">
+                                <label class="form-label">ผล IMAGING(X-ray/CT/MRI)</label>
+                                <textarea class="form-control" id="xray_history" style="height: 90px" disabled>
+
+                                </textarea>
+                              </div>
+                            </div>
+                            <div class="row mt-1">
+                              <div class="col">
+                                <label class="form-label">ผล U/S</label>
+                                <textarea class="form-control" id="us_history" style="height: 90px" disabled>
+
+                                </textarea>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+
+                        <!-- วินิจฉัย ----------------------->
+                        <div class="tab-pane fade" id="dx-history-tab-pane" role="tabpanel" aria-labelledby="dx-history-tab" tabindex="0">
+                          
+                          <form class="row mt-1 p-1 text-black" id="form_table_dx_history">
+                            <table class="table table-bordered table-sm" id="table_dx_history"> 
+                              <thead class ="table-secondary">
+                                <tr>
+                                  <th>#</th>
+                                  <th>วินิจฉัย</th>
+                                  <th>รายละเอียด</th>
+                                  <th class="d-none "></th>
+                                </tr>
+                              </thead>
+
+                              <tbody id="input_dx_history">
+                                <!-- Rows will be added here -->
+
+                              </tbody>
+                                
+                              
+                                
+                              <template id="input_dx_template_history">
+                                <tr class="input-line input-dx-row-history">
+                                  <td class="text-center align-middle" style="max-width: 100px;"></td>
+                                  <td><input type="text" class="form-control input-dx-history" disabled></td>
+                                  <td><input type="text" class="form-control input-dx-history" disabled></td>
+                                  <td class="d-none col-1 text-center align-middle">
+                                    <div class="btn-group" role="group" aria-label="First group">
+                                      <button type="button" class="btn btn-outline-secondary add-input-dx-history" disabled>เพิ่ม</button>
+                                      <button type="button" class="btn btn-outline-secondary remove-input-dx-history" disabled>ลบ</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </template>
+                                
+                            </table>
+                          </form>
+
+                        </div>
+
+                        <!-- รักษา ------------------------>
+                        <div class="tab-pane fade" id="tx-history-tab-pane" role="tabpanel" aria-labelledby="tx-history-tab" tabindex="0">
+                           
+                          <form class="row mt-1 p-1 text-black" id="form_table_tx_history">
+                            <table class="table table-bordered table-sm" id="table_tx_history"> 
+                              <thead class ="table-secondary">
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">สั่งการรักษา</th>
+                                  <th scope="col">รายละเอียด</th>
+                                  <th scope="col-2" >ราคา</th>
+                                  <th scope="col" class="d-none"></th>
+                                </tr>
+                              </thead>
+                                
+                              <tbody id="input_tx_history">
+                                <tr class="input-line">
+                                  <td class="text-center align-middle" style="max-width: 100px;"></td>
+                                  <td><input type="text" class="form-control input-tx-history"></td>
+                                  <td><input type="text" class="form-control input-tx-history"></td>
+                                  <td><input type="text" class="form-control input-tx-history"></td>
+                                  <td class="d-none text-center align-middle">
+                                    <div class="btn-group" role="group" aria-label="First group">
+                                      <button type="button" class="btn btn-outline-secondary add-input-tx-history" disabled>เพิ่ม</button>
+                                      <button type="button" class="btn btn-outline-secondary remove-input-tx-history" disabled>ลบ</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </tbody>
+                                
+
+                              <template id="input_tx_template_history">
+                                <tr class="input-line input-tx-row-history">
+                                  <td class="text-center align-middle"></td>
+                                  <td><input type="text" class="form-control input-tx-history" disabled></td>
+                                  <td><input type="text" class="form-control input-tx-history" disabled></td>
+                                  <td class="col-2"><input type="text" class="form-control input-tx-history" disabled></td>
+                                  <td class="d-none col-2 text-center align-middle">
+                                    <div class="btn-group" role="group" aria-label="First group">
+                                      <button type="button" class="btn btn-outline-secondary add-input-tx-history" disabled>เพิ่ม</button>
+                                      <button type="button" class="btn btn-outline-secondary remove-input-tx-history" disabled>ลบ</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </template>
+                                
+                            </table>
+                          </form>
+                        </div>
+
+                        <!-- ยากลับบ้าน homemed ----------------------->
+                        <div class="tab-pane fade" id="hm-history-tab-pane" role="tabpanel" aria-labelledby="hm-history-tab" tabindex="0">
+                           
+                          <form class="row mt-1 p-1 text-black" id="form_table_hm_history">
+                            <table class="table table-bordered table-sm" id="table_hm_history"> 
+                              <thead class ="table-secondary">
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">ชื่อยา/หน่วย/ราคาต่อหน่วย/ข้อบ่งชี้</th>
+                                  <th scope="col">การใช้/ชื่อเต็ม/จน.ต่อวัน</th>
+                                  <th scope="col">จน.ทั้งหมด</th>
+                                  <th scope="col">ราคารวม</th>
+                                  <th scope="col" class="d-none "></th>
+                                </tr>
+                              </thead>
+                                
+                              <tbody id="input_hm_history">
+                                <tr class="input-line">
+                                  <td class="text-center align-middle" style="max-width: 100px;"></td>
+                                  <td><input type="text" class="form-control input-hm-history" disabled></td>
+                                  <td><input type="text" class="form-control input-hm-history" disabled></td>
+                                  <td><input type="text" class="form-control input-hm-history" disabled></td>
+                                  <td><input type="text" class="form-control input-hm-history" disabled></td>
+                                  <td class="d-none text-center align-middle">
+                                    <div class="btn-group" role="group" aria-label="First group">
+                                      <button type="button" class="btn btn-outline-secondary add-input-hm-history" disabled>เพิ่ม</button>
+                                      <button type="button" class="btn btn-outline-secondary remove-input-hm-history" disabled>ลบ</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </tbody>
+                                
+                              <template id="input_hm_template_history">
+                                <tr class="input-line input-hm-row-history">
+                                  <td class="text-center align-middle" style="max-width: 100px;" disabled></td>
+                                  <td><input type="text" class="form-control input-hm-history" disabled></td>
+                                  <td><input type="text" class="form-control input-hm-history" disabled></td>
+                                  <td class="col-2">
+                                      <div class="input-group">
+                                      <input type="text" class="form-control bg-opacity-10 input-hm-history input-amount-homemed-history" disabled>
+                                      <span class="input-group-text homemed-type-history" style="width: 80px;"></span>
+                                    </div>
+                                  </td>
+                                  <td class="col-2"><input type="text" class="form-control input-hm-history" disabled></td>
+                                  <td class="d-none col-2 text-center align-middle">
+                                    <div class="btn-group" role="group" aria-label="First group">
+                                      <button type="button" class="btn btn-outline-secondary add-input-hm-history" disabled>เพิ่ม</button>
+                                      <button type="button" class="btn btn-outline-secondary remove-input-hm-history" disabled>ลบ</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </template>
+                                
+                            </table>
+                          </form>
+                    
+                        </div>
+
+                        <!-- สรุป ---------------->
+                        <div class="tab-pane fade" id="summary-history-tab-pane" role="tabpanel" aria-labelledby="summary-history-tab" tabindex="0">
+                          <form id="summary_form_history">
+                            <div class="row mt-1">
+                              <div class="col-md">
+                                <label  class="form-label">ค่าหัตถการ</label>
+                                <input type="text" class="form-control" id="sum_procedure_price_history" disabled>
+                              </div>
+                              <div class="col-md">
+                                <label  class="form-label">ค่าแพทย์</label>
+                                <input type="number" class="form-control" id="sum_df_price_history" disabled>
+                              </div>
+                              <div class="col-md">
+                                <label  class="form-label">ค่ายากลับบ้าน</label>
+                                <input type="text" class="form-control" id="sum_homemed_price_history" disabled>
+                              </div>
+                              <div class="col-md">
+                                <label  class="form-label">รวมราคา</label>
+                                <input type="text" class="form-control" id="total_price_sum_history" disabled>
+                              </div>
+                            </div>
+
+                            <div class="row mt-1">
+                              <div class="col-md-3">
+                                <label for="exampleFormControlInput1" class="form-label">รูปแบบการจ่าย</label>
+                                <input type="text" class="form-control" id="pay_type_history" disabled>
+                              </div>
+                              <div class="col-md-3">
+                                <label for="exampleFormControlInput1" class="form-label">คงเหลือ</label>
+                                <input type="text" class="form-control" id="pay_remain_history" disabled>
+                              </div>
+
+                              <div class="col-md-3">
+                                <label for="exampleFormControlInput1" class="form-label">ผ่านช่องทาง</label>
+                                <input type="text" class="form-control" id="pay_channel_history" disabled>
+                              </div>
+                              
+                              <div class="col-md-3">
+                                <label for="exampleFormControlInput1" class="form-label">ประกันสังคม</label>
+                                <input type="text" class="form-control" id="social_security_history" disabled> 
+                              </div>
+                              
+                            </div>
+
+                            <div class="row mt-1">
+                              <div class="col-md">
+                                <label class="form-label">หมายเหตุ</label> 
+                                <div class="col mt-1">
+                                  <textarea class="form-control" id="doctor_note_history" style="height: 100px" disabled>
+
+                                  </textarea>
+                                </div>
+                              </div>
+                              <div class="col-md">
+                                <label class="form-label">แผนการรักษา</label>
+                                <div class="col mt-1">
+                                  <textarea class="form-control" id="tx_plan_history" style="height: 100px" disabled>
+
+                                  </textarea>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="row mt-1">
+                              <div class="col-md">
+                                <label  class="form-label">สถานะ</label>
+                                <input type="text" class="form-control" id="discharge_type_history" disabled>
+                              </div>
+                              <div class="col-md">
+                                <label class="form-label">ส่งต่อไปที่</label>
+                                <input type="text" class="form-control" id="referto_hosp_history" disabled> 
+                              </div>
+                              <div class="col-md">
+                                <label  class="form-label">Authen Code</label>
+                                <input type="text" class="form-control" id="authen_code_history" disabled>
+                              </div>
+                            
+                            </div>
+
+                          
+
+                          </form>
+
+                        </div>
+
+                        <!-- นัดหมาย ---------------->
+                        <div class="tab-pane fade" id="appointment-history-tab-pane" role="tabpanel" aria-labelledby="appointment-history-tab" tabindex="0">
+                          <form id="appointment_form_history">
+                            <div class="row mt-1">
+                              <div class="col-md-3">
+                                  <label class="form-label">วันนัด</label>
+                                  <input type="date" class="form-control" id="fu_date_history" disabled>
+                              </div>
+                              <div class="col-md-3">
+                                  <label class="form-label">เวลานัดหมาย</label>
+                                  <input type="time" class="form-control" id="fu_time_history" disabled>
+                              </div>
+                              <div class="col-md-6">
+                                <label class="form-label">เพื่อ</label>
+                                <input type="search" class="form-control" list="datalistOptions_purpose_calendar" id="fu_plan_history" disabled>
+                                <datalist id="datalistOptions_purpose_calendar">
+                                    
+                                </datalist>
+                              </div>
+                            </div>
+                            <div class="row mt-2">
+                              <div class="col-md-3 mt-2">
+                                <label class="form-label">นัดไปห้องตรวจ</label>
+                                <input type="search" class="form-control" list="datalistOptions_doctorroom" id="room_name_history" disabled>
+                                <datalist id="datalistOptions_doctorroom">
+                                </datalist>
+                              </div>
+                              <div class="col-md-3 mt-2">
+                                <label class="form-label">พบแพทย์</label>
+                                <input type="search" class="form-control" list="datalistOptions_doctorname" id="doctor_appoint_history" disabled>
+                                <datalist id="datalistOptions_doctorname">
+                                  
+                                </datalist>
+                              </div>
+                              <div class="col-md-6 mt-2">
+                                <label class="form-label">Comment</label>
+                                <input type="text" class="form-control" id="comment_history" disabled>
+                              </div>
+                              
+                            </div>
+                          </form>
+                        </div>
+
+                        
+                      </div>
+
+                        
+                    </div>
+                  </div>
+              </div>
+          </div>
+        
+    
+
+
+        
+          
+
+        </div>
+
+        
+        
+
+      </div>
+       
+    </div>
+  </div>
+</div>

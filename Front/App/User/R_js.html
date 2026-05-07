@@ -1,0 +1,74 @@
+
+<script>
+
+
+
+function openModalUserEdit(){
+  new bootstrap.Modal(document.getElementById('user_info_modal'), {keyboard: false }).show()
+
+  // console.log('sdsd')
+  document.getElementById('user_form_placeholder').classList.remove("d-none")
+  document.getElementById('user_form').classList.add("d-none")
+
+  document.getElementById('user_edit_btn').classList.remove("d-none")
+  document.getElementById('user_add_btn').classList.add("d-none")
+
+
+  const userId = document.getElementById('user_id_status').textContent
+
+  google.script.run.withSuccessHandler((userInfoReturn)=>{
+    console.log(userInfoReturn)
+    showUserEditForm(userInfoReturn)
+
+  }).getUserById(userId)
+
+  // setTimeout(showUserEditForm, 3000);
+
+};
+
+
+
+function openModalUserSwitch(){
+  new bootstrap.Modal(document.getElementById('user_switch_modal'), {keyboard: false }).show()
+
+  
+};
+
+ 
+
+function showUserEditForm(userInfoReturn){
+  document.getElementById('user_form_placeholder').classList.add("d-none")
+  document.getElementById('user_form').classList.remove("d-none")
+
+  document.getElementById('first_name_user').value = userInfoReturn[0].firstName
+  document.getElementById('last_name_user').value = userInfoReturn[0].lastName
+  document.getElementById('position_user').value = userInfoReturn[0].userPosition
+
+  document.getElementById('user_name_user').value = userInfoReturn[0].userName
+  document.getElementById('pass_word_user').value = userInfoReturn[0].passWord
+  document.getElementById('email_address_user').value = userInfoReturn[0].emailAddress
+  document.getElementById('license_user').value = userInfoReturn[0].userLicense
+
+  document.getElementById('phone_number_user').value = userInfoReturn[0].userPhone
+  document.getElementById('room_area_user').value = userInfoReturn[0].roomArea
+  document.getElementById('hos_user').value = userInfoReturn[0].userHos
+  
+
+};
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+</script>
+
+

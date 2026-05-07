@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+
+    <!-- bootstrap css  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+    <!-- bootstrap icon  -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- sweet alert  -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- google font  -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
+     
+
+    <style>
+      .pointer {
+          cursor: pointer;
+      }
+
+      body {
+        /* height: 90vh !important; */
+        /* display: flex; */
+        /* align-items: center !important; */
+        /* justify-content: center; */
+        font-family: 'Sarabun', serif;
+        background-color: DimGrey;
+      }
+      
+      /* ************************************************************************************** */
+      /* line แสดง การทำงานอยู่เบื้องหลัง auto refresh  working */
+      /* ************************************************************************************** */
+
+      .line{
+        position: fixed;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2F4F4F;
+        z-index: 99999;
+        overflow: hidden;
+      }
+      .dot{
+        position: absolute;
+        height: 100%;
+        width: 5px;
+        background: #fff;
+        animation: dotleft 2s cubic-bezier(.72,.03,.75,.54) infinite;
+      }
+      .dot1{
+      }
+      .dot2{
+        animation-delay: .4s;
+      }
+      .dot3{
+        animation-delay: .8s;
+      }
+      .dot4{
+        animation-delay: 1.2s;
+      }
+      .dot5{
+        animation-delay: 1.6s;
+      }
+      @keyframes dotleft {
+        0% {
+            left: 0%;
+        }
+        100% {
+            left: 100%;
+        }
+      }
+
+    </style>
+
+    
+  </head>
+  <body>
+
+    <!-- ตั้งค่า app app control ที่ซ่อนไว้ -->
+    <div class="row d-none">
+      <h5>App controller: 
+         
+        👨‍🦽‍➡️ ภาพ logoApp: <span class="text-danger" id="logo_app_config"><?=logoApp?></span> <br>
+        
+      </h5>
+    </div>
+
+    <div class="container mt-4" id="failed_view">
+
+      <!-- line progress bar  -->
+      <div class="row">
+        <div class="col">
+          <div class="row sticky-top">
+            <div class="" id="progressbar_refresh_data">
+              <div class="line" >
+                  <div class="dot dot1"></div>
+                  <div class="dot dot2"></div>
+                  <div class="dot dot3"></div>
+                  <div class="dot dot4"></div>
+                  <div class="dot dot5"></div>
+              </div>  
+            </div>
+          </div>
+        </div>  
+      </div>
+
+      <center>
+        <img class="mt-4 rounded-circle shadow-lg" id="logo_app" src="" width="180" height="180">
+      </center>
+
+      <center>
+        
+        <h3 class="mt-2 text-white">Login Failed Please Try Again</h3>
+        <h5 class="mt-2 text-white"><?=message?></h5>
+        <form class="mt-4" method="get" id="logout_form">
+          <!-- <button type="submit" class="btn btn-primary" onclick="loadingStart('กลับสู่หน้า Login');">Back to Login</button> -->
+          <button type="submit" class="btn btn-primary" onclick="loadingStart('กลับสู่หน้า Login');" id="goto_login_page_btn" disabled >กลับไปหน้า login</button>
+        </form>
+
+      </center>
+
+    </div>
+
+    <!-- Text in lower right -->
+    <div class="position-fixed bottom-0 end-0 p-3">
+      <!-- <p class="mb-0">
+        <span>Version: </span>
+        <span>19.2.1</span>
+      </p> -->
+      <p class="mb-0">
+         
+        <span><i class="bi bi-c-circle"></i></span>
+        <span>by golfguitar@gmail.com</span>
+      </p>
+    </div>
+
+
+ 
+    <script>
+
+
+
+      
+      document.getElementById('logo_app').src = document.getElementById('logo_app_config').innerHTML
+
+
+
+ 
+
+      function pageLoad(){
+        sessionStorage.removeItem("sUsername"); 
+        sessionStorage.removeItem("sPassword");
+        console.log("remove session")
+
+        const userNameInput =  sessionStorage.getItem("sUsername")    
+        const passWordInput =  sessionStorage.getItem("sPassword") 
+        console.log(userNameInput)
+        console.log(passWordInput)
+
+         
+
+        google.script.run.withSuccessHandler((urlReturn)=>{
+          // console.log(urlReturn)
+          document.getElementById("logout_form").action = urlReturn
+          
+          document.getElementById("goto_login_page_btn").removeAttribute("disabled");
+          document.getElementById("progressbar_refresh_data").classList.add('invisible')
+
+        }).getScriptUrl()
+
+      };
+
+
+
+
+
+      function loadingStart(textAlert){
+        const textInAlert = textAlert != "" ? textAlert:"กรุณารอสักครู่..."  
+        Swal.fire({ 
+          title:  textInAlert,
+          // html: loadingCreditText, 
+          html: 
+          '<h4>กรุณารอสักครู่... </h4>',
+          timer: 10000,    
+          width: 400,
+          allowOutsideClick: false,
+          // imageUrl: loadingImg, // global var
+          // imageWidth: 50,
+          imageHeight: 100,
+          showConfirmButton: false,
+
+        })
+        
+      };
+
+      function loadingEnd(){
+        Swal.close()
+        
+      };
+
+
+
+      document.addEventListener('DOMContentLoaded',pageLoad)
+
+
+
+ 
+       
+
+ 
+
+    </script>
+
+     
+  </body>
+</html>

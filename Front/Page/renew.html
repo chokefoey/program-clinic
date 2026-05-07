@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+
+    <!-- bootstrap css  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+    <!-- bootstrap icon  -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- sweet alert  -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- google font  -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
+     
+
+    <style>
+      .pointer {
+          cursor: pointer;
+      }
+
+      body {
+        /* height: 90vh !important; */
+        /* display: flex; */
+        /* align-items: center !important; */
+        /* justify-content: center; */
+        font-family: 'Sarabun', serif;
+        background-color: DimGrey;
+      }
+
+      /* ************************************************************************************** */
+      /* line แสดง การทำงานอยู่เบื้องหลัง auto refresh  working */
+      /* ************************************************************************************** */
+
+      .line{
+        position: fixed;
+        top: 0px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2F4F4F;
+        z-index: 99999;
+        overflow: hidden;
+      }
+      .dot{
+        position: absolute;
+        height: 100%;
+        width: 5px;
+        background: #fff;
+        animation: dotleft 2s cubic-bezier(.72,.03,.75,.54) infinite;
+      }
+      .dot1{
+      }
+      .dot2{
+        animation-delay: .4s;
+      }
+      .dot3{
+        animation-delay: .8s;
+      }
+      .dot4{
+        animation-delay: 1.2s;
+      }
+      .dot5{
+        animation-delay: 1.6s;
+      }
+      @keyframes dotleft {
+        0% {
+            left: 0%;
+        }
+        100% {
+            left: 100%;
+        }
+      }
+
+
+       
+      #countdown {
+        font-size: 2rem;
+        color: #333;
+      }
+
+
+    </style>
+
+    
+  </head>
+  <body>
+
+    <!-- ตั้งค่า app app control ที่ซ่อนไว้ -->
+    <div class="row  d-none">
+      <h5>App controller: <br>
+        👨‍🦽‍➡️ logoApp: <span class="text-danger" id="logo_app_config"><?=logoApp?></span> <br>
+        👨‍🦽‍➡️ email: <span class="text-danger" id="email_config"><?=email?></span> <br>
+        👨‍🦽‍➡️ username: <span class="text-danger" id="username_config"><?=userName?></span> <br>
+        👨‍🦽‍➡️ password: <span class="text-danger" id="password_config"><?=passWord?></span> <br>
+        👨‍🦽‍➡️ otp: <span class="text-danger" id="otp_config"><?=otp?></span> <br>
+        👨‍🦽‍➡️ otp: <span class="text-danger" id="refcode_config"><?=refCode?></span> <br>
+
+        
+        
+      </h5>
+    </div>
+
+    <div class="container mt-4" id="failed_view">
+
+      <!-- line progress bar  -->
+      <div class="row">
+        <div class="col">
+          <div class="row sticky-top">
+            <div class="" id="progressbar_refresh_data">
+              <div class="line" >
+                  <div class="dot dot1"></div>
+                  <div class="dot dot2"></div>
+                  <div class="dot dot3"></div>
+                  <div class="dot dot4"></div>
+                  <div class="dot dot5"></div>
+              </div>  
+            </div>
+          </div>
+        </div>  
+      </div>
+
+      <center>
+        <img class="mt-4 rounded-circle shadow-lg" id="logo_app" src="<?=logoApp?>" width="180" height="180">
+      </center>
+
+      <center>
+        
+        <h3 class="mt-2 text-white">เนื่องจากท่านไม่ได้เข้าใช้งานเป็นเวลานาน</h3>
+        <h5 class="mt-2 text-white"><?=message?></h5>
+        <h5 class="mt-2 text-white">ระบบได้ส่ง OTP ไปที่: 
+          <span><?=email?></span>
+          <span>รหัสอ้างอิง:</span>
+          <span><?=refCode?></span>
+          
+        </h5>
+        <h5 class="mt-2 text-white">กรุณากรอก OTP ตามเวลาที่กำหนดแล้วกดปุ่มยืนยันตัวตน</h5>
+        
+        <div id="countdown">Loading...</div>
+        
+
+        <form class="mt-4" method="get" id="logout_form">
+          <!-- <button type="submit" class="btn btn-primary" onclick="loadingStart('กลับสู่หน้า Login');">Back to Login</button> -->
+          <button type="submit" class="btn btn-secondary" onclick="loadingStart('กลับสู่หน้า Login');" id="goto_login_page_btn" disabled >กลับไปหน้า login</button>
+        </form>
+         
+
+        <form class="mt-4" method="post" id="renew_user_form">
+          <div class="container text-center">
+            <div class="row mb-2 justify-content-center">
+              <div class="col-md-6">
+                <div class="mt-3 input-group d-none">
+                  <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                  <input type="text" class="form-control" placeholder="Username" name="username" id="username_login_input" value="<?=userName?>" >
+                </div>
+                  
+                <div class="mt-3 input-group d-none">
+                  <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                  <input type="text" class="form-control" placeholder="Password" name="password" id="password_login_input" value="<?=passWord?>">
+                </div>
+
+                <div class="mt-3 input-group">
+                  <span class="input-group-text"><i class="bi bi-123"></i></span>
+                  <input type="text" class="form-control" placeholder="กรอก OTP" name="otp" id="otp_login_input" disabled>
+                </div>
+ 
+              </div>
+              
+            </div>
+
+            <div class="row mt-4 mb-5 justify-content-center">
+              <div class="col-md-6">
+                <button type="button" class="btn btn-primary shadow text-white w-100 mb-3" onclick="confirmOtpRenew()" id="send_otp_renew_btn" disabled >ยืนยันตัวตน</button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </form>
+        
+      </center>
+
+    </div>
+
+
+ 
+    <script>
+
+      
+
+
+
+      function confirmOtpRenew(){
+        loadingStart()
+        
+        const otpReturn = document.getElementById("otp_config").textContent
+         
+        const userInactiveEmail = document.getElementById("email_config").textContent
+        const otpInput = document.getElementById("otp_login_input").value
+
+        localStorage.setItem("lUserEmail",userInactiveEmail)
+
+        google.script.run.withSuccessHandler((res)=>{
+          // console.log(res)
+
+          if ( res == false){
+            loadingEnd()
+            // alert('OTP ไม่ถูกต้อง ระบบได้ส่ง OTP ไปใหม่ กรุณาตรวจสอบ')
+            Swal.fire({ icon:'error',title:'OTP ไม่ถูกต้อง', html:"<h5 align='center'>ระบบได้ส่ง OTP ไปใหม่ กรุณาตรวจสอบ</h5>"})
+
+            document.getElementById("otp_login_input").value = "";
+            resetCountdown();
+
+          } 
+          else if ( res == true){
+            document.getElementById('renew_user_form').submit();
+          }
+           
+
+        }).checkOTPandRenew(userInactiveEmail,otpInput)
+
+
+      };
+
+
+
+      function setActiveUser(){
+        const userInactiveEmail = document.getElementById("email_config").textContent
+        const otpInput = document.getElementById("otp_login_input").textContent
+
+        google.script.run.withSuccessHandler((res)=>{
+          console.log(res)
+           
+        }).checkOTPandRenew(userInactiveEmail,otpInput)
+
+
+      };
+
+
+
+
+      // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      // Function นับถอยหลัง
+      // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+      // Set the initial countdown duration (5 minutes in milliseconds)
+      const countdownDuration = 5 * 60 * 1000;
+      let targetTime = new Date().getTime() + countdownDuration;
+      let timerInterval;
+
+
+      // Function to execute when the countdown ends
+      function onTimeout() {
+        document.getElementById("countdown").innerHTML = "หมดเวลา";
+        // alert("Countdown has ended!"); // Example action: Display an alert
+        console.log("Executing timeout function...");
+
+        // document.getElementById("otp_login_input").setAttribute("disabled", "");
+        // document.getElementById("send_otp_renew_btn").setAttribute("disabled", "");
+        // document.getElementById("otp_login_input").setAttribute("hidden", "");
+        // document.getElementById("send_otp_renew_btn").setAttribute("hidden", "");
+        document.getElementById("renew_user_form").setAttribute("hidden", "");
+        
+
+      };
+
+
+
+      // Function to update the countdown display
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const timeLeft = targetTime - now;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval); // Stop the timer
+          onTimeout(); // Call the timeout function
+          return;
+        }
+
+        // Calculate minutes and seconds
+        const minutes = Math.floor(timeLeft / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        // Display the countdown
+        document.getElementById("countdown").innerHTML = `
+          ${minutes} นาที ${seconds < 10 ? "0" + seconds : seconds} วินาที
+        `;
+      }
+
+      // Function to start or restart the countdown
+      function startCountdown() {
+        clearInterval(timerInterval); // Clear any existing interval
+        targetTime = new Date().getTime() + countdownDuration; // Reset target time
+        timerInterval = setInterval(updateCountdown, 1000); // Start the interval
+        updateCountdown(); // Update immediately
+      }
+
+      // Function to reset the countdown
+      function resetCountdown() {
+        console.log("Resetting the countdown...");
+        startCountdown(); // Restart the countdown
+      }
+
+      // Event listener for the reset button
+      // document.getElementById("resetButton").addEventListener("click", resetCountdown);
+
+      // Start the countdown initially
+      startCountdown();
+
+
+
+
+
+      
+
+       
+
+
+      // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      // Function pageLoad
+      // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+      function pageLoad(){
+        sessionStorage.removeItem("sUsername"); 
+        sessionStorage.removeItem("sPassword");
+        console.log("remove session")
+
+        const userNameInput =  sessionStorage.getItem("sUsername")    
+        const passWordInput =  sessionStorage.getItem("sPassword") 
+        console.log(userNameInput)
+        console.log(passWordInput)
+
+        // console.log(<?=otp?>)
+
+
+        // const userEmail =
+        const userEmail =  localStorage.getItem("lUserEmail")
+        console.log("userEmail_local "+userEmail)
+
+        google.script.run.withSuccessHandler((urlReturn)=>{
+          // console.log(urlReturn)
+          document.getElementById("logout_form").action = urlReturn
+          document.getElementById("renew_user_form").action = urlReturn
+
+          document.getElementById("goto_login_page_btn").removeAttribute("disabled");
+          document.getElementById("otp_login_input").removeAttribute("disabled");
+          document.getElementById("send_otp_renew_btn").removeAttribute("disabled");
+
+          document.getElementById("progressbar_refresh_data").classList.add('invisible')
+
+
+        }).getScriptUrl()
+
+      };
+
+
+
+      document.addEventListener('DOMContentLoaded',pageLoad)
+
+
+
+
+
+
+
+
+      function loadingStart() {
+        Swal.fire({
+          title: 'Processing...',
+          html: '<div id="progress-bar-container" style="width: 100%; background-color: #e9ecef; border-radius: 5px;">' +
+                '<div id="progress-bar" class="swal2-progress-bar" style="width: 0%"></div>' +
+                '</div>',
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          didOpen: () => {
+            let progressBar = document.getElementById('progress-bar');
+            let width = 0;
+            let elapsedTime = 0;
+            let interval = setInterval(() => {
+                width += 2.5;  // Increments width by 2.5% every 0.1 second
+                elapsedTime += 0.1;  // Increments elapsed time by 0.1 second
+                progressBar.style.width = width + '%';
+
+                if (elapsedTime >= 4) {  // Stops after 4 seconds
+                    clearInterval(interval);
+                    // Swal.fire({
+                    //     title: 'Stopped!',
+                    //     text: 'Progress has been stopped after 4 seconds.',
+                    //     icon: 'warning',
+                    //     showConfirmButton: true
+                    // });
+                }
+
+                if (width >= 100) {
+                    clearInterval(interval);
+                    // Swal.fire({
+                    //     title: 'Completed!',
+                    //     icon: 'success',
+                    //     timer: 1500,
+                    //     showConfirmButton: false
+                    // });
+                }
+            }, 100);  // Updates every 0.1 second
+          }
+        });
+      }
+
+
+
+
+
+      function loadingEnd(){
+        Swal.close()
+        
+      };
+
+
+
+ 
+       
+
+ 
+
+    </script>
+
+     
+  </body>
+</html>
+
+

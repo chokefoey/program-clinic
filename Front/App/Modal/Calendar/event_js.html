@@ -1,0 +1,188 @@
+<script>
+
+
+
+function inputEventHandlerCalendarViewModal(e){
+  if (e.target.matches("#select_amountday_calendar")  ){
+    // console.log("rtrtr")
+    const noWeek = e.target.value; // Get the number of days from the input
+    // console.log(noWeek + ' Wk');
+
+    const tempId = 'tempId123456';
+
+    // Remove the existing event with the specified ID
+    elements.calendar2.getEventById(tempId)?.remove();
+
+    // Get today's date
+    const today = new Date();
+    const todayYYYYMMDD = formatDateYYYYMMDD(today);
+    // console.log(todayYYYYMMDD);
+
+    // Calculate the future date by adding the specified number of weeks
+    // const weeksToAdd = 5;
+    const futureDate = new Date(today);
+    const appointDate = futureDate.setDate(today.getDate() + noWeek * 7);
+    const nextDayYYYYMMDD = formatDateYYYYMMDD(appointDate);
+    // console.log(nextDayYYYYMMDD);
+
+
+    if ( todayYYYYMMDD !== nextDayYYYYMMDD ){
+
+      elements.calendar2.gotoDate(nextDayYYYYMMDD);
+
+      // Define a temporary event object
+      const temporaryEvent = {
+        id: tempId, // Use the same ID to replace the event
+        // title: '👆 ' + noWeek + ' Wk' + '👆', 
+        title: noWeek + ' Wk', 
+        start: nextDayYYYYMMDD,
+        // backgroundColor: 'blue', // Set the background color
+        borderColor: 'blue', // Set the border color
+        color: 'yellow',   // an option!
+        textColor: 'yellow', // an option!
+        // display: 'inverse-background',
+        display: 'background',
+        backgroundColor: 'blue',
+        description: {
+          purpose: 'ทดสอบ',
+        }
+      };
+
+      // Add the new event to the calendar
+      elements.calendar2.addEvent(temporaryEvent);
+      
+      // Re-render the calendar to reflect changes
+      elements.calendar2.render();
+
+    }  
+
+    
+    // Example usage
+    // updateEventColorById('tempId123456', '#00FF00', '#00FF00'); // Change colors to green
+
+  }
+  if (e.target.matches("#input_amountday_calendar")  ){
+    // console.log("input_amountday_calendar")
+    const amountDays = Number(e.target.value)
+    console.log(amountDays)
+
+    const tempId = 'tempId123456';
+
+    // Remove the existing event with the specified ID
+    elements.calendar2.getEventById(tempId)?.remove();
+
+
+    // Get today's date
+    const today = new Date();
+    const todayYYYYMMDD = formatDateYYYYMMDD(today);
+    console.log("todayYYYYMMDD",todayYYYYMMDD);
+
+    const futureDate = new Date(today);
+    const appointDate = futureDate.setDate(today.getDate() + amountDays);
+    const nextDayYYYYMMDD = formatDateYYYYMMDD(appointDate);
+
+    
+    if ( todayYYYYMMDD !== nextDayYYYYMMDD ){
+
+      elements.calendar2.gotoDate(nextDayYYYYMMDD);
+
+      // Define a temporary event object
+      const temporaryEvent = {
+        id: tempId, // Use the same ID to replace the event
+        // title: '👆 ' + noWeek + ' Wk' + '👆', 
+        title: amountDays + ' วัน', 
+        start: nextDayYYYYMMDD,
+        // backgroundColor: 'blue', // Set the background color
+        borderColor: 'blue', // Set the border color
+        color: 'yellow',   // an option!
+        textColor: 'yellow', // an option!
+        // display: 'inverse-background',
+        display: 'background',
+        backgroundColor: 'blue',
+        description: {
+          purpose: 'ทดสอบ',
+        }
+      };
+
+      // Add the new event to the calendar
+      elements.calendar2.addEvent(temporaryEvent);
+      
+      // Re-render the calendar to reflect changes
+      elements.calendar2.render();
+
+    }
+
+
+
+  }
+  
+
+
+
+  
+  
+};
+
+
+
+
+ 
+
+
+
+function clickEventHandlerCalendarViewModal(e){
+  if (e.target.matches("#btnradio1_amountday_calendar")  ){
+    console.log("btnradio1_select_amountday_calendar")
+    document.getElementById("select_amountday_calendar_div").classList.remove("d-none")
+    document.getElementById("input_amountday_calendar_div").classList.add("d-none")
+    document.getElementById("select_amountday_calendar").value = "";
+    document.getElementById("input_amountday_calendar").value = "";
+     
+
+  }
+  if (e.target.matches("#btnradio2_amountday_calendar")  ){
+    console.log("btnradio2_select_amountday_calendar")
+    document.getElementById("select_amountday_calendar_div").classList.add("d-none")
+    document.getElementById("input_amountday_calendar_div").classList.remove("d-none")
+    document.getElementById("select_amountday_calendar").value = "";
+    document.getElementById("input_amountday_calendar").value = "";
+    document.getElementById("input_amountday_calendar").focus()
+ 
+  }
+
+};
+
+
+
+function updateEventColorById(eventId, newBackgroundColor, newBorderColor) {
+  // Find the event by ID
+  const event = elements.calendar2.getEventById(eventId);
+  
+  if (event) {
+    // Set new colors
+    event.setProp('backgroundColor', newBackgroundColor);
+    event.setProp('borderColor', newBorderColor);
+    
+    // Optionally, refresh the calendar view
+    elements.calendar2.render();
+  } else {
+    console.log(`Event with ID ${eventId} not found.`);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+  document.getElementById('calendar_view_modal').addEventListener("input", inputEventHandlerCalendarViewModal)
+  document.getElementById('calendar_view_modal').addEventListener("click", clickEventHandlerCalendarViewModal)
+
+
+
+</script>
+

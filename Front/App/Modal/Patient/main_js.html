@@ -1,0 +1,373 @@
+<script>
+
+
+
+
+
+
+function filterNumericInput(input) {
+  // Replace any non-numeric characters with an empty string
+  input.value = input.value.replace(/\D/g, '');
+  
+  // Optionally, validate the ID as the user types
+  validateThaiID(input.value);
+}
+
+
+
+function validateThaiID(id) {
+  const regex = /^[0-9]{13}$/;
+  const validitySpan = document.getElementById('cid_validity');
+  const validityHelp = document.getElementById('cid_validity_help');
+  
+  if (!regex.test(id)) {
+      validitySpan.innerHTML = '';  // Clear the validity span if not a valid ID length
+      return;
+  }
+  
+  let sum = 0;
+  for (let i = 0; i < 12; i++) {
+      sum += parseInt(id.charAt(i)) * (13 - i);
+  }
+  
+  const checkDigit = (11 - (sum % 11)) % 10;
+  
+  if (checkDigit === parseInt(id.charAt(12))) {
+      validitySpan.innerHTML = '✅';  // Show tick if valid
+      validitySpan.style.color = 'green';
+      validityHelp.classList.add('invisible')
+
+  } else {
+      validitySpan.innerHTML = '❌';  // Show cross if invalid
+      validitySpan.style.color = 'red';
+      validityHelp.classList.remove('invisible')
+  }
+
+};
+
+
+
+
+function selectCidCheckForm(){
+  document.getElementById("firstname_pt_check").value = ""
+  document.getElementById("lastname_pt_check").value = ""
+
+  document.getElementById("check_pt_cid_regist_btn").classList.remove("d-none")
+  document.getElementById("check_pt_fullname_regist_btn").classList.add("d-none")
+  document.getElementById("check_scan_card_regist_btn").classList.add("d-none")
+  
+
+  document.getElementById('cid_validity').innerHTML = "";
+  document.getElementById('cid_validity_help').classList.add('invisible')
+
+  let carouselElement = document.querySelector('#carouselExampleDark');
+  let carousel = new bootstrap.Carousel(carouselElement);
+  carousel.to(0); // Move to the first slide (บัตรประชาชน)
+
+  setTimeout(()=>{
+      document.getElementById("cid_pt_check").focus()
+  }, 500);
+
+
+};
+
+
+
+function selectFullNameCheckForm(){
+  document.getElementById("cid_pt_check").value = ""
+
+  document.getElementById("check_pt_cid_regist_btn").classList.add("d-none")
+  document.getElementById("check_pt_fullname_regist_btn").classList.remove("d-none")
+  document.getElementById("check_scan_card_regist_btn").classList.add("d-none")
+
+  document.getElementById('cid_validity').innerHTML = "";
+  document.getElementById('cid_validity_help').classList.add('invisible')
+
+  let carouselElement = document.querySelector('#carouselExampleDark');
+  let carousel = new bootstrap.Carousel(carouselElement);
+  carousel.to(1); // Move to the second slide (ชื่อ-นามสกุล)
+
+  // document.getElementById("firstname_pt_check").focus()
+  setTimeout(()=>{
+      document.getElementById("firstname_pt_check").focus()
+  }, 500);
+  
+};
+
+
+
+function selectScanCardForm(){
+  document.getElementById("cid_pt_check").value = ""
+
+  document.getElementById("check_pt_cid_regist_btn").classList.add("d-none")
+  document.getElementById("check_pt_fullname_regist_btn").classList.add("d-none")
+  document.getElementById("check_scan_card_regist_btn").classList.remove("d-none")
+
+  document.getElementById('cid_validity').innerHTML = "";
+  document.getElementById('cid_validity_help').classList.add('invisible')
+
+  let carouselElement = document.querySelector('#carouselExampleDark');
+  let carousel = new bootstrap.Carousel(carouselElement);
+  carousel.to(2); // Move to the Scan card
+
+  // document.getElementById("firstname_pt_check").focus()
+  setTimeout(()=>{
+      document.getElementById("prefix_name_scan").focus()
+  }, 500);
+  
+};
+
+
+
+
+function openModalPatientInfo(){
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patient_menu_modal')) // Returns a Bootstrap modal instance
+  // modal.show();
+  modal.hide();
+
+  // document.getElementById('openModalPatientMenu_from_patientInfoModal_btn').classList.remove('d-none')
+
+  setTimeout(()=>{
+    const patientId = document.getElementById("pid_patient_menu").textContent 
+
+    openPatientEditModal(patientId);
+  }, 50);
+
+};
+
+
+
+
+function openModalPatientInfoFromTreatView(){ 
+  const patientId = document.getElementById('patient_id_treat').textContent
+  // console.log("patientId "+ patientId)
+  // openModalCalendar()
+
+  document.getElementById('back_to_appointmentmodal_btn').classList.add("d-none")
+
+  openPatientEditModal(patientId)
+
+  document.getElementById('delete_pt_regist_btn').classList.add("d-none")
+
+};
+
+
+
+function openModalPatientHistory(){
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patient_menu_modal')) // Returns a Bootstrap modal instance
+  // modal.show();
+  modal.hide();
+
+
+  document.getElementById('back_to_appointmentmodal_btn').classList.add("d-none")
+
+  resetFormHistory()
+    
+  document.getElementById('re_dx_history_btn').classList.add("invisible")
+  document.getElementById('re_tx_history_btn').classList.add("invisible")
+  document.getElementById('re_hm_history_btn').classList.add("invisible")
+
+  setTimeout(()=>{
+    const patientId = document.getElementById("pid_patient_menu").textContent 
+
+    openModalHistoryTreat(patientId);
+  }, 50);
+
+};
+
+
+
+function openModalPatientAppointment(){
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patient_menu_modal')) // Returns a Bootstrap modal instance
+  // modal.show();
+  modal.hide();
+
+  document.getElementById('openvisit_event_btn').classList.add("d-none")
+
+  
+  setTimeout(()=>{
+    const patientId = document.getElementById("pid_patient_menu").textContent 
+    const opdVisitId = ""
+    // console.log(`patientId ${patientId}`)
+    // console.log(`opdVisitId ${opdVisitId}`)
+    openModalAppointment(patientId,opdVisitId);
+  }, 50);
+
+
+};
+
+
+
+function openModalPatientSendRoomFromMenu(){
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patient_menu_modal')) // Returns a Bootstrap modal instance
+  // modal.show();
+  modal.hide();
+
+
+  document.getElementById('send_treat_room_btn').classList.remove('d-none')
+  document.getElementById('change_treat_room_btn').classList.add('d-none')
+
+
+  setTimeout(()=>{
+    const patientId = document.getElementById("pid_patient_menu").textContent 
+    const opdVisitId = ""
+    // console.log(`patientId ${patientId}`)
+    // console.log(`opdVisitId ${opdVisitId}`)
+    openModalPatientSendRoom(patientId,opdVisitId);
+  }, 50);
+
+
+};
+
+
+
+function openModalPatientMenu_from_patientInfoModal(){
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patient_info_modal')) // Returns a Bootstrap modal instance
+  // modal.show();
+  modal.hide();
+
+  const patientId = document.getElementById("id_pt_regist").value 
+  
+  console.log(`patientId ${patientId}`)
+  // console.log(rowData.generalData) // string
+  openModalPatientMenu(patientId)
+
+};
+
+
+
+
+
+function openModalBuddhaDay(val, elemId) {
+  // console.log(val) //  val e.g., "1974-10-06"
+
+  // Get the Bootstrap modal instance and show it
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('buddha_day_modal')); 
+  modal1.show();
+
+
+  // If val is undefined, reset the fields to empty strings
+  if (val === undefined || val ===  "") {
+    document.getElementById('day_buddha').value = "";
+    document.getElementById('month_buddha').value = "";
+    document.getElementById('year_buddha').value = "";
+
+  } else {
+    // Use the passed value as a date string ( val e.g., "1974-10-06")
+    // Extract year, month, and day from the date string
+    const [year, month, day] = val.split("-");
+
+    // console.log(day); // Outputs: "06"
+
+    // Set the extracted values into corresponding form fields
+    document.getElementById('day_buddha').value = Number(day);
+    document.getElementById('month_buddha').value = month;
+    document.getElementById('year_buddha').value = Number(year) + 543;
+
+  }
+
+  
+  // Add event listener to the button to set the date on click
+  document.getElementById('set_buddhaday_btn').addEventListener('click', () => {
+    const newDay = Number(document.getElementById('day_buddha').value)
+    const newMonth = document.getElementById('month_buddha').value
+    const newYear = Number(document.getElementById('year_buddha').value) - 543
+
+    // Reconstruct the date using the inputs
+    const newDate = new Date(`${newYear}-${newMonth}-${newDay}`);
+
+    // Get today's date
+    const today = new Date();
+
+    // Calculate the difference in years between newDate and today
+    const ageDifference = today.getFullYear() - newDate.getFullYear();
+
+    // Check if the difference is more than 120 years
+    if (ageDifference > 120) {
+      alert("Invalid date: The date cannot be more than 120 years ago.");
+      return; // Stop further execution
+    }
+
+    if (elemId == "birthday_pt_regist") {
+      const age = calculateAge(newDate); // คำนวนอายุ 
+      console.log(age)
+      document.getElementById("age_pt_regist").value = `${age.years}`;
+      document.getElementById("age_month_pt_regist").value = `${age.months}`;
+
+    }
+
+    // Make sure the date is valid
+    if (newDate.getTime()) {
+        // Set the value of the provided element (elemId) to the reconstructed date
+        const dateYYYYMMDD = formatDateYYYYMMDD(newDate);
+        console.log(dateYYYYMMDD);
+        document.getElementById(elemId).value = dateYYYYMMDD
+
+        modal1.hide();
+
+    } else {
+        alert("Invalid date");
+    }
+  });
+};
+
+
+
+
+ 
+  
+
+function findPatientIdsByName(patients, firstNameInput, lastNameInput) {
+  const firstNameMatches = [];
+  const lastNameMatches = [];
+  const result = {
+      byFirstName: [],
+      byLastName: [],
+      duplicates: []
+  };
+
+  // Find matches for first name
+  if (firstNameInput) {
+      firstNameMatches.push(...patients.filter(patient => 
+          patient.firstName.includes(firstNameInput)
+      ));
+      result.byFirstName = firstNameMatches.map(patient => patient.patientId);
+  }
+
+  // Find matches for last name
+  if (lastNameInput) {
+      lastNameMatches.push(...patients.filter(patient => 
+          patient.lastName.includes(lastNameInput)
+      ));
+      result.byLastName = lastNameMatches.map(patient => patient.patientId);
+  }
+
+  // Find duplicates (patient IDs that appear in both first and last name matches)
+  if (firstNameInput && lastNameInput) {
+      const firstNameIds = new Set(result.byFirstName);
+      result.duplicates = result.byLastName.filter(id => firstNameIds.has(id));
+  }
+
+  if ( result.duplicates.length > 0 ){
+    return true  // ซ้ำ
+  } else {
+    return false // ไม่ซ้ำ
+  }
+
+   
+};
+
+ 
+
+
+
+  
+
+
+
+</script>
+
+
+
+
+

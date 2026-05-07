@@ -1,0 +1,137 @@
+<style>
+
+
+/* *************************************** */
+/* นับจำนวน row แล้วใส่ตัวเลข row number อัตโนมัติ */
+/* *************************************** */
+
+/* สำหรับตาราง Diag หน้า Treat view */
+/* Reset default counter to start at 0 for a specific table by ID */
+#table_dx_treat {
+  counter-reset: rowNumber -1; /* start at number 0 */
+}
+
+/* Increment the counter for each table row within the specific table */
+#table_dx_treat tr {
+  counter-increment: rowNumber;
+}
+
+/* Display the row number before content in the first cell of each row within the specific table */
+#table_dx_treat tr td:first-child::before {
+  content: counter(rowNumber);
+  min-width: 1em;
+  margin-right: 0.5em;
+}
+
+/* สำหรับตาราง Diag หน้า History modal */
+#table_dx_history {
+  counter-reset: rowNumber -1; /* start at number 0 */
+}
+
+/* Increment the counter for each table row within the specific table */
+#table_dx_history tr {
+  counter-increment: rowNumber;
+}
+
+/* Display the row number before content in the first cell of each row within the specific table */
+#table_dx_history tr td:first-child::before {
+  content: counter(rowNumber);
+  min-width: 1em;
+  margin-right: 0.5em;
+}
+
+
+
+
+/* สำหรับตาราง Treat ลงการรักษา*/
+#table_tx_treat {
+  counter-reset: rowNumber -1; /* start at number 0 */
+}
+
+/* Increment the counter for each table row within the specific table */
+#table_tx_treat tr {
+  counter-increment: rowNumber;
+}
+
+/* Display the row number before content in the first cell of each row within the specific table */
+#table_tx_treat tr td:first-child::before {
+  content: counter(rowNumber);
+  min-width: 1em;
+  margin-right: 0.5em;
+}
+
+
+#table_tx_history {
+  counter-reset: rowNumber -1; /* start at number 0 */
+}
+
+/* Increment the counter for each table row within the specific table */
+#table_tx_history tr {
+  counter-increment: rowNumber;
+}
+
+/* Display the row number before content in the first cell of each row within the specific table */
+#table_tx_history tr td:first-child::before {
+  content: counter(rowNumber);
+  min-width: 1em;
+  margin-right: 0.5em;
+}
+
+
+
+
+/* สำหรับตาราง Home med */
+#table_hm_treat {
+  counter-reset: rowNumber -1; /* start at number 0 */
+}
+
+/* Increment the counter for each table row within the specific table */
+#table_hm_treat tr {
+  counter-increment: rowNumber;
+}
+
+/* Display the row number before content in the first cell of each row within the specific table */
+#table_hm_treat tr td:first-child::before {
+  content: counter(rowNumber);
+  min-width: 1em;
+  margin-right: 0.5em;
+}
+
+
+#table_hm_history {
+  counter-reset: rowNumber -1; /* start at number 0 */
+}
+
+/* Increment the counter for each table row within the specific table */
+#table_hm_history tr {
+  counter-increment: rowNumber;
+}
+
+/* Display the row number before content in the first cell of each row within the specific table */
+#table_hm_history tr td:first-child::before {
+  content: counter(rowNumber);
+  min-width: 1em;
+  margin-right: 0.5em;
+}
+
+
+/* สำหรับตาราง Drugset*/
+#table_hm_drugset {
+  counter-reset: rowNumber -1; /* start at number 0 */
+}
+
+/* Increment the counter for each table row within the specific table */
+#table_hm_drugset tr {
+  counter-increment: rowNumber;
+}
+
+/* Display the row number before content in the first cell of each row within the specific table */
+#table_hm_drugset tr td:first-child::before {
+  content: counter(rowNumber);
+  min-width: 1em;
+  margin-right: 0.5em;
+}
+
+
+
+</style>

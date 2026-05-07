@@ -1,0 +1,467 @@
+<script>
+
+
+
+
+
+
+
+
+
+  
+const drugAmountAlert_tablet = 100; // เม็ด
+const drugAmountAlert_sachet = 50; // ซอง
+const drugAmountAlert_pack = 50;  // แผง
+const drugAmountAlert_tube = 20; // หลอด
+const drugAmountAlert_bottle = 20; // ขวด
+const drugAmountAlert_capsule = 100; // แคปซูล
+const drugAmountAlert_pieces = 100; // ชิ้น
+const drugAmountAlert_ampule = 20; // Ampule
+const drugAmountAlert_vial = 20; // Vial
+const drugAmountAlert_item = 100; // อัน
+const drugAmountAlert_sheet = 10; // แผ่น
+const drugAmountAlert_box = 10; // กล่อง
+
+
+// Function to check if the date difference is more than 6 months
+const isOlderThan6Months = (dateStr) => {
+  const today = new Date();
+  const givenDate = new Date(dateStr);
+  
+  // Calculate the difference in months
+  const diffInMonths = (today.getFullYear() - givenDate.getFullYear()) * 12 
+                      + (today.getMonth() - givenDate.getMonth());
+  
+  return diffInMonths > 6;
+};
+
+
+
+
+ 
+
+
+
+function getDrugCatalog(){
+  // loadingStart()
+
+  google.script.run.withSuccessHandler((output) => {
+    // console.log("DrugCatalogInfo:",output);
+    // console.log("DrugCatalogInfo",res)
+     
+    document.getElementById('drug_catalog_content').classList.remove('d-none')
+
+    const drugsTotal = output
+    // console.log(drugsTotal);
+    drugCatalogInfo = output  // Globsl var
+
+    const drugsExp = output.filter(item => item.daysRemain === "Expired")
+    // console.log(drugsExp);
+    // console.log(drugsExp.length);
+
+    // ปริมาณยาเหลือน้อยกว่าหน่วยที่กำหนด
+      
+    const drugsLowAmount = output.filter((drugs) => 
+      (drugs.type === "เม็ด" && drugs.amount < drugAmountAlert_tablet) ||
+      (drugs.type === "หลอด" && drugs.amount < drugAmountAlert_tube) ||
+      (drugs.type === "ซอง" && drugs.amount < drugAmountAlert_sachet) ||
+      (drugs.type === "ขวด" && drugs.amount < drugAmountAlert_bottle) || 
+      (drugs.type === "แผง" && drugs.amount < drugAmountAlert_pack) || 
+      (drugs.type === "แคปซูล" && drugs.amount < drugAmountAlert_capsule) || 
+      (drugs.type === "ชิ้น" && drugs.amount < drugAmountAlert_pieces) || 
+      (drugs.type === "Ampule" && drugs.amount < drugAmountAlert_ampule) || 
+      (drugs.type === "Vial" && drugs.amount < drugAmountAlert_vial) || 
+      (drugs.type === "อัน" && drugs.amount < drugAmountAlert_item) || 
+      (drugs.type === "แผ่น" && drugs.amount < drugAmountAlert_sheet) || 
+      (drugs.type === "กล่อง" && drugs.amount < drugAmountAlert_box) 
+    );
+    // console.log('drugsLowAmount',drugsLowAmount)
+      
+
+    // Filter items that are older than 6 months ไม่มีความเคลื่อนไหว หรือไม่มีการใช้งานเกิน 6 เดือน
+    const drugsFewUse = output.filter(item => isOlderThan6Months(item.stockUpdate));
+    // console.log("drugsFewUse",drugsFewUse);
+
+
+    document.getElementById('total_drugs_catalog').textContent = drugsTotal.length
+    document.getElementById('exp_drugs_catalog').textContent = drugsExp.length
+    document.getElementById('low_drugs_catalog').textContent = drugsLowAmount.length
+    document.getElementById('few_drugs_catalog').textContent = drugsFewUse.length
+
+
+    document.getElementById('loading_drug_sb').classList.add("d-none")
+    document.getElementById('loading_drug_oc').classList.add("d-none")
+
+    // document.getElementById('show_drug_count_sb').textContent = drugsTotal.length
+
+    document.getElementById("show_drug_count_sb").textContent = "✔️"
+    document.getElementById("show_drug_count_oc").textContent = "✔️"
+
+    // document.getElementById('show_drug_count_oc').textContent = drugsTotal.length
+    
+
+    document.getElementById('drug_amount_alert').innerHTML = `รายการยาทั้งหมด`;
+
+    showTableDrugsCatalog(output)
+
+    // document.getElementById('drug_info_form').reset()
+
+    // loadingEnd();
+    // workingEnd('สำเร็จ');
+
+    
+
+  }).getDrugCatalog();
+
+
+
+};
+
+
+   
+
+
+
+
+
+
+function filterDrugsTotal(){
+  // console.log('filterDrugsTotal')
+  elements.tableDrugCatalog.clearFilter();
+  // Injecting dynamic content into an element with the id 'drug-alert'
+  document.getElementById('drug_amount_alert').innerHTML = `
+    รายการยาทั้งหมด
+  `;
+
+}; 
+
+function filterDrugsExp(){
+  // console.log('filterDrugsExp')
+  elements.tableDrugCatalog.setFilter("daysRemain", "=", "Expired");
+
+  // Injecting dynamic content into an element with the id 'drug-alert'
+  document.getElementById('drug_amount_alert').innerHTML = `
+    รายการยาที่หมดอายุ
+  `;
+};
+
+
+
+function filterDrugsLowAmount() {
+  // Clear any existing filters
+  elements.tableDrugCatalog.clearFilter();
+
+  // Apply a custom filter function
+  elements.tableDrugCatalog.setFilter((data) => {
+    // Check type and apply conditional filtering
+    if (data.type === "เม็ด") {
+        return data.amount < drugAmountAlert_tablet;
+
+    } else if (data.type === "หลอด") {
+        return data.amount < drugAmountAlert_tube;
+
+    } else if (data.type === "ซอง") {
+        return data.amount < drugAmountAlert_sachet;
+
+    } else if (data.type === "ขวด") {
+        return data.amount < drugAmountAlert_bottle;
+        
+    } else if (data.type === "แผง") {
+        return data.amount < drugAmountAlert_pack;
+        
+    } else if (data.type === "แคปซูล") {
+        return data.amount < drugAmountAlert_capsule;
+        
+    } else if (data.type === "ชิ้น") {
+        return data.amount < drugAmountAlert_pieces;
+        
+    } else if (data.type === "Ampule") {
+        return data.amount < drugAmountAlert_ampule;
+        
+    } else if (data.type === "Vial") {
+        return data.amount < drugAmountAlert_vial;
+        
+    } else if (data.type === "อัน") {
+        return data.amount < drugAmountAlert_item;
+        
+    } else if (data.type === "แผ่น") {
+        return data.amount < drugAmountAlert_sheet;
+        
+    } else if (data.type === "กล่อง") {
+        return data.amount < drugAmountAlert_box;
+        
+    }
+    return false; // If type is neither "เม็ด" nor "หลอด", do not include it
+  });
+
+  // Injecting dynamic content into an element with the id 'drug-alert'
+  document.getElementById('drug_amount_alert').innerHTML = `
+    รายการยาที่เหลือน้อย เงื่อนไข < ${drugAmountAlert_tablet} เม็ด, 
+    < ${drugAmountAlert_tube} หลอด, 
+    < ${drugAmountAlert_sachet} ซอง, 
+    < ${drugAmountAlert_bottle} ขวด,
+    < ${drugAmountAlert_pack} แผง,
+    < ${drugAmountAlert_capsule} แคปซูล,
+    < ${drugAmountAlert_pieces} ชิ้น,
+    < ${drugAmountAlert_ampule} Ampule,
+    < ${drugAmountAlert_vial} Vial,
+    < ${drugAmountAlert_item} อัน,
+    < ${drugAmountAlert_sheet} แผ่น,
+    < ${drugAmountAlert_box} กล่อง,
+  `;
+
+};
+
+
+
+  
+
+function filterDrugsFewUse(){
+  elements.tableDrugCatalog.setFilter("lastUpdate", ">",6);
+  // Injecting dynamic content into an element with the id 'drug-alert'
+  document.getElementById('drug_amount_alert').innerHTML = `
+    รายการยาที่มีการใช้น้อย เงื่อนไข ไม่มีการเคลื่อนไหวเกิน 6 เดือน
+  `;
+
+};
+
+
+
+
+
+
+function searchTableDrugsCatalog(){
+  const searchInput = document.getElementById('search_input_table_drugscatalog').value.trim().replace(/\s\s+/g, ' ');
+  // console.log(searchInput)
+  // Removes spaces from the beginning and end of the input and between word
+  // " John   Doe   Smith "  i want this  "John Doe Smith"
+
+  // ค้นหาทั้งตาราง searchtable
+  elements.tableDrugCatalog.setFilter([
+    {field:"drugName",type: "like",value: searchInput}, // search with and
+    // {field:"appointDate",type: "!=",value:""}, // search with and
+    // [
+    //     {field:"hn",type: "like",value: searchInput}, // or
+    //     {field:"cid",type: "like",value: searchInput}, // or
+    //     // {field:"firstName",type: "like",value: searchInput}, // or
+    //     // {field:"lastName",type: "like",value: searchInput}, // or
+    //     {field:"fullNameSearch",type: "like",value: searchInput}, // or
+    // ]
+  ]);
+
+   
+
+};
+
+
+function searchTableDrugsSet(){
+  const searchInput = document.getElementById('search_input_drugset').value.trim().replace(/\s\s+/g, ' ');
+  console.log(searchInput)
+  // Removes spaces from the beginning and end of the input and between word
+  // " John   Doe   Smith "  i want this  "John Doe Smith"
+
+  // ค้นหาทั้งตาราง searchtable
+  elements.tableDrugsSets.setFilter([
+    {field:"setName",type: "like",value: searchInput}, // search with and
+    // {field:"appointDate",type: "!=",value:""}, // search with and
+    // [
+    //     {field:"hn",type: "like",value: searchInput}, // or
+    //     {field:"cid",type: "like",value: searchInput}, // or
+    //     // {field:"firstName",type: "like",value: searchInput}, // or
+    //     // {field:"lastName",type: "like",value: searchInput}, // or
+    //     {field:"fullNameSearch",type: "like",value: searchInput}, // or
+    // ]
+  ]);
+
+
+};
+
+
+
+
+ 
+  
+function getDrugSets(){
+  // loadingStart()
+  google.script.run.withSuccessHandler((drugSetsInfo) => {
+    // console.log("DrugSetsInfo",drugSetsInfo);
+
+    showTableDrugSets(drugSetsInfo)
+
+    const userId =  document.getElementById('user_id_status').textContent // "US240812-466691" 
+
+    const filteredDrugSetsByUserId = drugSetsInfo.filter(entry => entry.userId === userId);
+
+    // console.log("filteredDrugSetsByUserId",filteredDrugSetsByUserId);
+    
+    addOptionsById_ChoiceJs(filteredDrugSetsByUserId,"setName","search_input_table_drugset") // choice js
+
+    addDropdownOptions(filteredDrugSetsByUserId,"setName","datalistOptions_newDrugSetName") // datalist options
+
+    // loadingEnd();
+    // workingEnd('สำเร็จ');
+
+
+  }).getDrugSets();
+
+
+
+};
+
+
+
+
+
+function addRowInputHmDrugSet() { 
+  // Get all elements with the class '.dose-options' and '.drug-options'
+  const drugOptions = document.querySelectorAll('.drug-options-drugset');
+  const doseOptions = document.querySelectorAll('.dose-options-drugset');
+
+  // Check if there are any drug or dose options
+  if (drugOptions.length === 0) {
+      console.log('No elements found with the class .drug-options-drugset.');
+      return;
+  }
+
+  if (doseOptions.length === 0) {
+      console.log('No elements found with the class .dose-options-drugset.');
+      return;
+  }
+
+  // Get the last element with the class '.drug-options' and '.dose-options-drugset'
+  const lastDrugOptions = drugOptions[drugOptions.length - 1];
+  const lastDoseOptions = doseOptions[doseOptions.length - 1];
+
+  // Select all elements with the class '.input-hm-amount-drugset'
+  const inputs = document.querySelectorAll('.input-hm-amount-drugset');  
+
+  // Check if there are any inputs
+  if (inputs.length === 0) {
+      console.warn('No elements found with the class .input-hm-amount-drugset');
+      return;
+  }
+
+  // Get the last input element and check if its value is empty
+  const lastInput = inputs[inputs.length - 1];
+  const isEmpty = !lastInput.value.trim();
+
+  // Check if Choices.js is initialized on the last element
+  if (!lastDrugOptions.choicesInstance) {
+      console.log('Choices.js is not initialized on the last .drug-options-drugset element.');
+      return;
+  }
+  if (!lastDoseOptions.choicesInstance) {
+      console.log('Choices.js is not initialized on the last .dose-options-drugset element.');
+      return;
+  }
+
+  // Get the current value from the Choices.js instance
+  const selectedDrugValue = lastDrugOptions.choicesInstance.getValue(true);
+  const selectedDoseValue = lastDoseOptions.choicesInstance.getValue(true);
+
+  // Validate selected value and input value
+  if (!selectedDrugValue) {
+      console.log('The last .drug-options-drugset element has no value.');
+      Swal.fire({ icon: 'error', title: 'กรุณากรอกชื่อยา' });
+      return;
+  }
+  if (!selectedDoseValue) {
+      console.log('The last .dose-options-drugset element has no value.');
+      Swal.fire({ icon: 'error', title: 'กรุณากรอกวิธีใช้ยา' });
+      return;
+  }
+  if (isEmpty) {
+      console.log('The last input with the class .input-price-dose is empty.');
+      Swal.fire({ icon: 'error', title: 'กรุณาระบุจำนวน' });
+      return;
+  }
+
+  // If all validations pass, proceed to add a new row
+  console.log('The last .dose-options-drugset value is:', selectedDoseValue);
+  addRowHmDrugSet("", "", "", ""); // Add an empty row if no valid data is found
+   
+
+  // clickLastDrugOption()
+
+  // addEventHandlerEnterTreatView();
+  
+};
+
+
+
+ 
+
+
+
+function calPriceHomemedDrugSet(){
+  console.log("คำนวนค่ายา calPriceHomemedDrugSet")
+
+  const inputs = document.querySelectorAll('.input-hm-drugset');
+  // console.log(inputs)
+  const data = inputs.length === 0 ? [] : Array.prototype.map.call(inputs, (n)=>{ return n.value });
+  console.log(data) 
+
+  // let data = ['Diclofenac gel/หลอด/80', '', '1', '', 'Hyoscine 10mg/เม็ด/2', '', '2', '', 'Ofloxacin 200mg/เม็ด/5', '', '2', '', '', '', '', ''];
+
+  // Initialize a total array to store all the calculated products
+  let totals = [];
+
+  // Loop through the array with a step of 4 to access each product block 
+  for (let i = 0; i < data.length; i += 4) {  
+    let item = data[i];        // 'Diclofenac gel/หลอด/80'
+    let price = parseFloat(item.split('/')[2]); // Get the price part (80, 2, 5)
+    let quantity = parseFloat(data[i + 2]); // Get the quantity part (1, 2, 2)
+
+    if (!isNaN(price) && !isNaN(quantity)) {
+      totals.push(price * quantity);
+    }
+  }
+
+  // Output the totals array containing all calculated values
+  console.log(totals); // Output: [80, 4, 10]
+
+
+  const inputsPriceHm = document.querySelectorAll('.input-hm-price-drugset');
+  const values = totals
+
+  inputsPriceHm.forEach((input, index) => {
+    if (index < values.length) {
+      input.value = values[index];
+    }
+  });
+
+  // let totals = [80, 4, 10];
+
+  let sumHmPrice = totals.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+  console.log(sumHmPrice); // Outputs: 94
+
+ 
+  // document.getElementById('sum_homemed_price_treat').value = sumHmPrice.toFixed(2);
+  // document.getElementById('sum_homemed_price_small_treat').textContent = sumHmPrice.toFixed(2);
+
+
+  // sumTotalPriceTreatView();
+
+  // return sumHmPrice
+
+};
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+

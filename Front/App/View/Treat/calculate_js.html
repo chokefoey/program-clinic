@@ -1,0 +1,324 @@
+<script>
+
+
+
+
+//***************************************************************************
+// คำนวนค่าหัตถการ   
+//***************************************************************************
+
+function findPriceProcedure(e) {
+  // Log details of the choice
+  // console.log('Choice details:', e.detail); 
+  const val = e.detail.value;
+  console.log(val);
+
+  // console.log(proceduresInfo); // Global var
+  const data = proceduresInfo;
+
+  // Check if the event target has the class 'procedure-options'
+  if (e.target.classList.contains('procedure-options')) {
+    // Get the row containing the changed dropdown
+    const row = e.target.closest('.input-tx-row-treat');
+
+    if (row) {
+      // Get the selected procedure name
+      const selectedProcedure = e.target.value;
+
+      // Find the price for the selected procedure
+      const procedureData = data.find(entry => entry.procedureName === selectedProcedure);
+      const price = procedureData ? procedureData.price : null; // Use null if not found
+
+      // Find all input-tx-treat elements in the row
+      const inputs = row.querySelectorAll('.input-tx-treat');
+
+      // Ensure there are at least 3 elements (dropdown + 2 inputs)
+      if (inputs.length >= 3) {
+        // Set values for the next two inputs
+        // inputs[1].value = `Details for ${selectedProcedure}`; // Update details input
+        inputs[2].value = price !== null ? price : 'N/A';      // Update price input
+      }
+    }
+  }
+
+  // Recalculate totals or other derived values
+  calPriceProcedure();
+};
+
+
+
+
+
+
+
+
+//***************************************************************************
+// คำนวน ค่าหัตถการ ค่า DF
+//***************************************************************************
+
+function calPriceProcedure() {
+  // Select all elements with the class .input-tx-treat
+  const inputs = document.querySelectorAll('.input-tx-treat');
+  
+  // Create an array to hold the values
+  const arr = Array.from(inputs).map(input => input.value);
+  console.log(arr)
+  // const arr = ['DF(ค่าแพทย์)', '', '100', 'DF(ค่าแพทย์)', '', '50', 'Tramol 50 mg', '', '120'];
+
+  let totalDF = 0;
+  let totalNonDF = 0;
+
+  for (let i = 0; i < arr.length; i++) {
+      if (arr[i] === 'DF(ค่าแพทย์)' ) {
+          // Move to the next index to get the numeric value
+          const num = parseFloat(arr[i + 2]);
+          if (!isNaN(num)) {
+              totalDF += num;
+          }
+          i += 2; // Skip to the next relevant item
+
+      } else if (arr[i] !== 'DF(ค่าแพทย์)' ) {
+        const num2 = parseFloat(arr[i + 2]);
+          if (!isNaN(num2)) {
+              totalNonDF += num2;
+          }
+          i += 2; // Skip to the next relevant item
+
+      }
+
+  }
+
+  // console.log(totalDF)
+  // console.log(totalNonDF)
+  // console.log("DF " + totalDF); // Output: 150
+
+  // Format the result to two decimal places and include commas eg. 1,200.00
+  const formattedSum_totalDF = totalDF.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formattedSum_totalNonDF = totalNonDF.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  
+  document.getElementById('sum_df_price_treat').value = totalDF.toFixed(2);
+  document.getElementById('sum_df_price_small_treat').textContent = formattedSum_totalDF
+
+
+  document.getElementById('sum_procedure_price_treat').value = totalNonDF.toFixed(2);
+  document.getElementById('sum_procedure_price_small_treat').textContent = formattedSum_totalNonDF
+
+  sumTotalPriceTreatView()
+
+
+};
+
+
+
+
+//***************************************************************************
+// คำนวน จำนวนยา  
+//***************************************************************************
+
+function calculateHomemedAmount() {
+  const inputAmountDay = document.getElementById('input_amountday_forcalculate').value;
+
+  if (inputAmountDay !== 'กำหนดเอง') {
+    const amountDays = inputAmountDay;
+
+    // Get all inputs with class 'dose-options' and map their values
+    const inputsDoseOptions = document.querySelectorAll('.dose-options');
+    
+    let homemeds = [];
+
+    for (let i = 0; i < inputsDoseOptions.length; i++) {
+      const dose = inputsDoseOptions[i];
+      const doseValue = dose.choicesInstance?.getValue(true);
+
+      if (!dose.choicesInstance || doseValue === '' || doseValue === undefined) {
+        console.log(`Procedure option input ${i + 1} is empty.`);
+        continue; // Skip to the next iteration if current doseValue is invalid
+      }
+
+      // Push the doseValue into homemeds
+      homemeds.push(doseValue);
+    }
+
+    console.log('Homemeds:', homemeds);
+
+    // Create a new array to hold the split second elements
+    let amountPerDay = [];
+
+    // Process each item in homemeds
+    for (let i = 0; i < homemeds.length; i++) {
+      // Split the current item by '/'
+      const splitItem = homemeds[i].split('/');
+
+      // Check if there is a second element
+      if (splitItem.length > 2) {
+        amountPerDay.push(splitItem[2].trim()); // Use trim() to remove extra spaces
+      }
+    }
+
+    console.log('Second Elements:', amountPerDay);
+    
+
+    // Get all inputs with class 'input-amount-homemed'
+    const inputsAmountHm = document.querySelectorAll('.input-amount-homemed');
+
+    // Update input values based on extracted values and appointment day amount
+    inputsAmountHm.forEach((input, index) => {
+      if (index < amountPerDay.length) {
+        input.value = amountPerDay[index] * amountDays;
+      } else {
+        input.value = ''; // Clear values if there are more inputs than values
+      }
+
+
+    })
+
+
+  }
+
+  calPriceHomemed();
+
+};
+
+
+
+
+
+
+
+  
+
+
+
+
+
+//***************************************************************************
+// คำนวนราคายา คำนวนค่ายา  
+//***************************************************************************
+
+function calPriceHomemed(){
+  console.log("คำนวนค่ายา")
+
+  const inputs = document.querySelectorAll('.input-hm-treat');
+  const data = inputs.length === 0 ? [] : Array.prototype.map.call(inputs, function(n) { return n.value });
+  console.log(data) 
+
+  // let data = ['Diclofenac gel/หลอด/80', '', '1', '', 'Hyoscine 10mg/เม็ด/2', '', '2', '', 'Ofloxacin 200mg/เม็ด/5', '', '2', '', '', '', '', ''];
+
+  // Initialize a total array to store all the calculated products
+  let totals = [];
+
+  // Loop through the array with a step of 4 to access each product block 
+  for (let i = 0; i < data.length; i += 4) {  
+    let item = data[i];        // 'Diclofenac gel/หลอด/80'
+    let price = parseFloat(item.split('/')[2]); // Get the price part (80, 2, 5)
+    let quantity = parseFloat(data[i + 2]); // Get the quantity part (1, 2, 2)
+
+    if (!isNaN(price) && !isNaN(quantity)) {
+      totals.push(price * quantity);
+    }
+  }
+
+  // Output the totals array containing all calculated values
+  console.log(totals); // Output: [80, 4, 10]
+
+
+  const inputsPriceHm = document.querySelectorAll('.input-price-homemed');
+  const values = totals
+
+  inputsPriceHm.forEach((input, index) => {
+    if (index < values.length) {
+      input.value = values[index];
+    }
+  });
+
+  // let totals = [80, 4, 10];
+
+  let sumHmPrice = totals.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+  console.log(sumHmPrice); // Outputs: 94
+
+ 
+  document.getElementById('sum_homemed_price_treat').value = sumHmPrice.toFixed(2);
+  // document.getElementById('sum_homemed_price_small_treat').textContent = sumHmPrice.toFixed(2);
+
+  // Format the result to two decimal places and include commas
+  const formattedSum_sumHmPrice = sumHmPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('sum_homemed_price_small_treat').textContent = formattedSum_sumHmPrice
+
+
+
+  sumTotalPriceTreatView();
+
+  // return sumHmPrice
+
+};
+
+
+
+
+
+//***************************************************************************
+// รวมค่ารักษาทั้งหมด คำนวนค่ารักษา คำนวนค่ายา  
+//***************************************************************************
+
+function sumTotalPriceTreatView() {
+  // Function to safely get and parse values
+  const getValue = (id) => {
+    const value = document.getElementById(id).value;
+    return value === '' ? 0 : parseFloat(value.replace(/,/g, ''));
+  };
+
+  // Get values from inputs
+  const df = getValue('sum_df_price_treat');
+  const nonDf = getValue('sum_procedure_price_treat');
+  const hm = getValue('sum_homemed_price_treat');
+
+  // Sum the values
+  const sum = df + nonDf + hm;
+
+  // Format the result to two decimal places and include commas
+  // console.log(formattedSum);
+
+  // Format the result to two decimal places and include commas
+  const formattedSum_df = df.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formattedSum_nonDf = nonDf.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formattedSum_hm = hm.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formattedSum = sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+
+  document.getElementById('sum_procedure_price_small_treat').textContent = formattedSum_nonDf ;
+  document.getElementById('sum_df_price_small_treat').textContent = formattedSum_df ;
+  document.getElementById('sum_homemed_price_small_treat').textContent = formattedSum_hm;
+
+  // Set the formatted sum in the total price field
+  document.getElementById('total_price_sum_treat').value = sum.toFixed(2)
+  document.getElementById('total_price_sum_small_treat').textContent = formattedSum;
+
+};
+
+
+
+
+
+
+//***************************************************************************
+// คำนวน BMI
+//***************************************************************************
+
+function calculateBMI(weight, height) {
+    // BMI = weight (kg) / (height (m) * height (m))
+    const bmi = weight / (height/100 * height/100)
+    return bmi.toFixed(2)  // Outputs: Your BMI is: 22.86
+};
+
+ 
+
+
+
+
+
+
+
+
+</script>

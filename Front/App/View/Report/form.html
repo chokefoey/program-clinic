@@ -1,0 +1,220 @@
+ 
+
+
+<div class="col d-none " id="report_view">
+    
+    <div class="row mt-4"> 
+        <center><h3 class="">หน้ารายงาน</h3></center> 
+        <div class="col mt-4">
+            <nav>
+                <div class="nav nav-tabs" role="tablist">
+                    <button class="nav-link active" id="nav-excel-tab" data-bs-toggle="tab" data-bs-target="#nav-excel" type="button" role="tab" aria-controls="nav-excel" aria-selected="false"><i class="bi bi-file-earmark-spreadsheet"></i> ผู้ป่วย</button>
+                    <button class="nav-link d-none " id="nav-chart-tab" data-bs-toggle="tab" data-bs-target="#nav-chart" type="button" role="tab" aria-controls="nav-chart" aria-selected="true"><i class="bi bi-file-bar-graph"></i> Chart</button>
+                    <button class="nav-link " id="nav-income-tab" data-bs-toggle="tab" data-bs-target="#nav-income" type="button" role="tab" aria-controls="nav-income" aria-selected="true"><i class="bi bi-currency-bitcoin"></i> Income</button>
+                </div>
+            </nav>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="nav-excel" role="tabpanel" aria-labelledby="nav-excel-tab" tabindex="0">
+                    <div class="row mt-4 justify-content-center" >
+                        <div class="col-sm-10 mb-2 mb-sm-0 ">
+                            <div class="card bg-secondary bg-opacity-10">
+                                <div class="card-body">
+                                    <h5 class="">ข้อมูลผู้ป่วยที่ขึ้นทะเบียนทั้งหมด</h5>
+                                    <div class="row">
+                                        <div class="col">
+                                            <label class="form-label invisible">xxx</label>
+                                            <div>
+                                                <button type="button" class="btn btn-secondary shadow my-btn" onclick="getDataReportPatientRegist()">Download</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 justify-content-center" >
+                        <div class="col-sm-10 mb-2 mb-sm-0 ">
+                            <div class="card bg-secondary bg-opacity-10">
+                                <div class="card-body">
+                                    <h5 class="">ข้อมูลการมารับบริการ</h5>
+                                    <div class="row">
+                                        <div class="col-md">
+                                            <label class="form-label pointer">ตั้งแต่</label>
+                                            <input type="text" class="form-control pointer datepicker" id="date_start_report" >
+                                        </div>
+                                        <div class="col-md">
+                                            <label class="form-label pointer">ถึง</label>
+                                            <input type="text" class="form-control pointer datepicker" id="date_end_report" >
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <label class="form-label">ข้อมูลที่ต้องการ</label>
+                                        <div class="col-md">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input pointer check-input-report" type="checkbox" id="inlineCheckbox_piData" value="piData">
+                                                <label class="form-check-label pointer" for="inlineCheckbox_piData">ประวัติ</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input pointer check-input-report" type="checkbox" id="inlineCheckbox_peData" value="peData">
+                                                <label class="form-check-label pointer" for="inlineCheckbox_peData">ตรวจร่างกาย</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input pointer check-input-report" type="checkbox" id="inlineCheckbox_ixData" value="ixData">
+                                                <label class="form-check-label pointer" for="inlineCheckbox_ixData">Investigation</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input pointer check-input-report" type="checkbox" id="inlineCheckbox_dxData" value="dxData">
+                                                <label class="form-check-label pointer" for="inlineCheckbox_dxData">วินิจฉัย</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input pointer check-input-report" type="checkbox" id="inlineCheckbox_txData" value="txData">
+                                                <label class="form-check-label pointer" for="inlineCheckbox_txData">หัตถการ</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input pointer check-input-report" type="checkbox" id="inlineCheckbox_hmData" value="hmData">
+                                                <label class="form-check-label pointer" for="inlineCheckbox_hmData">Home Med</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input pointer check-input-report" type="checkbox" id="inlineCheckbox_summaryData" value="summaryData">
+                                                <label class="form-check-label pointer" for="inlineCheckbox_summaryData">สรุปการรักษา</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md">
+                                            <label class="form-label invisible">xxx</label>
+                                            <div>
+                                                <button type="button" class="btn btn-secondary shadow my-btn" id="download_report_opdvisit_btn" >Download</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade d-none" id="nav-chart" role="tabpanel" aria-labelledby="nav-chart-tab" tabindex="0">
+                    <!-- <button type="button" class="btn btn-secondary shadow my-btn mt-4" id="report_view_show_btn">Show Chart</button>
+                    <div class="row mt-2" id="chart1_view"> </div> -->
+                </div>
+                <div class="tab-pane fade" id="nav-income" role="tabpanel" aria-labelledby="nav-income-tab" tabindex="0">
+                    <div class="row mt-4 justify-content-center" >
+                        <div class="col-sm-10 mb-2 mb-sm-0 ">
+                            <div class="card bg-secondary bg-opacity-10">
+                                <div class="card-body">
+                                    <h5 class="">เลือกช่วงวันที่</h5>
+                                    <div class="row mt-2">
+                                        <div class="col-md">
+                                            <label class="form-label pointer">ตั้งแต่</label>
+                                            <input type="text" class="form-control pointer datepicker" id="date_start_income_report" >
+                                        </div>
+                                        <div class="col-md">
+                                            <label class="form-label pointer">ถึง</label>
+                                            <input type="text" class="form-control pointer datepicker" id="date_end_income_report" >
+                                        </div>
+                                        <div class="col-md">
+                                            <label class="form-label">แพทย์</label>
+                                            <div>
+                                                <select class="doctor-name-options form-control w-100" id="doctor_name_income_report"> 
+                                                     
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col">
+                                            <label class="form-label invisible">xxx</label>
+                                            <div>
+                                                <button type="button" class="btn btn-secondary shadow my-btn" id="show_income_btn">แสดงรายได้</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row mt-4">
+                                        <div class="col-sm-3 mb-3 mb-sm-0">
+                                            <div class="card text-secondary text-bg-secondary ">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">ค่าหัตถการ</h5>
+                                                    <h3 class="card-title" id="procedure_income_report">0</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 mb-3 mb-sm-0">
+                                            <div class="card text-secondary text-bg-secondary ">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">ค่าแพทย์(DF)</h5>
+                                                    <h3 class="card-title" id="df_income_report">0</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 mb-3 mb-sm-0">
+                                            <div class="card text-secondary text-bg-secondary ">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">ค่ายากลับบ้าน</h5>
+                                                    <h3 class="card-title" id="homemed_income_report">0</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 mb-3 mb-sm-0">
+                                            <div class="card text-secondary text-bg-secondary ">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">รวมรายรับ</h5>
+                                                    <h3 class="card-title" id="total_income_report">0</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 justify-content-center">
+                        <div class="col-sm-10 mb-3 mb-sm-0 ">
+                            <div class="card bg-secondary bg-opacity-10 shadow">
+                                <div class="card-body">
+                                    <div class="col-12"  id="table_income_report">
+
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                </div>
+
+                
+
+                
+            </div>
+        
+        </div>
+    
+    </div>
+
+    
+
+    
+
+    <div class="row mt-4 mb-3 justify-content-center">
+        <center><div class="col-10">golfguitar@gmail.com</div></center>
+    </div>
+
+    
+
+    
+    
+     
+    
+</div>
+ 

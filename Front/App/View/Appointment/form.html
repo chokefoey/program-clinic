@@ -1,0 +1,89 @@
+<div class="col d-none " id="appointment_view">
+     
+    
+  <div class="row mt-4 mb-2 justify-content-center"> 
+    <center><h3 class="">รายชื่อนัดหมาย</h3></center>
+  </div>
+
+  <!-- placeholder *************  -->
+  <div class="row mt-2 justify-content-center" id="placeholder_appointment_view">
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+
+
+  <section class="mt-4" >
+
+    <div class="d-none row mt-4 justify-content-center" id="section_appointment_view">
+      <div class="col-sm-10 mb-3 mb-sm-0 mt-4">
+          <div class="card bg-secondary bg-opacity-10 shadow">
+              <div class="card-body">
+                  <div class="row">
+                      <div class="col">
+                          <label class="form-label">รูปแบบ</label>
+                          <select class="form-select" id="filtertype_table_appointment">
+                              <option value="1" selected>วันนี้</option>
+                              <option value="2">ทั้งหมด</option>
+                              <!-- <option value="3">ทุกการนัด</option> -->
+                          </select>
+                      </div>
+                      <div class="col">
+                          <label class="form-label">วันที่นัด</label>
+                          <input type="text" class="form-control datepicker" id="datefilter_table_appointment" disabled>
+                      </div>
+                      <div class="col">
+                          <label class="form-label">ค้นหา</label>
+                          <input type="search" class="form-control" id="search_input_table_appointment" placeholder="ชื่อ-สกุล หรือ HN" >
+                      </div>
+                  </div>
+                      
+              </div>
+          </div>
+      </div>
+        
+    </div>
+
+    <div class="row mt-2 justify-content-center" >
+      <div class="col-sm-10 mb-3 mb-sm-0 ">
+        <div class="col-md-4 mt-2">
+          <div>
+            <button type="button" class="btn btn-secondary shadow my-btn" onclick="reportTableAppointment()"><i class="bi bi-file-earmark-spreadsheet-fill"></i> Download</button>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+
+    <div class="row mt-4 justify-content-center">
+      <div class="col-sm-10 mb-3 mb-sm-0 ">
+          <div class="card bg-secondary bg-opacity-10 shadow">
+            <div class="card-body">
+              <div class="col-12"  id="table_appointment">
+
+              </div>
+                    
+            </div>
+          </div>
+      </div>
+    </div>
+
+    
+  </section>
+
+
+  <div class="row mt-4 mb-3 justify-content-center">
+    <center><div class="col-10">golfguitar@gmail.com</div></center>
+  </div>
+     
+     
+ 
+
+    
+    
+     
+    
+</div>

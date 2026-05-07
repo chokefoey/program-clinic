@@ -1,0 +1,157 @@
+ 
+
+
+<script>
+
+
+  
+ 
+
+
+
+
+function clickEventHandlerCalendarAddEditModal(e){
+  if (e.target.matches("#add_calendar_event_btn") ){
+    if( document.getElementById('start_date_calendar').value == "" || document.getElementById('start_time_calendar').value == "" || document.getElementById('purpose_calendar').value == "" ){
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณาระบุวันเวลาและวัตถุประสงค์</h5>"});
+
+    } else if ( document.getElementById('room_name_calendar').value == "" || document.getElementById('doctor_appoint_calendar').value == "" ){
+      // const roomName = document.getElementById('room_name_calendar').value
+      // console.log(roomName)
+
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณาระบุห้องตรวจและแพทย์</h5>"});
+
+    } else {
+      const vid = document.getElementById('opd_visitid_calendar').value
+      console.log("vid " + vid)
+      if( vid == ""){
+        console.log('addAppointmentWithNewVid')
+        // กรณี ผป ลงทะเบียนครั้งแรกแล้วนัดหมาย ไม่ได้เข้าตรวจ จะการนัดและสร้าง opdVisitId ไว้สำหรับนัด
+        // หรือ ผป เคยลงทะเบียนไว้แล้ว ต้องการมาทำนัดหมาย จะสร้าง opdVisitId ใหม่
+        addAppointmentWithNewVid(); 
+        
+      } else {
+        console.log('addAppointmentDataByVid')
+        addAppointmentDataByVid();  // กรณี ผป เข้าตรวจแล้ว
+
+      }
+    }
+  }
+  if (e.target.matches("#edit_calendar_event_btn") ){
+    // Assuming 'elements["room_name_calendar"]' is id your Choices.js instance
+    const choicesInstanceRoom = elements["room_name_calendar"];
+    const choicesInstanceDoctor = elements["doctor_appoint_calendar"];
+
+    // get value of Choice js getchoicevalue getvalue of choice
+    // Get the selected value from the Choices.js instance
+    const selectedValueRoom = choicesInstanceRoom.getValue(true);  // Passing true returns the value(s) as a string or array
+    console.log(selectedValueRoom);
+
+    const selectedValueDoctor = choicesInstanceDoctor.getValue(true);  // Passing true returns the value(s) as a string or array
+    console.log(selectedValueDoctor);
+
+
+    if( document.getElementById('start_date_calendar').value == "" || document.getElementById('start_time_calendar').value == "" || document.getElementById('purpose_calendar').value == "" ){
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณาระบุวันเวลาและวัตถุประสงค์</h5>"});
+
+    } else if ( choicesInstanceRoom == "" || choicesInstanceDoctor == "" ){
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณาระบุห้องตรวจและแพทย์</h5>"});
+        
+    } else {
+      Swal.fire({ 
+        title: "ยืนยันแก้ไข?",
+        // html:  htmlContent ,
+        // showDenyButton: true,
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: "ยืนยัน",
+        cancelButtonText: "ยกเลิก",
+        // denyButtonText: `ไม่อนุมัติ`
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          editAppointmentCalendar();
+          
+        } 
+      })
+      
+        
+    }
+      
+  }
+  if (e.target.matches("#delete_calendar_event_btn") ){
+    // console.log("แปแปแป") 
+    if( document.getElementById('appointmentid_calendar').value == ""  ){
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>ไม่พบข้อมูลที่ต้องการลบ</h5>"});
+
+    } else {
+      Swal.fire({ 
+        title: "ยืนยันการลบ?",
+        // html:  htmlContent ,
+        // showDenyButton: true,
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: "ยืนยัน",
+        cancelButtonText: "ยกเลิก",
+        // denyButtonText: `ไม่อนุมัติ`
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          deleteAppointmentCalendar();
+          
+        } 
+      })
+        
+    }
+  }
+  
+  
+  
+
+};
+
+
+
+
+
+
+
+
+function clickEventHandlerCalendarView(e){
+  if (e.target.matches("#add_dayoff_btn") ){
+    // console.log("add_dayoff_btn")
+    if( document.getElementById('dayoff_calendar').value == ""  ){
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณาระบุวัน</h5>"});
+
+    } else {
+      addDayOff()
+
+    }
+      
+  }
+  if (e.target.matches("#show_dayoff_btn") ){
+    // console.log("show_dayoff_btn")
+    getDayOffToCalendar()
+     
+      
+  }
+
+  
+
+
+
+
+};
+  
+
+
+
+
+
+
+document.getElementById('calendar_event_addedit_modal').addEventListener("click", clickEventHandlerCalendarAddEditModal)
+document.getElementById('calendar_view').addEventListener("click", clickEventHandlerCalendarView)
+
+
+
+</script>

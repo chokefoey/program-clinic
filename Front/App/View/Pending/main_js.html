@@ -1,0 +1,556 @@
+ 
+<script>
+
+
+function getDataOpdVisits(ssId_DB){
+    google.script.run.withSuccessHandler((res)=>{
+        // console.log("OpdVisitInfo ", res)
+
+        showTableAppointment(res);
+        showTablePending(res);  
+        showTableHistory(res);
+        
+        setDataForCalendar(res);
+
+        loadingEnd();
+        progressbarEnd();
+
+
+    }).getDataOpdVisits(ssId_DB)
+
+};
+
+
+function showDashboardPending(){
+    // const opdVisitInfo = elements.tablePending.getRow(patientId).getData();
+    // console.log(opdVisitInfo)
+    // แสดงข้อมูลที่เห็น ณ เวลานั้น
+    const activeDataTablePending = elements.tablePending.getData("active")
+    // console.log(activeDataTablePending) // arr of obj
+
+    // Count occurrences of 'opdStatus' with value 'รอตรวจ' ส่งห้องตรวจ
+    const countOpdStatusWaiting = activeDataTablePending.reduce((count, item) => {
+        if (item.opdStatus === "รอตรวจ" || item.opdStatus === "ส่งห้องตรวจ") {
+            count += 1;
+        }
+        return count;
+    }, 0);
+    
+    // ตรวจเสร็จ ได้แก่ ส่งห้องยา ส่งการเงิน ส่งนัดหมาย จำหน่าย
+    const countOpdStatusFinish = activeDataTablePending.reduce((count, item) => {
+        if (item.opdStatus === "ส่งห้องยา" || item.opdStatus === "ส่งการเงิน" || item.opdStatus === "ส่งนัดหมาย" ) {
+            count += 1;
+        }
+        return count;
+    }, 0);
+
+    const countOpdStatusSendPharmacy = activeDataTablePending.reduce((count, item) => {
+        if (item.opdStatus === "ส่งห้องยา" ) {
+            count += 1;
+        }
+        return count;
+    }, 0);
+
+    const countOpdStatusSendFinance = activeDataTablePending.reduce((count, item) => {
+        if (item.opdStatus === "ส่งการเงิน" ) {
+            count += 1;
+        }
+        return count;
+    }, 0);
+
+    const countOpdStatusSendAppointment = activeDataTablePending.reduce((count, item) => {
+        if (item.opdStatus === "ส่งนัดหมาย" ) {
+            count += 1;
+        }
+        return count;
+    }, 0);
+
+
+    const countOpdStatusDischarge = activeDataTablePending.reduce((count, item) => {
+        if (item.opdStatus === "จำหน่าย") {
+            count += 1;
+        }
+        return count;
+    }, 0);
+
+    // console.log(countOpdStatusWaiting); 
+
+    document.getElementById('total_dashboard_pending').textContent = activeDataTablePending.length
+    document.getElementById('waiting_dashboard_pending').textContent = countOpdStatusWaiting
+    document.getElementById('finish_dashboard_pending').textContent = countOpdStatusFinish
+    document.getElementById('discharge_dashboard_pending').textContent = countOpdStatusDischarge
+
+    document.getElementById('pharmacy_dashboard_pending').textContent = countOpdStatusSendPharmacy
+    document.getElementById('finance_dashboard_pending').textContent = countOpdStatusSendFinance
+    document.getElementById('appointment_dashboard_pending').textContent = countOpdStatusSendAppointment
+
+};
+
+
+
+
+// Function to handle radio button change
+// function getRadioBtnValue() {
+//     // Get all radio buttons with the class "inlineRadioOptionsPending"
+//     const radioButtons = document.querySelectorAll('.inlineRadioOptionsPending');
+
+//     // Loop through all radio buttons
+//     for (let i = 0; i < radioButtons.length; i++) {
+//         // Check if the current radio button is checked
+//         if (radioButtons[i].checked) {
+//             // console.log(radioButtons[i].value);
+//             // Do something with the selected value, such as storing it in a variable or using it in further logic
+//             return radioButtons[i].value; // Return the value of the checked radio button
+//         }
+//     }
+
+//     // If no radio button is checked, return null or handle accordingly
+//     return null; // Or return a default value or handle the case where no radio button is checked
+// };
+
+
+
+    
+
+
+     
+
+
+
+function setDataPatientRegistInfo(patientId,opdVisitId){
+    // console.log(patientId)
+    const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData()
+    console.log("patientRegistInfo",patientRegistInfo);
+
+    // document.getElementById("patient_pic").src = "https://lh5.googleusercontent.com/d/1WfDhv9ODm6TtV0ySIahImju-a7lmIH8i" // male
+    // document.getElementById("patient_pic").src = "https://lh5.googleusercontent.com/d/17zoS21g717BIik953Ip_GRpx41qV6yNJ" // female
+
+    if ( patientRegistInfo.identityData.gender == "ชาย"){
+        document.getElementById("patient_pic").src = "https://lh5.googleusercontent.com/d/1WfDhv9ODm6TtV0ySIahImju-a7lmIH8i"
+
+    } else if ( patientRegistInfo.identityData.gender == "หญิง") {
+        document.getElementById("patient_pic").src = "https://lh5.googleusercontent.com/d/17zoS21g717BIik953Ip_GRpx41qV6yNJ"
+
+    } else {
+        // cartoon
+        document.getElementById("patient_pic").src = "https://lh5.googleusercontent.com/d/1WfDhv9ODm6TtV0ySIahImju-a7lmIH8i"
+    }
+
+    document.getElementById("patient_fname_treat").textContent = patientRegistInfo.firstName
+    document.getElementById("patient_lname_treat").textContent = patientRegistInfo.lastName
+
+    document.getElementById("patient_hn_treat").textContent = patientRegistInfo.incrementHn
+    document.getElementById("patient_id_treat").textContent = patientId
+    document.getElementById("opd_visitid_treat").textContent = opdVisitId
+
+    document.getElementById("patient_cid_treat").textContent = patientRegistInfo.identityData.cid
+    document.getElementById("patient_address_treat").textContent = 
+        patientRegistInfo.addressData.tumbon != '' ? 
+        " บ้านเลขที่ " + patientRegistInfo.addressData.houseNo + 
+        " หมู่ " + patientRegistInfo.addressData.moo + 
+        " ซ." + patientRegistInfo.addressData.soi + 
+        " ถ." + patientRegistInfo.addressData.road + 
+        " ต." + patientRegistInfo.addressData.tumbon + 
+        " อ." + patientRegistInfo.addressData.amphoe + 
+        " จ." + patientRegistInfo.addressData.province + 
+        " " + patientRegistInfo.addressData.zipcode
+        : '' ;
+    
+    document.getElementById("patient_birthday_treat").textContent = patientRegistInfo.identityData.birthDay
+    document.getElementById("patient_gender_treat").textContent = patientRegistInfo.identityData.gender
+
+    const age = calculateAge(patientRegistInfo.identityData.birthDay); // คำนวนอายุ
+
+    document.getElementById("patient_age_treat").textContent = `${age.years} ปี ${age.months} เดือน`
+
+    document.getElementById("patient_tel_treat").textContent = patientRegistInfo.contactData.phoneNumber1
+
+    document.getElementById("patient_healthwelfare_treat").textContent = patientRegistInfo.medicalData.healthWelfare
+
+    
+    document.getElementById("patient_ud_treat").textContent = patientRegistInfo.medicalData.underlying
+    document.getElementById("patient_allergy_treat").textContent = patientRegistInfo.medicalData.drugAllergy
+    document.getElementById("patient_note_treat").textContent = patientRegistInfo.otherData.comment
+
+    document.getElementById("selected_patient_view_treat").classList.remove('d-none')
+    document.getElementById("non_selected_patient_view_treat").classList.add('d-none')
+
+
+};
+
+
+
+// Function to clean data by removing keys with undefined values
+function cleanData(obj) {
+    let cleanedObj = {};
+    for (let key in obj) {
+        if (obj[key] !== undefined) {
+            cleanedObj[key] = obj[key];
+        }
+    }
+    return cleanedObj;
+
+};
+
+
+
+function setDataOpdvisitInfo(opdVisitId){ 
+    // console.log(rowData)
+
+    const opdVisitInfo = elements.tablePending.getRow(opdVisitId).getData()
+    console.log("opdVisitInfo",opdVisitInfo)
+
+    // set วันเวลา 
+    // toThaiDateString(new Date(opdVisitInfo.visitDate));
+    document.getElementById('date_visit_treat').textContent = toThaiDateStringShort(new Date(opdVisitInfo.visitDate)) || "";  // short form if value is undefined
+    document.getElementById('time_visit_treat').textContent = opdVisitInfo.visitTime || "";  // short form if value is undefined
+
+    // set data pi
+    document.getElementById('wt_treat').value = opdVisitInfo.piData.wt || "";  // short form if value is undefined
+    document.getElementById('ht_treat').value = opdVisitInfo.piData.ht || "";
+    document.getElementById('bmi_treat').value = opdVisitInfo.piData.bmi || "";
+    document.getElementById('bt_treat').value = opdVisitInfo.piData.bt || "";
+    document.getElementById('o2sat_treat').value = opdVisitInfo.piData.o2sat || "";
+
+    document.getElementById('sbp_treat').value = opdVisitInfo.piData.sbp || "";
+    document.getElementById('dbp_treat').value = opdVisitInfo.piData.dbp || "";
+    document.getElementById('pr_treat').value = opdVisitInfo.piData.pr || "";
+    document.getElementById('rr_treat').value = opdVisitInfo.piData.rr || "";
+    document.getElementById('cc_treat').value = opdVisitInfo.piData.cc || "";   
+    document.getElementById('pi_treat').value = opdVisitInfo.piData.pi || "";
+    document.getElementById('ph_treat').value = opdVisitInfo.piData.ph || "";
+
+    // document.getElementById('previous_hosp_treat').value = opdVisitInfo.piData.previousHosp || "";
+    // const previousHospValue =  opdVisitInfo.piData.previousHosp  
+    // console.log("previousHospValue:"+previousHospValue)
+    // setValueOfChoiceById("previous_hosp_treat", previousHospValue)
+    setValueOfChoiceById("previous_hosp_treat", opdVisitInfo?.piData?.previousHosp ?? "");
+
+    document.getElementById('current_drug_treat').value = opdVisitInfo.piData.currentDrug || "";
+    document.getElementById('growth_treat').value = opdVisitInfo.piData.growth || "";
+    document.getElementById('development_treat').value = opdVisitInfo.piData.development || "";
+    document.getElementById('vaccine_treat').value = opdVisitInfo.piData.vaccine || "";
+    document.getElementById('vaccine_incomplete_cause_treat').value = opdVisitInfo.piData.vaccineincompleteCause || "";
+
+
+    // set data pe
+    document.getElementById('pe_treat').value = opdVisitInfo.peData.pe || ""; 
+    document.getElementById('oe_treat').value = opdVisitInfo.peData.oe || ""; 
+
+    // set data ix
+    document.getElementById('lab_treat').value = opdVisitInfo.ixData.lab || ""; 
+    document.getElementById('xray_treat').value = opdVisitInfo.ixData.xray || ""; 
+    document.getElementById('us_treat').value = opdVisitInfo.ixData.us || ""; 
+
+
+    // set data dx **************
+    // Clean the dataDx object remove undefind
+    const cleanedDataDx = cleanData(opdVisitInfo.dxData);
+
+    // Check if cleanedDataDx is empty or if dx1 is empty
+    if (Object.keys(cleanedDataDx).length === 0 ) {
+        addRowDx("", ""); // Add an empty row if no valid data is found
+            
+    } else {
+        // Dynamically add rows based on the cleaned data object
+        for (let i = 1; i <= Object.keys(cleanedDataDx).length / 2; i++) {
+            const dx = cleanedDataDx[`dx${i}`];
+            const icd = cleanedDataDx[`icd${i}`];
+            
+            if (dx !== undefined && icd !== undefined) { // Ensure both dx and icd are defined
+                addRowDx(dx, icd);
+
+            }
+        }
+    }
+
+
+
+    // set data tx  **************
+    // Clean the dataDx object remove undefind
+    const cleanedDataTx = cleanData(opdVisitInfo.txData);
+    // console.log(cleanedDataTx)
+
+    // Check if cleanedDataTx is empty or if tx1 is empty
+    if (Object.keys(cleanedDataTx).length === 0 || cleanedDataTx.tx1 === "") {
+        // console.log("sdsd")
+        addRowTx("", "", ""); // Add an empty row if no valid data is found
+        
+    } else {
+        // Dynamically add rows based on the cleaned data object
+        for (let i = 1; i <= Object.keys(cleanedDataTx).length / 3; i++) {
+            const tx = cleanedDataTx[`tx${i}`];
+            const dose = cleanedDataTx[`dose${i}`];
+            const price = cleanedDataTx[`price${i}`];
+            
+            if (tx !== undefined && dose !== undefined && price !== undefined) { // Ensure both dx and icd are defined
+                addRowTx(tx, dose, price);
+            }
+        }
+    }
+
+
+
+
+    // set data hm *************************
+    // Clean the dataDx object remove undefind
+    const cleanedDataHm = cleanData(opdVisitInfo.hmData);
+
+    // Check if cleanedDataHm is empty or if tx1 is empty
+    if (Object.keys(cleanedDataHm).length === 0 || cleanedDataHm.hm1 === "") {
+        addRowHm("", "", "", ""); // Add an empty row if no valid data is found
+    } else {
+        // Dynamically add rows based on the cleaned data object
+        for (let i = 1; i <= Object.keys(cleanedDataHm).length / 4; i++) {
+            const hm = cleanedDataHm[`hm${i}`];
+            const dose = cleanedDataHm[`dose${i}`];
+            const amount = cleanedDataHm[`amount${i}`];
+            const price = cleanedDataHm[`price${i}`];
+            
+            if (hm !== undefined && dose !== undefined && amount !== undefined && price !== undefined) { // Ensure both dx and icd are defined
+                addRowHm(hm, dose,amount, price);
+            }
+        }
+    }
+
+    
+
+
+    // set data summary
+    document.getElementById('sum_procedure_price_treat').value = opdVisitInfo.summaryData.sumProcedurePrice || ""; 
+    document.getElementById('sum_df_price_treat').value = opdVisitInfo.summaryData.sumDfPrice || ""; 
+    document.getElementById('sum_homemed_price_treat').value = opdVisitInfo.summaryData.sumHomemedPrice || ""; 
+
+    document.getElementById('total_price_sum_treat').value = opdVisitInfo.summaryData.totalPrice || ""; 
+    document.getElementById('authen_code_treat').value = opdVisitInfo.summaryData.authenCode || ""; 
+
+
+    document.getElementById('pay_type_treat').value = opdVisitInfo.summaryData.payType || ""; 
+    document.getElementById('pay_remain_treat').value = opdVisitInfo.summaryData.payRemain || ""; 
+    document.getElementById('pay_channel_treat').value = opdVisitInfo.summaryData.payChannel || ""; 
+    document.getElementById('social_security_treat').value = opdVisitInfo.summaryData.socialSecurity || ""; 
+    document.getElementById('doctor_note_treat').value = opdVisitInfo.summaryData.doctorNote || ""; 
+    document.getElementById('tx_plan_treat').value = opdVisitInfo.summaryData.txPlan || ""; 
+
+    document.getElementById('discharge_type_treat').value = opdVisitInfo.summaryData.dischargeType || ""; 
+
+    // const refertoHospValue =  opdVisitInfo.summaryData.refertoHosp  
+    // console.log("refertoHospValue:"+refertoHospValue)
+    // setValueOfChoiceById("referto_hosp_treat", refertoHospValue)
+    setValueOfChoiceById("referto_hosp_treat", opdVisitInfo?.summaryData?.refertoHosp ?? "");
+
+ 
+        
+    // set preview SUMMARY แสดงค่ารักษาก่อนเบื้องต้น 
+    // Format the result to two decimal places and include commas
+    const sumProcedure = document.getElementById('sum_procedure_price_treat').value 
+    const formatted_sumProcedure = formatMoney(sumProcedure);
+    
+    const sumDf = document.getElementById('sum_df_price_treat').value 
+    const formatted_sumDf = formatMoney(sumDf);
+
+    const sumHm = document.getElementById('sum_homemed_price_treat').value 
+    const formatted_sumHm = formatMoney(sumHm);
+
+    const sumTotal = document.getElementById('total_price_sum_treat').value 
+    const formatted_sumTotal = formatMoney(sumTotal);
+    // console.log("formattedSum:"+formattedSum)
+
+    document.getElementById('sum_procedure_price_small_treat').textContent = formatted_sumProcedure 
+    document.getElementById('sum_df_price_small_treat').textContent = formatted_sumDf
+    document.getElementById('sum_homemed_price_small_treat').textContent = formatted_sumHm
+    document.getElementById('total_price_sum_small_treat').textContent = formatted_sumTotal
+
+
+    // setHomemedTypeTreat();
+    setHomemedType('input-hm-treat', 'homemed-type-treat');
+    addEventHandlerEnterTreatView();
+
+    
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+function addRowDx(dx, icd10) {
+    // Get the template and table body
+    const template = document.getElementById("input_dx_template_treat").content;
+    const tableBody = document.getElementById("table_dx_treat").querySelector("tbody");
+
+    // Clone the template content
+    const clone = document.importNode(template, true);
+
+    // Get all selects and inputs in the cloned template
+    const selects = clone.querySelectorAll("select");
+    const inputs = clone.querySelectorAll("input");
+
+    // Set the ICD-10 value in the input field
+    inputs[0].value = icd10 || "";
+
+    // Append the cloned row to the table body before doing anything with the select
+    tableBody.appendChild(clone);
+
+    // Get the newly appended select element 
+    const dxSelect = selects[0]; // Assuming the first select is for 'dx'
+    dxSelect.classList.add('icd10-options'); // Add the class for easy targeting
+
+    // Pass the specific select element to addOptionsByClass_ChoiceJs along with the dx value
+    addOptionsByClass_ChoiceJs(ddOptionsInfo, 'icd10', dxSelect, dx);
+
+
+};
+
+
+
+
+function clickLastIcd10Option(){
+    // Get all elements with the class '.icd10-options'
+    const icd10Options = document.querySelectorAll('.icd10-options');
+    // Get the last element with the class '.icd10-options'
+    const lastIcd10Option = icd10Options[icd10Options.length - 1];
+    // Programmatically click the last element
+    lastIcd10Option.click();
+
+};
+
+
+
+
+
+
+function addRowTx(tx, dose, price) {
+    // Get the template and table body
+    const template = document.getElementById("input_tx_template_treat").content;
+    const tableBody = document.getElementById("table_tx_treat").querySelector("tbody");
+    
+    // Clone the template content
+    const clone = document.importNode(template, true);
+    
+    // Get all selects and inputs in the cloned template
+    const selects = clone.querySelectorAll("select");
+    const inputs = clone.querySelectorAll("input");
+
+    // Set the 'amount' input field (detail)
+    inputs[0].value = dose || ""; // Corresponds to the 'detail' input field
+
+    // Set the 'price' input field
+    inputs[1].value = price || ""; // Corresponds to the 'price' input field
+    
+    // Append the cloned row to the table body
+    tableBody.appendChild(clone);
+    
+    // procedure-options
+    // Get the newly appended select element 
+    const txSelect = selects[0]; // Assuming the first select is for 'tx'
+    txSelect.classList.add('procedure-options'); // Add the class for easy targeting
+
+    // Pass the specific select element to addOptionsByClass_ChoiceJs along with the dx value
+    // addOptionsByClass_ChoiceJs(ddOptionsInfo, 'procedure', txSelect, tx);
+    addOptionsByClass_ChoiceJs(proceduresInfo, 'procedureName', txSelect, tx);
+
+    
+};
+
+
+
+function clickLastProcedureOption(){
+    // Get all elements with the class '.procedure-options'
+    const procedureOptions = document.querySelectorAll('.procedure-options');
+    // Get the last element with the class '.procedure-options'
+    const lastProcedureOption = procedureOptions[procedureOptions.length - 1];
+    // Programmatically click the last element
+    lastProcedureOption.click();
+
+}
+
+
+
+
+
+function addRowHm(hm, dose, amount, price) {
+    // Get the template and table body
+    const template = document.getElementById("input_hm_template_treat").content;
+    const tableBody = document.getElementById("table_hm_treat").querySelector("tbody");
+    
+    // Clone the template content
+    const clone = document.importNode(template, true);
+    
+    // Get all selects and inputs in the cloned template
+    const selects = clone.querySelectorAll("select");
+    const inputs = clone.querySelectorAll("input");
+
+    // Set the 'amount' input field (detail)
+    inputs[0].value = amount || ""; // Corresponds to the 'detail' input field
+
+    // Set the 'price' input field
+    inputs[1].value = price || ""; // Corresponds to the 'price' input field
+    
+    // Append the cloned row to the table body
+    tableBody.appendChild(clone);
+    
+        
+    // Get the newly appended select element 
+    const drugSelect = selects[0]; // Assuming the first select is for 'hm'
+    drugSelect.classList.add('drug-options'); // Add the class for easy targeting
+
+    const doseSelect = selects[1]; // Assuming the first select is for 'hm'
+    doseSelect.classList.add('dose-options'); // Add the class for easy targeting
+
+    // Pass the specific select element to addOptionsByClass_ChoiceJs along with the dx value
+
+    
+
+    // const drugInfo = elements.tableDrugCatalog.getData() 
+    // console.log(drugInfo)
+
+    addOptionsByClass_ChoiceJs(drugCatalogInfo, 'options', drugSelect, hm);    // drugCatalogInfo Global var
+    addOptionsByClass_ChoiceJs(ddOptionsInfo, 'dose', doseSelect, dose);
+    
+};
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+function clickLastDrugOption(){ 
+    // Get all elements with the class '.drug-options'
+    const drugOptions = document.querySelectorAll('.drug-options');
+    // Get the last element with the class '.drug-options'
+    const lastDrugOption = drugOptions[drugOptions.length - 1];
+    // Programmatically click the last element
+    lastDrugOption.click();
+
+};
+
+
+
+
+    
+
+
+  
+    
+
+
+
+</script>
+ 

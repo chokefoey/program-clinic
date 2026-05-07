@@ -1,0 +1,351 @@
+<script>
+
+
+
+function openModalAddDrug(){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('druginfo_modal')) // Returns a Bootstrap modal instance
+  modal1.show();
+  // modal1.hide();
+  document.getElementById('drug_info_form').reset()
+
+  document.getElementById('add_drug_btn').classList.remove('d-none')
+  document.getElementById('edit_drug_btn').classList.add('d-none')
+  document.getElementById('delete_drug_btn').classList.add('d-none')
+
+
+}; 
+
+
+
+function addDrug(){
+  loadingStart();
+  
+  const drugInfo = getFormDataById('drug_info_form'); // obj
+  // console.log(drugInfo)
+  const options = drugInfo.drugName +"/"+ drugInfo.type +"/"+ drugInfo.price +"/"+ drugInfo.indication
+
+  // drugInfo.options  = drugInfo.drugName +"/"+ drugInfo.type +"/"+ drugInfo.price +"/"+ drugInfo.indication
+  console.log(drugInfo)
+
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res)
+
+    document.getElementById('drug_info_form').reset()
+
+    const drugId = res[0].newId
+   
+    const newDrugInfo = {drugId,...drugInfo,options}
+
+    // add data add row
+    // elements.tableDrugCatalog.addRow([newDrugInfo], true); adddatatable
+    // re render re-render redraw table
+    elements.tableDrugCatalog.addRow([newDrugInfo]).then(()=>{
+      // Redraw or refresh to re-apply formatters if necessary
+      // rebulid table rebuild table redraw
+      elements.tableDrugCatalog.redraw(true); // true forces a re-render
+      // OR
+      // elements.tablePatientRegist.refresh(); // refresh the table layout and data
+    });
+
+
+
+    drugCatalogInfo.push(newDrugInfo); // drugCatalogInfo Global var
+    console.log(drugCatalogInfo);
+
+
+    loadingEnd()
+    workingEnd('สำเร็จ')
+
+  }).addNewDrug(drugInfo)
+
+  
+};
+
+
+
+function openModalEditDrug(rowData){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('druginfo_modal')) // Returns a Bootstrap modal instance
+  modal1.show();
+  // modal1.hide();
+
+  document.getElementById('add_drug_btn').classList.add('d-none')
+  document.getElementById('edit_drug_btn').classList.remove('d-none')
+  document.getElementById('delete_drug_btn').classList.remove('d-none')
+
+
+  document.getElementById('drug_id').value = rowData.drugId
+  document.getElementById('drug_name').value = rowData.drugName
+  document.getElementById('drug_type').value = rowData.type
+  document.getElementById('drug_indication').value = rowData.indication
+  document.getElementById('drug_price').value = rowData.price
+  document.getElementById('drug_amount').value = rowData.amount
+  document.getElementById('drug_expired').value = rowData.expired
+
+};
+
+
+
+function editDrug(){
+  loadingStart()
+   
+  const drugId = document.getElementById('drug_id').value
+
+  const drugInfo = getFormDataById('drug_info_form'); // obj
+  console.log(drugInfo)
+
+  const newDrugInfo = {drugId,...drugInfo}
+
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res)
+
+    //update data หน้าบ้าน
+    elements.tableDrugCatalog.updateData([newDrugInfo]); 
+
+    
+
+
+    loadingEnd()
+    workingEnd('สำเร็จ')
+
+    // document.getElementById('drug_info_form').reset()
+
+  }).editDrugById(drugId,drugInfo)
+
+  
+};
+
+
+
+
+function deleteDrug(){
+  loadingStart()
+   
+  const drugId = document.getElementById('drug_id').value
+
+  const drugInfo = getFormDataById('drug_info_form'); // obj
+  console.log(drugInfo)
+
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res)
+
+    elements.tableDrugCatalog.deleteRow(drugId); //delete row with an id  
+
+    document.getElementById('drug_info_form').reset()
+
+    let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('druginfo_modal')) // Returns a Bootstrap modal instance
+    // modal1.show();
+    modal1.hide();
+
+    loadingEnd()
+    workingEnd('สำเร็จ')
+
+    
+
+  }).deleteDrugById(drugId)
+
+  
+};
+
+
+
+
+function openModalDrugSetsAdd(){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('drugsets_modal')) // Returns a Bootstrap modal instance
+  modal1.show();
+  // modal1.hide();
+
+  // document.getElementById('drug_info_form').reset()
+  // Attach the callback to the `hidden.bs.modal` event
+  const modalElement = document.getElementById('drugsets_modal');
+  modalElement.addEventListener('hidden.bs.modal', ()=>{
+    console.log("Modal has been hidden!");
+    // alert("The modal has been closed!");
+    // remove choice clear choice reset choice removechoice clearchoice resetchoice 
+    elements["search_input_table_drugset"].removeActiveItems();
+
+    // reset form
+    const tbodyHm = document.getElementById('input_hm_drugset');
+    while (tbodyHm.firstChild) {
+        tbodyHm.removeChild(tbodyHm.firstChild);
+    }
+
+
+
+  });
+
+  // getDrugSets()
+
+  document.getElementById("drugset_name").textContent = "";
+  document.getElementById("drugset_id").textContent = "";
+
+  // remove choice clear choice
+  elements["search_input_table_drugset"].removeActiveItems();
+
+  // reset form
+  const tbodyHm = document.getElementById('input_hm_drugset');
+  while (tbodyHm.firstChild) {
+      tbodyHm.removeChild(tbodyHm.firstChild);
+  }
+
+  addRowHmDrugSet("", "", "", ""); // Add an empty row if no valid data is found
+
+  document.getElementById("search_input_table_drugset_parent").classList.add("d-none");
+  document.getElementById("new_drugset_name_input").classList.remove("d-none");
+
+  document.getElementById('add_drugset_btn').classList.remove('d-none')
+  document.getElementById('edit_drugset_btn').classList.add('d-none')
+  document.getElementById('delete_drugset_btn').classList.add('d-none')
+  document.getElementById('select_drugset_btn').classList.add('d-none')
+
+}; 
+
+
+
+
+
+function openModalDrugSetsEdit(rowData){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('drugsets_modal')) // Returns a Bootstrap modal instance
+  modal1.show();
+  // modal1.hide();
+
+  // Attach the callback to the `hidden.bs.modal` event
+  const modalElement = document.getElementById('drugsets_modal');
+  modalElement.addEventListener('hidden.bs.modal', ()=>{
+    console.log("Modal has been hidden!");
+    // alert("The modal has been closed!");
+  });
+
+
+  console.log(rowData)
+
+  document.getElementById("search_input_table_drugset_parent").classList.add("d-none");
+  document.getElementById("new_drugset_name_input").classList.add("d-none");
+
+  
+  document.getElementById("drugset_name").textContent = rowData.setName
+  document.getElementById("drugset_id").textContent = rowData.setId
+
+  // elements["search_input_table_drugset"].setChoiceByValue(rowData.setName)
+
+  // reset form
+  const tbodyHm = document.getElementById('input_hm_drugset');
+  while (tbodyHm.firstChild) {
+      tbodyHm.removeChild(tbodyHm.firstChild);
+  }
+
+  // set data hm drugset *************************
+  // set data hm *************************
+  // Clean the dataDx object remove undefind
+  const cleanedDataHm = cleanData(rowData.drugSet);
+
+  // Check if cleanedDataHm is empty or if tx1 is empty
+  if (Object.keys(cleanedDataHm).length === 0 || cleanedDataHm.hm1 === "") {
+    addRowHmDrugSet("", "", "", ""); // Add an empty row if no valid data is found
+  } else {
+    // Dynamically add rows based on the cleaned data object
+    for (let i = 1; i <= Object.keys(cleanedDataHm).length / 4; i++) {
+      const hm = cleanedDataHm[`hm${i}`];
+      const dose = cleanedDataHm[`dose${i}`];
+      const amount = cleanedDataHm[`amount${i}`];
+      const price = cleanedDataHm[`price${i}`];
+      
+      if (hm !== undefined && dose !== undefined && amount !== undefined && price !== undefined) { // Ensure both dx and icd are defined
+          addRowHmDrugSet(hm, dose,amount, price);
+      }
+    }
+  }
+
+  // set 
+  setHomemedType('input-hm-drugset', 'homemed-type-drugset');
+
+
+  document.getElementById('add_drugset_btn').classList.add('d-none')
+  document.getElementById('edit_drugset_btn').classList.remove('d-none')
+  document.getElementById('delete_drugset_btn').classList.remove('d-none')
+  document.getElementById('select_drugset_btn').classList.add('d-none')
+
+}; 
+
+
+
+
+function addRowHmDrugSet(hm, dose, amount, price) {
+  // Get the template and table body
+  const template = document.getElementById("input_hm_template_drugset").content;
+  const tableBody = document.getElementById("table_hm_drugset").querySelector("tbody");
+  
+  // Clone the template content
+  const clone = document.importNode(template, true);
+  
+  // Get all selects and inputs in the cloned template
+  const selects = clone.querySelectorAll("select");
+  const inputs = clone.querySelectorAll("input");
+
+  // Set the 'amount' input field (detail)
+  inputs[0].value = amount || ""; // Corresponds to the 'detail' input field
+
+  // Set the 'price' input field
+  inputs[1].value = price || ""; // Corresponds to the 'price' input field
+  
+  // Append the cloned row to the table body
+  tableBody.appendChild(clone);
+  
+    
+  // Get the newly appended select element 
+  const drugSelect = selects[0]; // Assuming the first select is for 'hm'
+  drugSelect.classList.add('drug-options-drugset'); // Add the class for easy targeting
+
+  const doseSelect = selects[1]; // Assuming the first select is for 'hm'
+  doseSelect.classList.add('dose-options-drugset'); // Add the class for easy targeting
+
+  
+
+  // Pass the specific select element to addOptionsByClass_ChoiceJs along with the dx value
+  // const drugInfo = elements.tableDrugCatalog.getData() 
+  // console.log(drugInfo)
+
+  addOptionsByClass_ChoiceJs(drugCatalogInfo, 'options', drugSelect, hm);    // drugCatalogInfo Global var
+  addOptionsByClass_ChoiceJs(ddOptionsInfo, 'dose', doseSelect, dose);
+    
+};
+
+
+ 
+ 
+
+function openModalDrugSets(){ 
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('drugsets_modal')) // Returns a Bootstrap modal instance
+  modal1.show();
+  // modal1.hide();
+
+  document.getElementById("search_input_table_drugset_parent").classList.remove("d-none");
+
+  // remove active choice ที่แสดง
+  elements["search_input_table_drugset"].removeActiveItems();
+
+  document.getElementById("new_drugset_name_input").classList.add("d-none");
+
+  document.getElementById("drugset_name").textContent = "";
+  document.getElementById("drugset_id").textContent =  "";
+
+  // reset form
+  const tbodyHm = document.getElementById('input_hm_drugset');
+  while (tbodyHm.firstChild) {
+      tbodyHm.removeChild(tbodyHm.firstChild);
+  }
+
+
+  addRowHmDrugSet("", "", "", ""); // Add an empty row if no valid data is found
+
+  document.getElementById('add_drugset_btn').classList.add('d-none')
+  document.getElementById('edit_drugset_btn').classList.add('d-none')
+  document.getElementById('delete_drugset_btn').classList.add('d-none')
+  document.getElementById('select_drugset_btn').classList.remove('d-none')
+
+  
+
+}; 
+
+
+</script>
+

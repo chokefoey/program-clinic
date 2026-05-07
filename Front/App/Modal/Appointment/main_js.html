@@ -1,0 +1,434 @@
+<script>
+
+
+
+function openModalAppointment(patientId,opdVisitId){
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal')) 
+  modal.show(); // modal.hide();
+
+  // console.log(patientId)
+  // console.log(opdVisitId)
+
+  // document.getElementById('room_name_calendar').value = elements["room_name_calendar"].setChoiceByValue('gp'); // set ค่าของ choice js
+  
+  // // reset form resetform
+  // document.getElementById('calendar_event_addedit_form').reset()
+
+
+  const currentDate = getCurrentDate()
+  const currentTime = getCurrentTime()
+
+  document.getElementById('currentdate_appointmodal').textContent = currentDate
+  document.getElementById('currenttime_appointmodal').textContent = currentTime
+  
+  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();
+  // console.log(patientRegistInfo)
+  
+  document.getElementById('patientid_calendar').value = patientId
+  document.getElementById('opd_visitid_calendar').value = opdVisitId
+  
+  document.getElementById('fn_pt_calendar').value = patientRegistInfo.identityData.firstName
+  document.getElementById('ln_pt_calendar').value = patientRegistInfo.identityData.lastName
+  document.getElementById('hn_pt_calendar').value = patientRegistInfo.incrementHn
+
+  document.getElementById('fullname_pt_show_calendar').textContent = patientRegistInfo.identityData.firstName + " " + patientRegistInfo.identityData.lastName
+  document.getElementById('hn_pt_show_calendar').textContent = patientRegistInfo.incrementHn
+
+
+  // กรณี ผป เปิด visit แล้ว ได้รับการนัดหมายมาแล้ว หรือ ส่งชื่อเข้าตรวจแล้ว มีเลข OpdVisitId
+  if (opdVisitId != ""){
+    const opdVisitInfo = elements.tablePending.getRow(opdVisitId).getData(); 
+    // console.log(opdVisitInfo.appointmentData)
+
+    if ( opdVisitInfo.visitDate != "" && opdVisitInfo.appointDate == ""){
+      // กรณีเข้าห้องตรวจ และเพิ่มการนัดหมาย ใน visit เดียวกัน
+      console.log('กรณีเข้าห้องตรวจ และเพิ่มการนัดหมาย ใน visit เดียวกัน')
+
+      document.getElementById('appointmentid_calendar').value = "";
+
+      document.getElementById('start_date_calendar').value = "";
+      document.getElementById('start_time_calendar').value = "";
+      document.getElementById('purpose_calendar').value = "";
+        
+      
+      document.getElementById('room_name_calendar').value = "";
+      document.getElementById('doctor_appoint_calendar').value = "";
+      elements["room_name_calendar"].removeActiveItems();  // This clears the selection but keeps the choices set ค่าของ choice js
+      elements["doctor_appoint_calendar"].removeActiveItems();  // This clears the selection but keeps the choices set ค่าของ choice js
+      
+
+      document.getElementById('add_calendar_event_btn').classList.remove("d-none")
+      document.getElementById('print_calendar_event_btn').classList.add("d-none")
+      document.getElementById('edit_calendar_event_btn').classList.add("d-none")
+      document.getElementById('delete_calendar_event_btn').classList.add("d-none")
+
+
+    } 
+    else if (opdVisitInfo.visitDate != "" && opdVisitInfo.appointDate != "") {
+      // กรณีตรวจเสร็จแล้ว นัดหมายแล้ว ต้องการแก้แก้ไขการนัด 
+      console.log('กรณีตรวจเสร็จแล้ว นัดหมายแล้ว ต้องการแก้แก้ไขการนัด')
+      
+      document.getElementById('appointmentid_calendar').value = opdVisitInfo.appointmentData.id || "";
+
+      document.getElementById('start_date_calendar').value = opdVisitInfo.appointmentData.description.startDate || "";
+      document.getElementById('start_time_calendar').value = opdVisitInfo.appointmentData.description.startTime || "";
+      document.getElementById('purpose_calendar').value = opdVisitInfo.appointmentData.description.purpose || "";
+      
+      document.getElementById('room_name_calendar').value = opdVisitInfo.appointmentData.description.roomName || "";
+      document.getElementById('doctor_appoint_calendar').value = opdVisitInfo.appointmentData.description.doctorName || "";
+      elements["room_name_calendar"].setChoiceByValue(opdVisitInfo.appointmentData.description.roomName); // set ค่าของ choice js
+      elements["doctor_appoint_calendar"].setChoiceByValue(opdVisitInfo.appointmentData.description.doctorName); // set ค่าของ choice js
+
+      document.getElementById('comment_calendar').value = opdVisitInfo.appointmentData.description.comment || "";
+
+      document.getElementById('add_calendar_event_btn').classList.add("d-none")
+      document.getElementById('print_calendar_event_btn').classList.remove("d-none")
+      document.getElementById('edit_calendar_event_btn').classList.remove("d-none")
+      document.getElementById('delete_calendar_event_btn').classList.remove("d-none")
+
+
+    }
+    else if (opdVisitInfo.visitDate == "" && opdVisitInfo.appointDate != "") {
+      // กรณีนัดหมายล่วงหน้าแล้ว ต้องการดูรายละเอียดการนัด หรือแก้ไขการนัด 
+      console.log('นัดหมายล่วงหน้าแล้ว ต้องการดูรายละเอียดการนัด หรือแก้ไขการนัด')
+      
+      document.getElementById('appointmentid_calendar').value = opdVisitInfo.appointmentData.id || "";
+
+      document.getElementById('start_date_calendar').value = opdVisitInfo.appointmentData.description.startDate || "";
+      document.getElementById('start_time_calendar').value = opdVisitInfo.appointmentData.description.startTime || "";
+      document.getElementById('purpose_calendar').value = opdVisitInfo.appointmentData.description.purpose || "";
+      
+      document.getElementById('room_name_calendar').value = opdVisitInfo.appointmentData.description.roomName || "";
+      document.getElementById('doctor_appoint_calendar').value = opdVisitInfo.appointmentData.description.doctorName || "";
+      elements["room_name_calendar"].setChoiceByValue(opdVisitInfo.appointmentData.description.roomName); // set ค่าของ choice js
+      elements["doctor_appoint_calendar"].setChoiceByValue(opdVisitInfo.appointmentData.description.doctorName); // set ค่าของ choice js
+
+      document.getElementById('comment_calendar').value = opdVisitInfo.appointmentData.description.comment || "";
+
+      document.getElementById('add_calendar_event_btn').classList.add("d-none")
+      document.getElementById('print_calendar_event_btn').classList.remove("d-none")
+      document.getElementById('edit_calendar_event_btn').classList.remove("d-none")
+      document.getElementById('delete_calendar_event_btn').classList.remove("d-none")
+
+
+    }
+
+  }
+  // กรณี ผป มาลงทะเบียนแล้วนัดเลย ไม่ได้ตรวจ ยังไม่ได้มี visit id
+  else if (opdVisitId == "") {
+    console.log('no visit id')
+
+    document.getElementById('opd_visitid_calendar').value = "";
+    document.getElementById('appointmentid_calendar').value = "";
+
+    document.getElementById('start_date_calendar').value = "";
+    document.getElementById('start_time_calendar').value = "";
+    document.getElementById('purpose_calendar').value = "";
+
+    // elements["room_name_calendar"].setChoiceByValue(); // set ค่าของ choice js
+    elements["room_name_calendar"].removeActiveItems();  // This clears the selection but keeps the choices set ค่าของ choice js
+    elements["doctor_appoint_calendar"].removeActiveItems();  // This clears the selection but keeps the choices set ค่าของ choice js
+      
+    document.getElementById('add_calendar_event_btn').classList.remove("d-none")
+    document.getElementById('print_calendar_event_btn').classList.add("d-none")
+    document.getElementById('edit_calendar_event_btn').classList.add("d-none")
+    document.getElementById('delete_calendar_event_btn').classList.add("d-none")
+
+  } 
+
+
+};
+
+
+
+
+
+
+function addAppointmentWithNewVid(){
+  loadingStart();
+
+  const event = createEventInfo();  // return obj
+  // console.log(event) 
+
+  const patientId = document.getElementById('patientid_calendar').value
+  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();
+  console.log(patientRegistInfo)
+
+  
+  // ส่งไปหลังบ้าน และ หน้าบ้าน
+  const dataObj = {  
+    patientId: patientId,
+    
+    firstName:document.getElementById('fn_pt_calendar').value,
+    lastName: document.getElementById('ln_pt_calendar').value,
+    fullNameSearch: document.getElementById('fn_pt_calendar').value + " " + document.getElementById('ln_pt_calendar').value,
+    incrementHn: document.getElementById('hn_pt_calendar').value,
+
+    cid: patientRegistInfo.identityData.cid,
+
+    appointmentData: event,
+    appointDate: document.getElementById('start_date_calendar').value,
+    appointTime: document.getElementById('start_time_calendar').value,
+    
+    // roomName: document.getElementById('room_name_calendar').value,  // ไม่ต้องส่งไปเพราะเพทย์นัดกับแพทย์ตรวจอาจคนละคน
+    // doctorName: document.getElementById('doctor_appoint_calendar').value, // ไม่ต้องส่งไปเพราะเพทย์นัดกับแพทย์ตรวจอาจคนละคน
+    opdStatus: 'นัดแล้ว',
+    
+    userStamp: {
+      userId: document.getElementById("user_id_status").textContent,
+      userName: document.getElementById("user_fullname_status").textContent,
+
+    }
+
+  }
+
+
+
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res)
+
+    event.description.opdVisitId = res[0].newId
+
+    elements.calendar1.addEvent(event)
+    elements.calendar2.addEvent(event)
+    elements.calendar1.render();  // ใส่ไว้ เพื่อให้ calendar2 render ใหม่ แต่ calendar1 ดีแล้ว
+    elements.calendar2.render();  // ใส่ไว้ เพื่อให้ calendar2 render ใหม่ แต่ calendar1 ดีแล้ว
+
+
+    elements.tableAppointment.addRow({ 
+      opdVisitId:res[0].newId,  
+      appointDate:dataObj.appointDate,
+      appointTime:dataObj.appointTime,
+      firstName:dataObj.firstName, 
+      lastName:dataObj.lastName,
+      fullNameSearch:dataObj.fullNameSearch,
+      incrementHn:dataObj.incrementHn,
+      cid:dataObj.cid,
+      patientId:dataObj.patientId, 
+      opdStatus:dataObj.opdStatus,
+      roomName: dataObj.roomName,
+      doctorName: dataObj.doctorName,
+      appointmentData: event,
+    }, true, 1).then(()=>{
+      // Redraw or refresh to re-apply formatters if necessary
+      elements.tableAppointment.redraw(true); // true forces a re-render tablerender table render
+      // OR
+      // elements.tableAppointment.refresh(); // refresh the table layout and data
+    });
+
+     
+
+    elements.tablePending.addRow({
+      opdVisitId:res[0].newId, 
+      visitDate:"", // res[0].dateStamp
+      visitTime:"", // res[0].timeStamp, 
+      firstName:dataObj.firstName,
+      lastName:dataObj.lastName,
+      fullNameSearch:dataObj.fullNameSearch,
+      incrementHn:dataObj.incrementHn,
+      cid:dataObj.cid,
+      patientId:dataObj.patientId,
+      opdStatus:dataObj.opdStatus,
+      roomName: dataObj.roomName,
+      doctorName: dataObj.doctorName,
+      appointmentData: event, 
+
+    },true, 1); 
+
+
+
+    document.getElementById('calendar_event_addedit_form').reset()
+
+    closeModalCalendarEventEdit();
+
+    searchTableAppointment();
+
+    workingEnd('สำเร็จ');
+
+
+  }).addAppointmentWithNewVid(dataObj)
+
+
+};
+
+
+
+
+
+function editAppointmentCalendar(){ 
+  loadingStart();
+  const eventId = document.getElementById('appointmentid_calendar').value
+  const event = {}
+    event.id = document.getElementById('appointmentid_calendar').value
+    event.title = document.getElementById('fn_pt_calendar').value + " " + document.getElementById('ln_pt_calendar').value
+    event.start = document.getElementById('start_date_calendar').value + " " + document.getElementById('start_time_calendar').value
+    event.end = document.getElementById('start_date_calendar').value + " " + document.getElementById('start_time_calendar').value
+    
+  event.description = {};
+    event.description.startDate = document.getElementById('start_date_calendar').value;
+    event.description.startTime = document.getElementById('start_time_calendar').value;
+
+    event.description.opdVisitId = document.getElementById('opd_visitid_calendar').value;
+    event.description.patientId = document.getElementById('patientid_calendar').value;
+    
+    event.description.firstName = document.getElementById('fn_pt_calendar').value;
+    event.description.lastName = document.getElementById('ln_pt_calendar').value;
+    event.description.purpose = document.getElementById('purpose_calendar').value === '' ? 'ไม่ทราบ' : document.getElementById('purpose_calendar').value;
+    event.description.doctorName = document.getElementById('doctor_appoint_calendar').value;
+
+    event.description.roomName = document.getElementById('room_name_calendar').value;
+    event.description.comment = document.getElementById('comment_calendar').value;
+    event.description.sign = document.getElementById('user_fullname_status').textContent;
+
+  // console.log(event)
+
+  // ส่งไปหลังบ้าน sheet OpdVisit
+  const dataObj = {
+    patientId: document.getElementById('patientid_calendar').value,
+    firstName:document.getElementById('fn_pt_calendar').value,
+    lastName: document.getElementById('ln_pt_calendar').value,
+    roomName:document.getElementById('room_name_calendar').value,
+    doctorName:document.getElementById('doctor_appoint_calendar').value,
+    opdStatus: 'นัดแล้ว',
+    appointDate: document.getElementById('start_date_calendar').value,
+    appointTime: document.getElementById('start_time_calendar').value,
+    appointmentData: event, // JSON.stringify(event)
+    userStamp: {
+      userId: document.getElementById("user_id_status").textContent,
+      userName: document.getElementById("user_fullname_status").textContent,
+
+    }
+
+  }
+
+  // const appointmentId = document.getElementById('eventid_calendar').value
+  // console.log(appointmentId)
+
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res)
+
+    // edit calendar 1
+    const targetEvent1 = elements.calendar1.getEventById(eventId)
+      targetEvent1.setProp( 'title', event.title )
+      targetEvent1.setStart(event.start)
+      targetEvent1.setEnd(event.end)
+      targetEvent1.setExtendedProp( 'description', event.description )
+
+    elements.calendar1.render();   
+
+
+    // edit calendar 2
+    const targetEvent2 = elements.calendar2.getEventById(eventId)
+      targetEvent2.setProp( 'title', event.title )
+      targetEvent2.setStart(event.start)
+      targetEvent2.setEnd(event.end)
+      targetEvent2.setExtendedProp( 'description', event.description )
+
+    elements.calendar2.render();  // ใส่ไว้ เพื่อให้ calendar2 render ใหม่ แต่ calendar1 ดีแล้ว
+    
+
+      //update data
+    elements.tablePending.updateData([{
+      opdVisitId: event.description.opdVisitId, 
+      appointmentData: event,
+      appointDate: event.description.startDate,
+      appointTime: event.description.startTime
+    }]); 
+
+    //update data
+    elements.tableAppointment.updateData([{ 
+      opdVisitId: event.description.opdVisitId, 
+      appointmentData: event,
+      appointDate: event.description.startDate,
+      appointTime: event.description.startTime,
+      doctorName: event.description.doctorName,
+      roomName: event.description.roomName,
+    }]); 
+    searchTableAppointment();
+
+
+    // document.getElementById('calendar_event_addedit_form').reset()
+    // closeModalCalendarEventEdit();
+
+    // To check if a div element with a specific id includes the class d-none
+    const element = document.getElementById('treat_view'); // Replace 'yourDivId' with your actual div id
+
+    if (element.classList.contains('d-none')) {
+        console.log("The class 'd-none' is present.");
+    } else {
+        console.log("The class 'd-none' is not present.");
+        showAppointDayInTreatView()
+        
+    }
+
+
+    // loadingEnd();
+    workingEnd('สำเร็จ');
+
+  }).editCalendarEventById(event.description.opdVisitId,dataObj);
+
+  
+    
+};
+
+
+
+
+
+
+
+
+
+function deleteAppointmentCalendar(){
+  loadingStart();
+
+  const eventId = document.getElementById('appointmentid_calendar').value
+  const vid = document.getElementById('opd_visitid_calendar').value
+
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res)
+
+    elements.calendar1.getEventById(eventId).remove()
+    elements.calendar2.getEventById(eventId).remove()
+
+    // elements.tableAppointment.updateData([{opdVisitId:vid, opdStatus:'ยกเลิกนัด',appointmentData:"",appointDate:"",appointTime:"" }]); //update data 
+    elements.tablePending.updateData([{opdVisitId:vid, opdStatus:'ยกเลิกนัด',appointmentData:"",appointDate:"",appointTime:"" }]); //update data
+    elements.tableAppointment.deleteRow(vid); //delete row with an id of vid
+
+
+    document.getElementById('calendar_event_addedit_form').reset()
+
+    let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal')) // Returns a Bootstrap modal instance
+    // Show or hide:
+    // modal1.show();
+    modal1.hide();
+
+
+    // To check if a div element with a specific id includes the class d-none
+    const element = document.getElementById('treat_view'); // Replace 'yourDivId' with your actual div id
+
+    if (element.classList.contains('d-none')) {
+        console.log("The class 'd-none' is present.");
+    } else {
+        console.log("The class 'd-none' is not present.");
+        showAppointDayInTreatView()
+        
+    }
+
+    searchTableAppointment();
+
+
+    loadingEnd();
+
+  }).deleteCalendarEventById(vid)
+
+
+};
+
+
+
+
+</script>
+
+
+

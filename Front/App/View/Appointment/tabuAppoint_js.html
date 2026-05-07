@@ -1,0 +1,146 @@
+
+<script>
+
+
+ 
+
+function showTableAppointment(tabledata){
+    // ตั้งค่าแสดงวันเริ่มต้น
+    // document.getElementById("datefilter_table_appointment").value = getCurrentDate();  
+
+
+    // Modify your tabledata to include the `fullNameSearch` field
+    tabledata.forEach((item)=>{
+        item.fullNameSearch = item.firstName + " " + item.lastName; // Combine first and last name
+    });
+
+    // Define the custom formatter function
+    let mergeFormatter = (cell, formatterParams, onRendered)=>{
+        const data = cell.getRow().getData();
+        return data.firstName + " " + data.lastName; // Merge name and surname
+    };
+
+    let thaiDateFormatter = (cell, formatterParams, onRendered)=>{
+        try {
+            const data = cell.getRow().getData();
+            
+            const thaiDateStr = toThaiDateStringShort(new Date(data.appointmentData.description.startDate)) 
+            return thaiDateStr
+
+        } catch(er){
+
+        }
+        
+    };
+
+    
+    
+    const currentDay = getCurrentDate();  // eg 2024-02-02
+    // console.log(currentDay) 
+
+    
+    elements.tableAppointment = new Tabulator("#table_appointment", {
+        data:tabledata,           //load row data from array
+        index:"opdVisitId", //set the index field to the "age" field.
+        layout:"fitColumns",      //fit columns to width of table
+        // layout:"fitDataStretch",
+        // layout:"fitDataFill",
+        responsiveLayout:"hide",  //hide columns that don't fit on the table
+        addRowPos:"top",          //when adding a new row, add it to the top of the table
+        
+        pagination:"local",       //paginate the data
+        paginationSize:10,         //allow 7 rows per page of data
+        paginationCounter:"rows", //display count of paginated rows in footer
+        movableColumns:true,      //allow column order to be changed
+        // initialSort:[             //set the initial sort order of the data
+        //     {column:"appointDate", dir:"dsc"},
+        // ],
+
+        placeholder:"ไม่พบการนัดหมาย", //display message to user on empty table
+
+        initialFilter:[
+            {field:"appointDate", type:"like", value:currentDay}
+        ],
+    
+        columns:[
+            {formatter:"rownum", hozAlign:"center", width:40,download:false},
+            {title:"VID", field:"opdVisitId", visible:false}, 
+            
+            {title:"วันนัด", field:"appointDate",   visible:false},
+            {title:"วันที่นัด", field:"appointDate",  formatter:thaiDateFormatter },  
+            {title:"เวลา", field:"appointTime",  formatter:timeFormatterTabu }, 
+            
+            {title:"วันที่มา", field:"visitDate",   visible:false},
+            {title:"เวลาที่มา", field:"visitTime" ,   formatter:timeFormatterTabu, visible:false},
+            
+            {title:"ชื่อ", field:"firstName", visible:false , download:true},
+            {title:"สกุล", field:"lastName", visible:false , download:true},
+            // Add the field for searching but keep it hidden
+            {title:"ชื่อ-สกุล (ค้นหา)", field:"fullNameSearch", visible:false, headerFilter:"input",download:true },
+            {title:"ชื่อ-สกุล", field:"fullName",responsive:0,minWidth:120,  formatter:mergeFormatter, download:false}, // Display the merged result
+            
+            {title:"HN", field:"incrementHn", },
+
+            // {title:"CID", field:"cid" },
+
+            {title:"นัดห้อง", field:"appointmentData.description.roomName" },
+            {title:"พบแพทย์", field:"appointmentData.description.doctorName" , visible:true},
+            // {title:"สถานะ", field:"opdStatus", visible:true },
+            {title:"appointmentData", field:"appointmentData", visible:false },
+
+        ],
+
+
+    });
+
+    elements.tableAppointment.on("rowClick", (e, row)=>{
+        //e - the click event object
+        //row - row component
+        const rowData = row.getData();
+        // console.log(rowData)
+        const patientId = rowData.patientId
+        const opdVisitId = rowData.opdVisitId
+        // console.log(`patientId ${patientId}`) // backtick
+        // console.log(`patientId ${opdVisitId}`) // backtick
+
+        // console.log(patientId)
+        // console.log(opdVisitId)
+        openModalAppointment(patientId,opdVisitId);
+
+        document.getElementById('openvisit_event_btn').classList.remove("d-none")
+        
+    });
+
+
+
+ 
+
+    elements.tableAppointment.on("tableBuilt", ()=>{
+        searchTableAppointment();
+        document.getElementById('section_appointment_view').classList.remove('d-none')
+        document.getElementById('placeholder_appointment_view').classList.add('d-none')
+
+    });
+
+
+};
+
+
+ 
+
+
+function reportTableAppointment(){
+    // console.log("sdsdsds")
+
+    elements.tableAppointment.download("xlsx", "data.xlsx", {}); //download table data as a XLSX formatted file with a file name of data.xlsx
+
+
+};
+
+    
+
+ 
+
+
+
+</script>

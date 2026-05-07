@@ -1,0 +1,202 @@
+ 
+
+
+<div class="col d-none " id="setting_view">
+    <center><h3 class="mt-4">หน้าการตั้งค่า</h3></center>
+    <div class="row">
+        <div class="col">
+        </div>
+
+        <nav class="mt-4">
+            <div class="nav nav-tabs" id="nav-tab-setting" role="tablist">
+                <button class="nav-link active" id="nav-approve-tab" data-bs-toggle="tab" data-bs-target="#nav-approve-setting" type="button" role="tab" aria-controls="nav-approve-setting" aria-selected="true" >ผู้ใช้งาน</button>
+                <button class="nav-link " id="nav-adddropdown-tab" data-bs-toggle="tab" data-bs-target="#nav-adddropdown-setting" type="button" role="tab" aria-controls="nav-adddropdown-setting" aria-selected="true" >ตัวเลือก</button>
+
+            </div>
+        </nav>
+
+        <div class="tab-content" >
+            <div class="tab-pane fade show active" id="nav-approve-setting" role="tabpanel" aria-labelledby="nav-approve-tab" tabindex="0">
+                <div class="row mt-2 justify-content-center" >
+                    <div class="col-sm-10 mb-3 mb-sm-0 ">
+                        <div class="col-md-4 mt-2">
+                            <div>
+                                <button type="button" class="btn btn-secondary shadow my-btn" onclick="getDataUsers()" >แสดงรายชื่อ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-none row mt-4 justify-content-center" id="user_regist_dashboard">
+                    <div class="col-sm-10 mb-3 mb-sm-0 ">
+                        <div class="card bg-secondary bg-opacity-10 shadow">
+                            <div class="card-body">
+                                <form class="row mt-2 g-3 d-none" id="users_dashboard_placeholder">
+                                    <p class="placeholder-glow">
+                                    <span class="mt-2 placeholder placeholder-sm col-12"></span> 
+                                    <span class="mt-2 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-2 placeholder placeholder-sm col-12"></span>
+                                    </p>
+                                </form>
+
+                                <form class="row g-3 d-none" id="users_table_placeholder">
+                                    <p class="placeholder-glow">
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    <span class="mt-3 placeholder placeholder-sm col-12"></span>
+                                    </p>
+                                </form>
+
+
+                                <div class="row g-2 d-none" id="users_dashboard">
+                                    <div class="col">
+                                    <div class="pointer box card mb-1" style="max-width: 540px;" onclick="filterUserTotal();">  
+                                        <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <h1 class="p-3"><i class="bi bi-people-fill"></i></h1>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                            <h5 class="card-title">Total</h5>
+                                            <p class="card-text" id="total_user_regist_count"></p> 
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="col" >
+                                    <div class="pointer box card mb-1" style="max-width: 540px;" onclick="filterUserApprove();">
+                                        <div class="row g-0" >
+                                        <div class="col-md-4">
+                                            <h1 class="p-3"><i class="bi bi-person-check-fill"></i></h1>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                            <h5 class="card-title">Approve</h5>
+                                            <p class="card-text" id="approve_user_regist_count"></p>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="col">
+                                    <div class="pointer box card mb-1" style="max-width: 540px;" onclick="filterUserPending();">
+                                        <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <h1 class="p-3"><i class="bi bi-person-exclamation"></i></h1>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                            <h5 class="card-title">Pending</h5>
+                                            <p class="card-text" id="pending_user_regist_count"></p>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="col">
+                                    <div class="pointer box card mb-1" style="max-width: 540px;" onclick="filterUserReject();">
+                                        <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <h1 class="p-3"><i class="bi bi-person-x-fill"></i></h1>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                            <h5 class="card-title">Reject</h5>
+                                            <p class="card-text" id="reject_user_regist_count"></p>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                </div>
+                                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2 justify-content-center" >
+                    <div class="col-sm-10 mb-3 mb-sm-0 ">
+                        <div class="col-md-4 mt-2">
+                            <div>
+                                <button type="button" class="d-none btn btn-secondary shadow my-btn" onclick="" id="openmodal_adduser_btn">เพิ่มรายชื่อ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-none row mt-4 justify-content-center" id="user_regist_table">
+                    <div class="col-sm-10 mb-3 mb-sm-0 ">
+                        <div class="card bg-secondary bg-opacity-10 shadow">
+                            <div class="card-body">
+                                
+                                <div class="col-12"  id="users_table">
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+            </div>
+            <div class="tab-pane fade" id="nav-adddropdown-setting" role="tabpanel" aria-labelledby="nav-adddropdown-tab" tabindex="0">
+                
+                <div class="row mt-2 justify-content-center" >
+                    <div class="col-sm-10 mb-3 mb-sm-0 ">
+                        <div class="col-md-4 mt-2">
+                            <div>
+                                <button type="button" class="btn btn-secondary shadow my-btn"  id="openmodal_ddoptions_setting_view_btn" >เพิ่มตัวเลือก</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4 justify-content-center" >
+                    <div class="col-sm-10 mb-3 mb-sm-0 ">
+                        <div class="card bg-secondary bg-opacity-10 shadow">
+                            <div class="card-body">
+                                
+                                <div class="col-12"  id="table_dropdown_options">
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+                    
+
+                
+            </div>
+
+            
+        </div>
+        
+    </div>
+
+    
+
+    <div class="row mt-4 mb-3 justify-content-center">
+        <center><div class="col-10">golfguitar@gmail.com</div></center>
+    </div>
+
+     
+
+     
+    
+     
+    
+</div>
+ 

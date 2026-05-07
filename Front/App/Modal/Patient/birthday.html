@@ -1,0 +1,63 @@
+
+
+
+<div class="modal fade"   id="buddha_day_modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered ">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary bg-opacity-10">
+
+        <!-- <button type="button" class="d-none btn btn-secondary shadow my-btn"  onclick="" id=""><i class="bi bi-arrow-return-left"></i> ย้อนกลับ</button> -->
+
+        
+        <!-- <center><h5 class="modal-title">กรุณาระบุจำนวนวันแล้วคลิ๊กเลือกที่ปฏิทิน</h5></center> -->
+        <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- <button type="button" class="btn btn-success shadow my-btn"  onclick="closeModalCalendar()" ><i class="bi bi-x-lg"></i> ปิดหน้าต่าง</button> -->
+        
+
+      </div>
+      <div class="modal-body">
+        <div class="w-100 text-center">  
+          <h6 class="modal-title">เลือกวัน-เดือน-ปีเกิด</h6>
+          <h5 class="modal-title text-primary" id=""></h5>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-md-4 mt-2">
+            <label class="form-label">วันที่</label>
+            <input type="text" class="form-control text-primary" name="day" id="day_buddha" oninput="validateDayInput(this)">
+          </div>
+          <div class="col-md-4 mt-2">
+            <label class="form-label">เดือน</label>
+            <select class="form-select text-primary" name="month" id="month_buddha" >
+              <option selected></option>
+              <option value="01">มกราคม</option>
+              <option value="02">กุมภาพันธ์</option>
+              <option value="03">มีนาคม</option>
+              <option value="04">เมษายน</option>
+              <option value="05">พฤษภาคม</option>
+              <option value="06">มิถุนายน</option>
+              <option value="07">กรกฎาคม</option>
+              <option value="08">สิงหาคม</option>
+              <option value="09">กันยายน</option>
+              <option value="10">ตุลาคม</option>
+              <option value="11">พฤศจิกายน</option>
+              <option value="12">ธันวาคม</option>
+            </select>
+          </div>
+          <div class="col-md-4 mt-2">
+            <label class="form-label">พ.ศ.</label>
+            <input type="text" class="form-control text-primary" name="year" id="year_buddha" oninput="validateNumberInput(this, 3000)">
+          </div>
+          
+        </div>
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary shadow my-btn" id="set_buddhaday_btn" >ตกลง</button>
+      </div>
+       
+    </div>
+  </div>
+</div>
+ 
+

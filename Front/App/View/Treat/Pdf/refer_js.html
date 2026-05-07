@@ -1,0 +1,457 @@
+
+
+<script>
+
+function openModalRefer(){ 
+  console.log("openModalRefer")
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('refer_modal')) // Returns a Bootstrap modal instance
+  // Show or hide:
+  modal.show();
+  // modal.hide();
+
+  // CC
+  document.getElementById('cc_refer').value != "" ? document.getElementById('cc_treat').value : document.getElementById('cc_refer').value
+
+  // const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData(); // ดึงข้อมูลจากตาราง
+  // console.log(patientInfo)
+
+  // const opdVisitInfo = elements.tablePending.getRow(opdVisitId).getData(); // ดึงข้อมูลจากตาราง
+  // console.log(opdVisitInfo)
+
+  // document.getElementById('fullname_history').textContent = `${patientRegistInfo.identityData.firstName} ${patientRegistInfo.identityData.lastName}`
+  // document.getElementById('hn_history').textContent = patientRegistInfo.incrementHn
+  // document.getElementById('patient_id_history').textContent = patientId
+
+  // DX
+  const data = getArrDataDxTreatByClass(); // ดึงค่าจากตารางการวินิจฉัยมาเก็บเป็น array
+  // Filter out empty strings and undefined values
+  const filteredData = data.filter(item => item && item.trim() !== "");
+  // Format output or return an empty string if no valid data
+  const formattedResult = filteredData.length ? filteredData.map((item, index) => `${index + 1}. ${item}`).join("\n") : "";
+  console.log(formattedResult);
+
+  document.getElementById('dx_refer').value = formattedResult // 
+
+  const dxObj = createObjDataDxTreat();
+  console.log(dxObj)
+
+  const txObj = createObjDataTxTreat();  
+  console.log(txObj)
+
+  // ส่งไปตารางหน้าบ้าน ส่งเป็น obj
+  const opdVisitInfo = {}
+    // opdVisitInfo.opdVisitId = opdVisitId
+    // opdVisitInfo.visitDate = visitDate
+    // opdVisitInfo.visitTime = visitTime
+    // opdVisitInfo.opdStatus = opdStatus
+    // opdVisitInfo.piData = piObj
+    // opdVisitInfo.peData = peObj
+    // opdVisitInfo.ixData = ixObj
+    opdVisitInfo.dxData = dxObj
+    opdVisitInfo.txData = txObj
+    // opdVisitInfo.hmData = hmObj
+    // opdVisitInfo.summaryData = summaryObj
+    // opdVisitInfo.appointmentData = appointmentObj
+
+  document.getElementById('cc_refer').value = document.getElementById('cc_treat').value
+  document.getElementById('pe_refer').value = document.getElementById('pe_treat').value
+
+  
+  // console.log(dxObj)
+    // Backtick
+    // `${dxObj.dx1},(${dxObj.dx2})`
+  document.getElementById('tx_refer').value = 
+    (opdVisitInfo.txData.tx1 ? opdVisitInfo.txData.tx1 : '') + 
+    (opdVisitInfo.txData.tx2 ? ', ' + opdVisitInfo.txData.tx2 : '') + 
+    (opdVisitInfo.txData.tx3 ? ', ' + opdVisitInfo.txData.tx3 : '') + 
+    (opdVisitInfo.txData.tx4 ? ', ' + opdVisitInfo.txData.tx4 : '') + 
+    (opdVisitInfo.txData.tx5 ? ', ' + opdVisitInfo.txData.tx5 : '') +
+    (opdVisitInfo.txData.tx6 ? ', ' + opdVisitInfo.txData.tx6 : '') +
+    (opdVisitInfo.txData.tx7 ? ', ' + opdVisitInfo.txData.tx7 : '') +
+    (opdVisitInfo.txData.tx8 ? ', ' + opdVisitInfo.txData.tx8 : '') +
+    (opdVisitInfo.txData.tx9 ? ', ' + opdVisitInfo.txData.tx9 : '') +
+    (opdVisitInfo.txData.tx10 ? ', ' + opdVisitInfo.txData.tx10 : '')
+
+ 
+
+};
+
+
+
+
+
+function makePdfReferTh(){
+  console.log(clinicInfo) // global var
+
+  const providerInfo = {}
+    providerInfo.fullName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
+    providerInfo.license = document.getElementById('user_license_config').textContent 
+
+
+  const patientId = document.getElementById('patient_id_treat').textContent
+  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();  
+  console.log(patientRegistInfo)
+  
+
+
+  const opdVisitInfo = {}
+    opdVisitInfo.wt = document.getElementById('wt_treat').value 
+    opdVisitInfo.ht = document.getElementById('ht_treat').value 
+    opdVisitInfo.bt = document.getElementById('bt_treat').value 
+     
+    opdVisitInfo.sbp = document.getElementById('sbp_treat').value 
+    opdVisitInfo.dbp = document.getElementById('dbp_treat').value  
+    opdVisitInfo.pr = document.getElementById('pr_treat').value
+    opdVisitInfo.rr = document.getElementById('rr_treat').value
+
+    
+    // Assuming 'elements["referto_hosp_treat"]' is id your Choices.js instance
+    const choicesInstanceReferToHosp = elements["referto_hosp_treat"];
+ 
+    // get value of Choice js
+    // Get the selected value from the Choices.js instance
+    const selectedReferToHosp = choicesInstanceReferToHosp.getValue(true);  // Passing true returns the value(s) as a string or array
+    console.log(selectedReferToHosp);
+
+    opdVisitInfo.refertoHosp = selectedReferToHosp
+
+  const referInfo = {}
+    referInfo.cc = document.getElementById('cc_refer').value
+    referInfo.pe = document.getElementById('pe_refer').value
+    referInfo.dx = document.getElementById('dx_refer').value
+    referInfo.tx = document.getElementById('tx_refer').value
+    referInfo.cause = document.getElementById('cause_refer').value
+     
+
+  runPdfMakeReferTh(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,referInfo)
+
+
+};
+
+
+
+function runPdfMakeReferTh(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,referInfo){
+  console.log('runPdfMakeReferTh')
+
+
+    const date = toThaiDateString(new Date())
+    const currentDate = toThaiDateString(new Date())
+    
+    const dateStamp = toThaiDateString(new Date());
+    const timeStamp = getCurrentTime();
+
+    const visitDate = document.getElementById('date_visit_treat').textContent
+    const visitTime = document.getElementById('time_visit_treat').textContent
+
+    const fileName = patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName + ' CID ' + patientRegistInfo.identityData.cid
+    const medCerId = generateUniqueId();
+    
+    const patientAge = calculateAge(patientRegistInfo.identityData.birthDay); // คำนวนอายุ return obj
+
+ 
+    pdfMake.fonts = {
+      THSarabunNew:{
+        normal: "https://Pichit-Raetai.github.io/font/THSarabunNew.ttf",
+        bold: "https://Pichit-Raetai.github.io/font/THSarabunNew Bold.ttf",
+        italics: "https://Pichit-Raetai.github.io/font/THSarabunNew Italic.ttf",
+        bolditalics: "https://Pichit-Raetai.github.io/font/THSarabunNew BoldItalic.ttf",
+        
+      }
+
+    }
+    const docDefinition = {
+      pageSize: 'A4',
+      
+      images: {
+        // bg: {
+        //   url: 'https://lh5.googleusercontent.com/d/1FeMKOWqyshLdarXuYzLRvc3NduzWA3p6',
+        //   // width: 100,
+        //   // height: 100,
+        //   // margin: [100,100,100,100], // [ซ้าย,บน,ขวา,ล่าง]
+        //   // width: 150,
+        //   // height: 150
+
+        // },
+        logo:{
+          url: logo_clinic,
+        }
+        
+        
+      },
+      // background: function(currentPage, pageSize) {
+      //   return [{
+      //     image:'bg',
+      //     width: pageSize.width,
+      //     height: pageSize.height
+      //   }]
+      // },
+      watermark: { text: clinicInfo.name, color: 'blue', opacity: 0.1, bold: true, italics: false },
+
+      
+      
+      content: [
+        // {
+        //   image: 'logo',
+        //   width: 100,
+        //   height: 100
+        // },
+        {
+          columns: [
+            {
+              image: 'logo',
+              width: 65,
+              height: 65
+            },
+            {
+              text: [
+                {text: clinicInfo.hosName + '\n', bold: false, fontSize: 14,margin: [0,0,0,0],},
+                {text: clinicInfo.hosAddress + '\n' , fontSize: 14},
+                {text: 'โทร: '  + clinicInfo.hosPhone + ', FB: ' + clinicInfo.faceBook + ', LineID: ' + clinicInfo.lineId, fontSize: 14},
+
+                
+              ],
+              alignment: 'right',
+              margin: [0,10,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+
+          ]
+
+        },
+        {
+          text: 'ใบส่งตัวผู้ป่วย',
+          style: 'header',
+          alignment: 'center',
+          bold: true,
+          // italics: true,
+          fontSize: 20,
+          margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        
+        {
+          text: [
+            'วันที่ ' + visitDate + '\n',
+            ],
+          style: ['quote', 'small'],
+          bold: false,
+          fontSize: 16,
+          alignment: 'center',
+          margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        
+        
+        {
+          text: [
+            {text: 'เรียนเจ้าหน้าที่/แพทย์ผู้เกี่ยวข้อง ', fontSize: 16},
+            {text: opdVisitInfo.refertoHosp  + ' ', style:'textinput'},
+            {text: ' ที่นับถือ ', fontSize: 16},
+            
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+         
+        {
+          text: [
+            {text: 'ขอส่งตัวผู้ป่วยชื่อ ', fontSize: 16},
+            {text: patientRegistInfo.identityData.firstName + ' ', style:'textinput'},
+            {text: patientRegistInfo.identityData.lastName + ' ', style:'textinput'},
+            {text: ' อายุ '  + ' ' , fontSize: 16},
+            {text: patientAge.years  , style:'textinput'},
+            {text: ' ปี '  + '\n' , fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: 'ที่อยู่ ', fontSize: 16},
+            {text: document.getElementById("patient_address_treat").textContent + ' ', style:'textinput'},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+              'มีรายละเอียดดังนี้' + '\n',
+            ],
+          
+          bold: false,
+          fontSize: 16,
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        
+        {
+          text: [
+            {text: 'น้ำหนัก ', fontSize: 16},
+            {text: opdVisitInfo.wt + ' ', style:'textinput'},
+            {text: 'กก, ', fontSize: 16},
+            {text: 'ส่วนสูง ', fontSize: 16},
+            {text: opdVisitInfo.ht + ' ', style:'textinput'},
+            {text: 'ซม, ', fontSize: 16},
+            {text: 'BT ', fontSize: 16},
+            {text: opdVisitInfo.bt + ' ', style:'textinput'},
+            {text: 'องศา, ', fontSize: 16},
+            {text: 'BP ', fontSize: 16},
+            {text: opdVisitInfo.sbp + "/" + opdVisitInfo.dbp + ' ', style:'textinput'},
+            {text: 'mmHg, ', fontSize: 16},
+            {text: 'PR ', fontSize: 16},
+            {text: opdVisitInfo.pr + ' ', style:'textinput'},
+            {text: 'ครั้ง/นาที, ', fontSize: 16},
+            {text: 'RR ', fontSize: 16},
+            {text: opdVisitInfo.rr + ' ', style:'textinput'},
+            {text: 'ครั้ง/นาที, ', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+
+        {
+          text: [
+            {text: 'อาการที่มา:', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: referInfo.cc, style:'textinput'},
+          ],
+          margin: [10,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+
+        {
+          text: [
+            {text: 'ตรวจร่างกาย:', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: referInfo.pe, style:'textinput'},
+          ],
+          margin: [10,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: 'วินิจฉัยเบื้องต้น:', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: referInfo.dx, style:'textinput'},
+          ],
+          margin: [10,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: 'การรักษา:', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: referInfo.tx, style:'textinput'},
+          ],
+          margin: [10,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: 'สาเหตุที่ส่งตัว:', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: referInfo.cause, style:'textinput'},
+          ],
+          margin: [10,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+         
+        
+        {
+          text: [
+            {text: 'ขอแสดงความนับถือ' , fontSize: 16},
+          ],
+          margin: [0,60,60,0], // [ซ้าย,บน,ขวา,ล่าง]
+          alignment: 'right'
+        },
+        
+        {
+          text: [
+            {text: 'ลงชื่อ...........................................' , fontSize: 16},
+            {text: 'ผู้ตรวจร่างกาย ' , fontSize: 16},
+          ],
+          margin: [0,20,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+          alignment: 'right'
+        },
+        {
+          text: [
+            {text: '(' + providerInfo.fullName + ' , ' + providerInfo.license + ')', fontSize: 16,},
+
+          ],
+          margin: [0,0,30,0], // [ซ้าย,บน,ขวา,ล่าง]
+          alignment: 'right'
+        },
+        
+        
+        
+      ],
+
+      defaultStyle:{
+        font: "THSarabunNew",
+      },
+      styles: {
+        textinput: {
+          fontSize: 16,
+          bold: true,
+          decoration: 'underline',
+          decorationStyle:'dotted'
+        },
+        
+      },
+
+      footer: function (currentPage, pageCount) {
+        return {
+          text: [
+            {text: 'รหัสอ้างอิง ' + medCerId , },
+            {text: ' วันที่พิมพ์: ' },
+            {text:  dateStamp, },
+            {text: 'เวลา ' + timeStamp + ' น.', },
+            
+          ],
+          fontSize: 12,
+          alignment: 'right',
+          margin: [0,0,40,0], // [ซ้าย,บน,ขวา,ล่าง]
+          
+        };
+      },
+      // styles: {
+      //   header: {
+      //     fontSize: 18,
+      //     bold: true,
+      //     alignment: 'right',
+      //     margin: [0, 190, 0, 80]
+      //   },
+      //   subheader: {
+      //     fontSize: 14
+      //   },
+      //   superMargin: {
+      //     margin: [20, 0, 40, 0],
+      //     fontSize: 15
+      //   }
+      // }
+    }
+
+    // สั่งให้สร้าง pdf พร้อมกับ download
+    pdfMake.createPdf(docDefinition).open()
+    pdfMake.createPdf(docDefinition).download( fileName +'.pdf');
+
+  
+
+
+};
+
+
+
+ 
+
+
+
+</script>

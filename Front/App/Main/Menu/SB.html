@@ -1,0 +1,103 @@
+<div class="d-none d-lg-block sticky-top d-flex flex-column justify-content-between col-xl-2 col-auto bg-secondary vh-100 p-2 left" id="sidebar_menu">
+  <div class="mt-4 " >
+    <center>
+      <img class="rounded-circle shadow-lg" src="" width="50" height="50" id="logo_app_sb">
+      <p class="text-warning fs-6 fw-light" id="app_version">
+        <span></span>
+        <span></span>
+      </p>
+    </center> 
+      
+
+    <ul class="nav nav-pills flex-column mt-1 mt-xl-0"  >
+      <li class="nav-item d-none" id="li_a_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed" aria-current="page" role="button" onclick="showViewById(this.id);" id="home_view_btn">
+          <i class="bi bi-house-door"></i>
+          <span>หน้าแรก</span>
+        </a>
+      </li>
+      <li class="nav-item d-none" id="li_b_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed d-flex justify-content-between" aria-current="page" role="button" onclick="showViewById(this.id);" id="registration_view_btn">
+          <span><i class="bi bi-people"></i> ทะเบียนผู้ป่วย</span>
+          <span class="" id="loading_patientregist_sb"><div class="spinner-grow spinner-grow-sm text-primary" role="status"></div></span>
+          <span class="badge text-bg-warning" id="show_patientregist_count_sb"></span>
+        </a>
+      </li>
+      <li class="nav-item d-none" id="li_c_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed d-flex justify-content-between" aria-current="page" role="button" onclick="showViewById(this.id);" id="appointment_view_btn">
+          <span><i class="bi bi-calendar-date"></i> รายการนัด</span>
+          <span class="" id="loading_appointment_sb"><div class="spinner-grow spinner-grow-sm text-primary" role="status"></div></span>
+          <span class="badge text-bg-warning" id="show_appointment_count_sb"></span>
+        </a>
+      </li>
+      <li class="nav-item d-none" id="li_d_sb"> 
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed d-flex justify-content-between" aria-current="page" role="button" onclick="showViewById(this.id);" id="pending_view_btn">
+          <span><i class="bi bi-hourglass-split"></i> รอรับบริการ</span>
+          <span class="" id="loading_pending_sb"><div class="spinner-grow spinner-grow-sm text-primary" role="status"></div></span>
+          <span class="badge text-bg-warning" id="show_pending_count_sb"></span>
+        </a>
+      </li>
+      <li class="nav-item d-none" id="li_e_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed" aria-current="page" role="button" onclick="showViewById(this.id);" id="treat_view_btn">
+          <i class="bi bi-magic"></i>
+          <span>การตรวจรักษา</span>
+        </a>
+      </li>
+      <li class="nav-item d-none" id="li_f_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed d-flex justify-content-between" aria-current="page" role="button" onclick="showViewById(this.id);" id="calendar_view_btn">
+          <span><i class="bi bi-calendar3"></i> ปฎิทินนัด</span>
+          <span class="" id="loading_calendar_sb"><div class="spinner-grow spinner-grow-sm text-primary" role="status"></div></span>
+          <span class="badge text-bg-warning" id="show_calendar_count_sb"></span>
+        </a>
+      </li>
+      <li class="nav-item d-none" id="li_g_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed d-flex justify-content-between" role="button" onclick="showViewById(this.id);" id="report_view_btn">
+          <span><i class="bi bi-file-earmark-spreadsheet"></i> รายงาน</span>
+          <span class="" id="loading_report_sb"><div class="spinner-grow spinner-grow-sm text-primary" role="status"></div></span>
+          <span class="badge text-bg-warning" id="show_report_count_sb"></span>
+        </a>
+      </li>
+      
+      <li class="nav-item d-none" id="li_h_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed d-flex justify-content-between" role="button" onclick="showViewById(this.id);" id="drugs_view_btn">
+          <span><i class="bi bi-capsule-pill"></i> ระบบยา</span>
+          <span class="" id="loading_drug_sb"><div class="spinner-grow spinner-grow-sm text-primary" role="status"></div></span>
+          <span class="badge text-bg-warning" id="show_drug_count_sb"></span>
+        </a>
+      </li>
+
+      <li class="nav-item d-none" id="li_i_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed d-flex justify-content-between" role="button" onclick="showViewById(this.id);" id="dashboard_view_btn">
+          <span><i class="bi bi-graph-down"></i> Dashboard</span>
+          <!-- <span class="" id="loading_dashboard_sb"><div class="spinner-grow spinner-grow-sm text-primary" role="status"></div></span> -->
+          <span class="badge text-bg-warning" id="show_dashboard_count_sb"></span>
+        </a>
+      </li>
+
+       <li class="nav-item d-none" id="li_j_sb">
+        <a class="nav-link bg-secondary text-white sidebar-link collapsed d-flex justify-content-between" role="button" onclick="showViewById(this.id);" id="setting_view_btn">
+          <span><i class="bi bi-gear"></i> การตั้งค่า</span>
+          <span class="" id="loading_setting_sb"><div class="spinner-grow spinner-grow-sm text-primary" role="status"></div></span>
+          <span class="badge text-bg-warning" id="show_admin_count_sb"></span>
+        </a>
+      </li>
+
+       
+
+     
+    </ul>
+    
+    
+  </div>
+
+   
+  
+
+  <!-- New p Tag at the Bottom -->
+  <p class="text-dark-emphasis fs-6 text-center position-absolute bottom-0 start-50 translate-middle-x mb-1">
+    2024 <i class="bi bi-c-circle"></i> Pichit
+  </p>
+
+  
+    
+</div>

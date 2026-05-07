@@ -1,0 +1,61 @@
+<script>
+
+function clickEventHandlerPendingView(e){
+    // if (e.target.matches(".inlineRadioOptionsPending") ){
+    //     // console.log(e.target.value)
+    //     searchTablePending();
+
+    // }
+    
+
+    
+
+};
+
+
+
+
+function inputEventHandlerPendingView(e){
+    if (e.target.matches("#search_input_table_pending") || e.target.matches("#datefilter_table_pending") ){
+        searchTablePending();
+
+    }
+    if (e.target.matches("#filtertype_table_pending") ){
+        // console.log(e.target.value)
+        if( e.target.value == 1 ){
+            document.getElementById("datefilter_table_pending").value = getCurrentDate();  
+            document.getElementById('datefilter_table_pending').setAttribute("disabled", "value")
+            searchTablePending();
+
+        } else if( e.target.value == 2) {
+            document.getElementById('datefilter_table_pending').removeAttribute("disabled")
+            document.getElementById('datefilter_table_pending').value = ""
+            searchTablePending();
+            
+        } else if( e.target.value == 3) {
+            document.getElementById('datefilter_table_pending').setAttribute("disabled", "value")
+            document.getElementById('datefilter_table_pending').value = ""
+            searchTablePending();
+
+        }
+
+    }
+    
+
+
+    
+        
+};
+
+
+    
+
+
+
+
+document.getElementById('pending_view').addEventListener("click", clickEventHandlerPendingView)
+document.getElementById('pending_view').addEventListener("input", inputEventHandlerPendingView)
+ 
+
+
+</script>

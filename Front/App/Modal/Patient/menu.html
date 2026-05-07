@@ -1,0 +1,126 @@
+
+
+
+<div class="modal fade" id="patient_menu_modal"  tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary bg-opacity-10">
+
+        <button type="button" class="d-none btn btn-secondary shadow my-btn"  onclick="" id=""><i class="bi bi-arrow-return-left"></i> ย้อนกลับ</button>
+
+        
+        <!-- <center><h5 class="modal-title">กรุณาระบุจำนวนวันแล้วคลิ๊กเลือกที่ปฏิทิน</h5></center> -->
+        <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- <button type="button" class="btn btn-success shadow my-btn"  onclick="closeModalCalendar()" ><i class="bi bi-x-lg"></i> ปิดหน้าต่าง</button> -->
+        
+
+      </div>
+      <div class="modal-body">
+        <div class="w-100 text-center">  
+            <h6 class="modal-title">เลือกรายการสำหรับ</h6>
+            <h5 class="modal-title text-primary" id="fullname_patient_menu"></h5>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-md mt-2">
+            <p class="" id="">
+              <span>PID: </span>
+              <span class="text-primary" id="pid_patient_menu"></span>
+
+              &nbsp;
+              <span>HN: </span>
+              <span class="text-primary" id="hn_patient_menu"></span>
+
+              &nbsp;
+              <span>CID: </span>
+              <span class="text-primary" id="cid_patient_menu"></span>
+
+              &nbsp;
+              <span>VID: </span>
+              <span class="text-primary" id="vid_patient_menu"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-sm-12 mb-3 mb-sm-0 ">
+            <div class="row g-2 " id="">
+                <div class="col-md-6">
+                  <div class="pointer box card mb-1 shadow" style="max-width: 540px;" onclick="openModalPatientInfo()" >  
+                    <div class="row g-0">
+                      <div class="col-md-4">
+                          <h1 class="p-3"><i class='bi bi-person-vcard'></i></h1>
+                      </div>
+                      <div class="col-md-8">
+                          <div class="card-body">
+                            <h5 class="card-title">ข้อมูลทั่วไป</h5>
+                            <p class="card-text" id=""></p>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6" >
+                  <div class="pointer box card mb-1 shadow" style="max-width: 540px;" onclick="openModalPatientHistory()" >
+                      <div class="row g-0" >
+                        <div class="col-md-4">
+                            <h1 class="p-3"><i class="bi bi-clock-history"></i></h1>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                              <h5 class="card-title">ประวัติการรักษา</h5>
+                              <p class="card-text" id=""></p>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="pointer box card mb-1 shadow" style="max-width: 540px;"  onclick="openModalPatientAppointment()" >
+                    <div class="row g-0">
+                      <div class="col-md-4">
+                        <h1 class="p-3"><i class="bi bi-calendar-plus"></i></h1>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="card-body">
+                          <h5 class="card-title">ลงนัดหมาย</h5>
+                          <p class="card-text"  id=""></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="pointer box card mb-1 shadow" style="max-width: 540px;" onclick="openModalPatientSendRoomFromMenu()" >
+                      <div class="row g-0">
+                        <div class="col-md-4">
+                            <h1 class="p-3"><i class="bi bi-box-arrow-in-right"></i></h1>
+                        </div>
+                        <div class="col-md-8">
+                          <div class="card-body">
+                            <h5 class="card-title">เข้ารับบริการ</h5>
+                            <p class="card-text" id=""></p>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  
+                </div>
+
+            </div>
+                          
+                    
+                
+          </div>
+        </div>
+       
+
+
+          
+      </div>
+       
+    </div>
+  </div>
+</div>
+ 
+

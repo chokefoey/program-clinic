@@ -1,0 +1,99 @@
+
+
+<script>
+
+
+
+
+function removeEmptyIcd10Rows() {
+    const rowInputDx = document.getElementsByClassName('add-input-dx-treat').length
+    // console.log(rowInputTx)
+    if( rowInputDx > 1){
+        //   removeEmptyIcd10Rows();
+        // Get all elements with the class '.icd10-options'
+        const icd10Options = document.querySelectorAll('.icd10-options');
+
+        // Loop through all the ICD10 options
+        for (let i = 0; i < icd10Options.length; i++) {
+            const icd10O = icd10Options[i];
+
+            // Check if Choices.js is initialized and if the option value is empty
+            const icd10OValue = icd10O.choicesInstance?.getValue(true);
+            const isIcd10OEmpty = !icd10OValue || icd10OValue.length === 0;
+
+            // Only remove the row if the .icd10-options is empty
+            if (isIcd10OEmpty) {
+                console.log(`ICD10 option ${i + 1} is empty.`);
+
+                // Remove the closest .input-line row
+                const rowToRemove = icd10O.closest('.input-line');
+                if (rowToRemove) {
+                    rowToRemove.remove();
+                    console.log(`Removed row for empty ICD10 option ${i + 1}.`);
+                }
+            }
+        }
+
+        console.log('Checked all ICD10 options inputs.');
+        return 'done';
+      
+    }
+
+    
+};
+
+
+
+
+
+
+
+
+
+function removeEmptyRowsDxTreat() {
+    const rowInputDx = document.getElementsByClassName('input-dx-row-treat').length
+    console.log(rowInputDx)
+
+    if( rowInputDx > 1){
+        //   removeEmptyIcd10Rows();
+        // Get all elements with the class '.icd10-options'
+        const icd10Options = document.querySelectorAll('.icd10-options');
+
+        // Loop through all the ICD10 options
+        for (let i = 0; i < icd10Options.length; i++) {
+            const icd10O = icd10Options[i];
+
+            // Check if Choices.js is initialized and if the option value is empty
+            const icd10OValue = icd10O.choicesInstance?.getValue(true);
+            const isIcd10OEmpty = !icd10OValue || icd10OValue.length === 0;
+
+            // Only remove the row if the .icd10-options is empty
+            if (isIcd10OEmpty) {
+                console.log(`ICD10 option ${i + 1} is empty.`);
+
+                // Remove the closest .input-dx-row-treat row
+                const rowToRemove = icd10O.closest('.input-dx-row-treat');
+                if (rowToRemove) {
+                    rowToRemove.remove();
+                    console.log(`Removed row for empty ICD10 option ${i + 1}.`);
+                }
+            }
+        }
+
+        console.log('Checked all ICD10 options inputs.');
+        return 'done';
+      
+    }
+
+    
+};
+
+
+
+
+
+
+
+
+
+</script>

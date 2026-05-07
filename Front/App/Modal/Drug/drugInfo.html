@@ -1,0 +1,104 @@
+
+
+
+ 
+
+
+
+<div class="modal fade"  id="druginfo_modal"  tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary bg-opacity-10">
+        
+        <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+
+      </div>
+      <div class="modal-body bg-secondary bg-opacity-10">
+        <div class="w-100 text-center mb-2"> 
+          <h3>ข้อมูลยา</h3>
+          
+        </div>
+
+        <form id="drug_info_form">
+          <div class="row mt-1">
+            <div class="col-md-4 mt-2">
+              <label class="form-label">DID</label>
+              <input type="text" class="form-control text-primary" name="drugId" id="drug_id" disabled> 
+            </div>
+          </div>
+          <div class="row mt-1">
+            <div class="col-md-6 mt-2">
+              <label class="form-label">ชื่อยา(ห้ามใช้เครื่องหมาย /)</label>
+              <input type="text" class="form-control text-primary" name="drugName" oninput="this.value = this.value.replace(/\//g, '')"   id="drug_name" required>
+ 
+            </div>
+            <div class="col-md-3 mt-2">
+              <label class="form-label">หน่วยเป็น</label>
+              <select class="form-select text-primary"  name="type" id="drug_type" required>  
+                <option value="กล่อง">กล่อง</option>
+                <option value="ขวด">ขวด</option>
+                <option value="แคปซูล">แคปซูล</option>
+                <option value="ชิ้น">ชิ้น</option>
+                <option value="ซอง">ซอง</option>
+                <option value="แผง">แผง</option>
+                <option value="แผ่น">แผ่น</option>
+                <option value="เม็ด" selected>เม็ด</option>
+                <option value="หลอด">หลอด</option>
+                <option value="อัน">อัน</option>
+                <option value="Ampoule">Ampoule</option>
+                <option value="Vial">Vial</option>
+              </select>
+            </div>
+            <div class="col-md-3 mt-2">
+              <label class="form-label">ราคาขายต่อหน่วย</label>
+              <!-- <input type="text" class="form-control text-primary" name="price" id="drug_price" required> -->
+              <input type="text" class="form-control text-primary" name="price" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" id="drug_price" required>
+            </div>
+              
+          </div>
+          <div class="row mt-1">
+            <div class="col-md-6 mt-2">
+              <label class="form-label">ข้อบ่งชี้</label>
+              <input type="search" class="form-control text-primary" list="datalistOptions_drug_indication" name="indication" id="drug_indication" required>
+              <datalist id="datalistOptions_drug_indication">
+                <option value="ลดไขมัน">
+                <option value="ฆ่าเชื้อ">
+                <option value="เกลือแร่">
+                <option value="แก้ปวดท้อง">
+                <option value="แก้อักเสบ">
+                <option value="แก้ปวด ลดไข้">
+                <option value="ป้องกันหลอดเลือดอุดตัน">
+                <option value="ลดกรด เคลือบแผล กระเพาะอาหาร">
+                <option value="วิตามิน">
+                <option value="บรรเทาอาการปวดกล้ามเนื้อ">
+                <option value="แก้ไอ">  
+              </datalist>
+              
+            </div> 
+            <div class="col-md-3 mt-2">
+              <label class="form-label">จำนวน</label>
+              <input type="text" class="form-control text-primary" name="amount" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');" id="drug_amount" required>
+            </div>
+            <div class="col-md-3 mt-2">
+              <label class="form-label">วันหมดอายุ</label>
+              <input type="text" class="form-control datepicker text-primary" name="expired" id="drug_expired" required> 
+            </div>
+            
+              
+          </div>
+          
+        </form>
+       
+
+       
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="d-none btn btn-primary" id="add_drug_btn">เพิ่มรายการยา</button>
+        <button type="button" class="d-none btn btn-secondary" id="edit_drug_btn">แก้ไขข้อมูลยา</button>
+        <button type="button" class="d-none btn btn-danger" id="delete_drug_btn">ลบรายการยา</button>
+       </div>
+    </div>
+  </div>
+</div>
+ 

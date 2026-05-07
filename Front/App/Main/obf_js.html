@@ -1,0 +1,537 @@
+
+
+<script>
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// PAGELOAD 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+async function pageLoad(){
+  await loadingStart()
+
+  await setAppByUserLevel()
+  await setAppBySuperAdminControl()
+  await showLastView() 
+  await showAnnouncementPopup()
+
+  //  *** ดึงข้อมูลมาจาก Sheet ที่กำหนดตาม Room Area
+  // await getDataPatientRegistByUserRoomArea(document.getElementById('room_area_config').textContent)  // ดึงข้อมูลจาก sheet ตาม room area
+
+
+  //  *** ดึงข้อมูลมาจาก Sheet ต่างๆ
+  await getDataPatientRegist()  // ดึงข้อมูลจาก sheet PatientRegist เพื่อนำไปสร้างตาราง
+  await getDataOpdVisits() // ดึงข้อมูลจาก sheet OpdVisit เพื่อนำไปสร้างตาราง และ ปฎิทิน
+  await getDropdownOptions()
+  await getDrugSets() // ดึงข้อมูลจาก sheet DrugSets แสดงรายการยาชุด
+  await getHosProfile()
+  await getDataProcedures()
+  await getDrugCatalog() // ดึงข้อมูลจาก sheet DrugCatalog for Dropdown
+
+  await loadingEnd()
+
+  setAutoRefresh()
+
+};
+
+
+
+ 
+function getDataPatientRegistByUserRoomArea(roomArea) {
+  // Check if ssIdByRoomArea is an empty string
+  if (roomArea === "") {
+    console.log("UserRoomArea: ", "ไม่พบ roomArea");
+    return Promise.resolve(""); // Immediately resolve with an empty string
+  }
+  
+  return new Promise((resolve, reject) => {
+    google.script.run.withSuccessHandler((output) => {
+      console.log("patientRegistInfoByUserRoomArea", output);
+      loadingEnd();
+      resolve(output);
+
+    }).withFailureHandler((error) => {
+      console.error(error);
+      reject(error);
+      
+    }).getDataPatientRegistByUserRoomAreaFromSheet(roomArea);
+  });
+}
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// function สำหรับ Enable tooltips
+// https://getbootstrap.com/docs/5.3/components/tooltips/
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// function สำหรับ เปิด ปิด console log ทั้งหมด 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+
+// Correct assignment of devModeOnOff
+const devModeOnOff = document.getElementById('debugmode_control').textContent.trim() === "ON";
+
+// IIFE (Immediately Invoked Function Expression) to toggle console logs
+(function() {
+    // Save original console.log function
+    console._originalLog = console.log;
+
+    // Function to enable or disable logging
+    console.toggleLogs = function(showLogs) {
+        if (showLogs) {
+            console.log = console._originalLog;
+        } else {
+            console.log = function() {};
+        }
+    };
+})();
+
+// Toggle logs based on devModeOnOff value
+console.toggleLogs(devModeOnOff);
+
+
+
+
+
+
+
+
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// เลือก function ที่ต้องการ auto refresh 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+function setAutoRefresh(){
+  let intervalId = setInterval(function() {
+    console.log('⌚This of setAutoRefresh every 60 seconds');
+
+    progressbarStart();
+
+    getDataPatientRegistRefresh(); // ดึงข้อมูลจาก sheet PatientRegistRefresh
+    getDataOpdVisitRefresh(); // ดึงข้อมูลจาก sheet OpdVisitRefresh
+    getDrugCatalog();  // ดึงข้อมูลจาก sheet DrugCatalog
+    
+
+    // Example condition to stop the interval after 10 seconds
+    // if ((new Date().getTime() - startTime) > 10000) {
+    //   clearInterval(intervalId);
+    //   console.log('Interval cleared after 10 seconds');
+    // }
+
+  }, 60000);
+
+  let startTime = new Date().getTime();
+
+};
+
+
+
+function getDataPatientRegistRefresh(){
+  google.script.run.withSuccessHandler((dataReturn)=>{
+    console.log(dataReturn)
+
+    if(dataReturn.length != 0){
+      elements.tablePatientRegist.updateOrAddData(dataReturn)
+      .then((rows)=>{
+        //rows - array of the row components for the rows updated or added
+        //run code after data has been updated
+        searchTablePatientRegist()
+      })
+      .catch((error)=>{
+          //handle error updating data
+      });
+
+      // elements.tablePatientRegist.updateOrAddRow(dataReturn)
+
+      // console.log('มีข้อมูล PatientRegist ใหม่ และทำการ update ล่าสุดแล้ว')
+      console.log({'Refresh Data PatientRegist': 'มีข้อมูลใหม่ และทำการ update ล่าสุดแล้ว'})
+
+    } else {
+      // console.log('ไม่มีข้อมูล PatientRegist สำหรับการ update')
+      console.log({'Refresh Data PatientRegist': 'ไม่มีข้อมูล update'})
+
+    }
+
+    progressbarEnd();
+
+  }).getDataPatientRegistRefresh()
+
+
+};
+
+
+
+function getDataOpdVisitRefresh(){
+  google.script.run.withSuccessHandler((dataReturn)=>{
+    console.log(dataReturn)
+
+    if(dataReturn.length != 0){
+      elements.tablePending.updateOrAddData(dataReturn)
+      .then((rows)=>{
+        //rows - array of the row components for the rows updated or added
+        //run code after data has been updated
+        searchTablePending();
+      })
+      .catch((error)=>{
+          //handle error updating data
+      });
+
+      elements.tableAppointment.updateOrAddData(dataReturn)
+      .then((rows)=>{
+        //rows - array of the row components for the rows updated or added
+        //run code after data has been updated
+        searchTableAppointment(); 
+
+      })
+      .catch((error)=>{
+          //handle error updating data
+      });
+
+      console.log({'Refresh Data OpdVisit': 'มีข้อมูลใหม่ และทำการ update ล่าสุดแล้ว'})
+
+    } else {
+      console.log({'Refresh Data OpdVisit': 'ไม่มีข้อมูล update'})
+
+    }
+
+    progressbarEnd();
+
+  }).getDataOpdVisitRefresh()
+
+
+};
+
+
+
+
+ 
+
+function getDataProcedures(){
+  google.script.run.withSuccessHandler((res)=>{
+    // console.log('proceduresInfo',res)
+    proceduresInfo = res
+
+  }).getDataProcedures()
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// เลือก Version 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+var version = 'Sale'  // Sale or Free
+var loadingCreditText = ""  // จะใส่ credit ตอน loading หรือไม่
+// var loadingCreditText = "<p align='center'> 🧑‍⚕️ พิชิต แร่ถ่าย <br> 📧 golfguitar@gmail.com</p>"  // จะใส่ credit ตอน loading หรือไม่
+
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// LOGOUT 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+function checkLogout(){
+  sessionStorage.removeItem("sUsername"); 
+  sessionStorage.removeItem("sPassword");
+  sessionStorage.removeItem("sLastView")
+  console.log("checkLogout")
+
+  let loadingImgLogout = 'https://lh5.googleusercontent.com/d/16rlNoO9pAh_fe78itPaIzUTgvGXt5Jec'   
+
+  Swal.fire({ 
+    title:  'กำลังเปลี่ยนผู้ใช้งาน',
+    timer: 10000,    
+    width: 400,
+    allowOutsideClick: false,
+    imageUrl: loadingImgLogout,
+    // imageWidth: 50,
+    imageHeight: 100,
+    showConfirmButton: false,
+
+  })
+   
+};
+
+
+ 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Show version and Credit : version Global var
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+function showVersion(){
+  if( version == "Free"){
+    alert("Please contact golfguitar@gmail.com")
+
+    document.getElementById('app_version').innerHTML = "Free Ver."
+
+  } else {
+
+  }
+
+};
+
+
+ 
+
+function getIpAddress(){
+  // alert(json.ip); // alerts the ip address
+  fetch('https://api.ipify.org?format=json')
+  .then(response => response.json())
+  .then(data => console.log(data.ip));
+
+};
+
+
+
+
+
+
+ 
+
+
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// function toast
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+function showToastsMessage(myText){
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "bottom-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: false,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+  Toast.fire({
+    icon: "question",
+    title: myText
+  });
+
+
+
+};
+
+
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// function สำหรับ swap modal ระหว่าง modal 2 อัน 
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+
+// Function to swap between modals
+function swapModal(currentModalId, nextModalId) {
+  const currentModal = bootstrap.Modal.getInstance(document.querySelector(currentModalId));
+  currentModal.hide(); // Close the current modal
+
+  // Show the next modal after the current one is hidden
+  currentModal._element.addEventListener('hidden.bs.modal', function () {
+    const nextModal = new bootstrap.Modal(document.querySelector(nextModalId));
+    nextModal.show();
+  }, { once: true });
+};
+
+
+
+
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// function สำหรับ สร้าง Format input
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function formatWtHt(input) {
+  // Allow only numbers and the dot symbol (.)
+  input.value = input.value.replace(/[^0-9.]/g, '');
+  
+  // Ensure there's only one dot allowed
+  const splitValue = input.value.split('.');
+  if (splitValue.length > 2) {
+    input.value = splitValue[0] + '.' + splitValue[1];
+  }
+
+  // Limit the length to 5 characters
+  if (input.value.length > 5) {
+    input.value = input.value.slice(0, 5);
+  }
+
+  // Alert if the value exceeds 50.00
+  const numValue = parseFloat(input.value);
+  if (numValue > 200.0) {
+    alert('Value cannot exceed 200.00');
+    input.value = ''; // Reset value 
+  }
+};
+
+function formatSat(input) {
+  // Allow only numbers and the dot symbol (.)
+  input.value = input.value.replace(/[^0-9.]/g, '');
+  
+  // Ensure there's only one dot allowed
+  const splitValue = input.value.split('.');
+  if (splitValue.length > 2) {
+    input.value = splitValue[0] + '.' + splitValue[1];
+  }
+
+  // Limit the length to 2 characters
+  if (input.value.length > 2) {
+    input.value = input.value.slice(0, 2);
+  }
+
+  // Alert if the value exceeds 100.00
+  const numValue = parseFloat(input.value);
+  if (numValue > 100.0) {
+    alert('Value cannot exceed 100.00');
+    input.value = ''; // Reset value 
+  }
+};
+
+
+function formatBT(input) {
+  // Allow only numbers and the dot symbol (.)
+  input.value = input.value.replace(/[^0-9.]/g, '');
+  
+  // Ensure there's only one dot allowed
+  const splitValue = input.value.split('.');
+  if (splitValue.length > 2) {
+    input.value = splitValue[0] + '.' + splitValue[1];
+  }
+
+  // Limit the length to 5 characters
+  if (input.value.length > 5) {
+    input.value = input.value.slice(0, 5);
+  }
+
+  // Alert if the value exceeds 50.00
+  const numValue = parseFloat(input.value);
+  if (numValue > 50.0) {
+    alert('Value cannot exceed 50.00');
+    input.value = ''; // Reset value 
+  }
+};
+
+
+function formatSBP(input) {
+  // Allow only numbers
+  input.value = input.value.replace(/[^0-9]/g, '');
+  
+  // Limit the string length to 3 characters
+  if (input.value.length > 3) {
+    input.value = input.value.slice(0, 3);
+  }
+
+  // Convert value to number and alert if greater than 220
+  const numValue = parseInt(input.value, 10);
+  if (numValue > 220) {
+    alert('Value cannot exceed 220');
+    input.value = '';
+  }
+};
+
+
+function formatDBP(input) {
+  // Allow only numbers
+  input.value = input.value.replace(/[^0-9]/g, '');
+  
+  // Limit the string length to 3 characters
+  if (input.value.length > 3) {
+    input.value = input.value.slice(0, 3);
+  }
+
+  // Convert value to number and alert if greater than 220
+  const numValue = parseInt(input.value, 10);
+  if (numValue > 120) {
+    alert('Value cannot exceed 120');
+    input.value = '';
+  }
+};
+
+
+function formatPR(input) {
+  // Allow only numbers
+  input.value = input.value.replace(/[^0-9]/g, '');
+  
+  // Limit the string length to 3 characters
+  if (input.value.length > 3) {
+    input.value = input.value.slice(0, 3);
+  }
+
+  // Convert value to number and alert if greater than 200
+  const numValue = parseInt(input.value, 10);
+  if (numValue > 200) {
+    alert('Value cannot exceed 200');
+    input.value = '';
+  }
+};
+
+
+function formatRR(input) {
+  // Allow only numbers
+  input.value = input.value.replace(/[^0-9]/g, '');
+  
+  // Limit the string length to 2 characters
+  if (input.value.length > 2) {
+    input.value = input.value.slice(0, 2);
+  }
+
+  // Convert value to number and alert if greater than 200
+  const numValue = parseInt(input.value, 10);
+  if (numValue > 30) {
+    alert('Value cannot exceed 30');
+    input.value = '';
+  }
+};
+
+
+function validateDayInput(input) {
+  if (input.value === '') {
+      input.value = '';
+  } else {
+      const numericValue = input.value.replace(/[^0-9]/g, '').replace(/^0+/, '');
+      const dayValue = Math.min(31, Math.max(1, numericValue));
+      input.value = numericValue === '' ? '' : dayValue;
+  }
+};
+
+
+function validateNumberInput(input, maxValue) {
+  if (input.value === '') {
+      input.value = '';
+  } else {
+      const numericValue = input.value.replace(/[^0-9]/g, '').replace(/^0+/, '');
+      const validValue = Math.min(maxValue, Math.max(1, numericValue));
+      input.value = numericValue === '' ? '' : validValue;
+  }
+};
+
+
+ 
+</script>
+

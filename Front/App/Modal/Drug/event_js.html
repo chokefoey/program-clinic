@@ -1,0 +1,248 @@
+
+
+<script>
+
+
+function clickEventHandlerDrugsetsModal(e){
+  if ( e.target.matches("#add_input_hm_row_drugset_btn") ){ 
+    const rowInput = document.getElementsByClassName('input-hm-row-drugset').length
+    console.log("rowInput: " + rowInput)
+
+    if( rowInput > 9){
+      Swal.fire({ icon: 'error',title: 'จำกัด 10 รายการ',})
+       
+    } else {
+      addRowInputHmDrugSet()
+
+    }
+  }
+  if ( e.target.matches("#add_drugset_btn") ){ 
+      
+    removeEmptyRowsHmDrugSet();
+
+    let setName = document.getElementById('new_drugset_name_input').value.trim()
+
+    // Check if the patient is selected
+    if ( setName === '') {
+      Swal.fire({ icon: 'error', title: 'กรุณาระบุชื่อยาชุด' });
+
+    } else {
+      // Check the procedure price and drug fields
+      // const procedureCheck = checkTableTxEmpty();
+      const drugCheck = checkTableHmEmptyDrugSet();
+
+      if (drugCheck !== true) {
+        Swal.fire({ icon: 'error', title: drugCheck });
+          
+      } else {
+        // If all conditions are met, proceed to save data
+        
+        // console.log('addNewDrugSet')
+       
+        const hmDrugSetObj = createObjDataHmDrugSet(); 
+        // console.log(hmDrugSetObj)
+
+        const drugSetInfo = {}
+        drugSetInfo.setName = setName
+        drugSetInfo.drugSet = hmDrugSetObj
+        drugSetInfo.userId = document.getElementById('user_id_config').textContent.trim()
+        
+        console.log(drugSetInfo)
+
+        addDrugSet(drugSetInfo)
+
+          
+      }
+
+    }
+
+  }
+  if ( e.target.matches("#edit_drugset_btn") ){
+    removeEmptyRowsHmDrugSet();
+
+    // Assuming 'elements["search_input_table_drugset"]' is id your Choices.js instance
+    const choicesInstance = elements["search_input_table_drugset"];
+
+    // get value of Choice js getchoicevalue getvalue of choice
+    // Get the selected value from the Choices.js instance
+    // const setName = choicesInstance.getValue(true);  // Passing true returns the value(s) as a string or array
+    
+    const setName = document.getElementById('drugset_name').textContent.trim()
+    console.log(setName);
+
+    
+    // let setName = document.getElementById('new_drugset_name_input').value.trim()
+
+    // Check if the patient is selected
+    if ( setName === '') {
+      Swal.fire({ icon: 'error', title: 'กรุณาระบุชื่อยาชุด' });
+
+    } else {
+      // Check the procedure price and drug fields
+      // const procedureCheck = checkTableTxEmpty();
+      const drugCheck = checkTableHmEmptyDrugSet();
+
+      if (drugCheck !== true) {
+        Swal.fire({ icon: 'error', title: drugCheck });
+          
+      } else {
+        Swal.fire({
+          title: "Do you want to save the changes?",
+          // showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "Confirm",
+        
+        }).then((result)=>{
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            // loadingStart();
+            const hmDrugSetObj = createObjDataHmDrugSet();
+            console.log(hmDrugSetObj)
+
+            const setId = document.getElementById("drugset_id").textContent
+            const drugSetInfo = {}
+              drugSetInfo.setName = setName
+              drugSetInfo.drugSet = hmDrugSetObj
+              drugSetInfo.userId = document.getElementById('user_id_config').textContent.trim()
+              
+            // console.log(drugSetInfo)
+
+            editDrugSet(setId,drugSetInfo)
+
+          }
+
+        })
+       
+      }
+
+    }
+
+  }
+  if ( e.target.matches("#delete_drugset_btn") ){
+    const setId = document.getElementById("drugset_id").textContent.trim()
+    console.log(setId)
+    const setName = document.getElementById("drugset_name").textContent.trim()
+    console.log(setName)
+
+    // Check if the patient is selected
+    if ( setId === '') {
+      Swal.fire({ icon: 'error', title: 'กรุณาระบุชื่อยาชุด' });
+
+    } else {
+      Swal.fire({
+        title: "Do you want to Delete?",
+        // showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+       
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          // loadingStart();
+          deleteDrugSetById(setId,setName)
+
+        }
+      })
+      
+    }
+
+  }
+  if (e.target.classList.contains("remove-input-hm-drugset") ){
+    const rowInput = document.getElementsByClassName('input-hm-row-drugset').length
+    console.log(rowInput)
+
+    if( rowInput > 1){
+      e.target.closest('.input-hm-row-drugset').remove()
+
+    } else {
+      document.getElementById("form_table_hm_drugset").reset();
+      
+    }
+
+  }
+  // if ( e.target.matches("#select_drugset_btn") ){
+  //   // const drugSetName = document.getElementsByClassName('input-hm-row-drugset').length
+  //   // console.log(rowInput)
+    
+
+  // }
+  if (e.target.matches("#select_drugset_btn") ){
+    // console.log("select_drugset_btn")
+    selectDrugSet();
+
+  }
+
+
+};
+
+
+
+
+
+
+
+
+ 
+
+function createObjDataHmDrugSet() {
+  const inputs = document.querySelectorAll('.input-hm-drugset');
+  const homemeds = inputs.length === 0 ? [] : Array.from(inputs).map(input => input.value);
+  // console.log("homemeds",homemeds)
+
+  const drugOptions = document.querySelectorAll('.drug-options-drugset'); 
+  const doseOptions = document.querySelectorAll('.dose-options-drugset');
+
+  // Define keys for home meds, doses, amounts, and prices
+  const hmKeys = ['hm1', 'hm2', 'hm3', 'hm4', 'hm5', 'hm6', 'hm7', 'hm8', 'hm9', 'hm10'];
+  const doseKeys = ['dose1', 'dose2', 'dose3', 'dose4', 'dose5', 'dose6', 'dose7', 'dose8', 'dose9', 'dose10'];
+  const amountKeys = ['amount1', 'amount2', 'amount3', 'amount4', 'amount5', 'amount6', 'amount7', 'amount8', 'amount9', 'amount10'];
+  const priceKeys = ['price1', 'price2', 'price3', 'price4', 'price5', 'price6', 'price7', 'price8', 'price9', 'price10'];
+
+  const result = {};
+
+  // Loop through all the drug options
+  for (let i = 0; i < drugOptions.length; i++) {
+    if (i >= hmKeys.length) break;
+    
+    // Get drug value and store it in the result
+    const drugValue = drugOptions[i].choicesInstance?.getValue(true) || '';
+    result[hmKeys[i]] = drugValue;
+  }
+
+  // Loop through all the dose options
+  for (let i = 0; i < doseOptions.length; i++) {
+    if (i >= doseKeys.length) break;
+
+    // Get dose value and store it in the result
+    const doseValue = doseOptions[i].choicesInstance?.getValue(true) || '';
+    result[doseKeys[i]] = doseValue;
+  }
+
+  // Loop through homemeds and assign amounts and prices to the result, using Math.floor(i / 3)
+  for (let i = 0; i < homemeds.length; i += 4) {
+    const hmIndex = Math.floor(i / 4);
+    if (hmIndex >= amountKeys.length || hmIndex >= priceKeys.length) break;
+
+    result[amountKeys[hmIndex]] = homemeds[i + 2] || '';
+    result[priceKeys[hmIndex]] = homemeds[i + 3] || '';
+  }
+
+  // console.log(result);
+
+  // Check if result is empty and return accordingly
+  return Object.keys(result).length === 0 ? { "hm1": "", "dose1": "", "amount1": "", "price1": "" } : result;
+  
+};
+
+
+
+
+document.getElementById('drugsets_modal').addEventListener("click", clickEventHandlerDrugsetsModal)
+
+
+
+
+</script>
+
+
+

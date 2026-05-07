@@ -1,0 +1,41 @@
+<script>
+
+
+
+ 
+
+function clickEventHandlerDropdownoptionModal(e){
+  if (e.target.matches("#add_option_btn")  ){
+    // console.log('add_option_btn')
+    const keySelected = getValueOfChoiceById("dd_option_category")
+    console.log(keySelected)
+    // const keyOf1Value = []
+    // ตรวจสอบ input ที่ required validateform 
+    // const resInput = checkFormInputRequired("dropdown_option_form")   // ถ้าถูกต้องให้ return true ไม่ถูกต้อง false
+    // console.log(resInput)
+
+    if( keySelected === undefined || keySelected === "" ){
+        Swal.fire({ title:"ระบุ Key",})
+
+    } else {
+        addNewOption();
+
+    }
+    
+
+  }
+ 
+    
+
+};
+
+document.getElementById('dropdown_option_modal').addEventListener("click", clickEventHandlerDropdownoptionModal)
+
+
+
+
+
+</script>
+
+
+

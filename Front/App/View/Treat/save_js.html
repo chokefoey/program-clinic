@@ -1,0 +1,475 @@
+
+
+<script>
+
+
+
+
+
+
+
+
+
+function checkTableTxEmpty() {
+  const rowInput = document.getElementsByClassName('add-input-tx-treat').length
+  console.log(rowInput)
+
+  if ( rowInput == 1){
+    // Get all elements with the class '.procedure-options' and '.input-price-procedure'
+    const procedureOptions = document.querySelectorAll('.procedure-options');
+    const priceInputs = document.querySelectorAll('.input-price-procedure');
+
+    // Loop through procedure options and corresponding price inputs
+    for (let i = 0; i < procedureOptions.length; i++) {
+      const procedure = procedureOptions[i];
+      const price = priceInputs[i]?.value.trim(); // Get price input at the same index
+
+      // Check if Choices.js is initialized and if procedure is empty
+      const procedureValue = procedure.choicesInstance?.getValue(true);
+
+      // Combined condition for both procedure and price being empty
+      if ((!procedure.choicesInstance || procedureValue === '' || procedureValue === undefined) && price === '') {
+          console.log(`Procedure option and price input ${i + 1} are both empty.`);
+          return true; // Both procedure and price are empty
+      }
+
+      if (!procedure.choicesInstance || procedureValue === '' || procedureValue === undefined) {
+          console.log(`Procedure option ${i + 1} is empty.`);
+          return 'procedure_empty'; // Only procedure is empty
+      }
+
+      
+      // Check if only the price input is empty
+      if (price === '') {
+          console.log(`Price input ${i + 1} is empty.`);
+          return 'procedure_price_empty'; // Only price is empty
+      }
+    }
+
+    // If none of the procedure options or price inputs are empty
+    console.log('All procedure options and price inputs are filled.');
+    return true;
+
+  }
+  else if( rowInput > 1){
+    
+    // Get all elements with the class '.procedure-options' and '.input-price-procedure'
+    const procedureOptions = document.querySelectorAll('.procedure-options');
+    const priceInputs = document.querySelectorAll('.input-price-procedure');
+
+    // Loop through procedure options and corresponding price inputs
+    for (let i = 1; i < procedureOptions.length; i++) {
+        const procedure = procedureOptions[i];
+        const price = priceInputs[i]?.value.trim(); // Get price input at the same index
+
+        // Check if Choices.js is initialized and if procedure is empty
+        const procedureValue = procedure.choicesInstance?.getValue(true);
+        if (!procedure.choicesInstance || procedureValue === '' || procedureValue === undefined) {
+            console.log(`Procedure option ${i + 1} is empty.`);
+            return 'procedure_empty';
+        }
+
+        // Check if the corresponding price input is empty
+        if (price === '') {
+            console.log(`Price input ${i + 1} is empty.`);
+            return 'procedure_price_empty';
+        }
+    }
+
+    // If none of the procedure options or price inputs are empty
+    console.log('All procedure options and price inputs are filled.');
+    return true;
+
+  }  
+  
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function checkTableHmEmpty() {
+  const rowInput = document.getElementsByClassName('input-hm-row-treat').length;
+  console.log("rowInput "+rowInput)
+  const selectors = [
+    { elements: document.querySelectorAll('.drug-options'), isChoice: true, message: 'ระบุชื่อยา' },
+    { elements: document.querySelectorAll('.dose-options'), isChoice: true, message: 'ระบุวิธีใช้' },
+    { elements: document.querySelectorAll('.input-amount-homemed'), isChoice: false, message: 'ระบุจำนวนยา' }
+  ];
+
+  function hasEmptyValue(elements, isChoice = false) {
+    for (let i = 0; i < elements.length; i++) {
+      const value = isChoice
+        ? elements[i].choicesInstance?.getValue(true)
+        : elements[i].value?.trim() || elements[i].textContent?.trim();
+      console.log(`Element [${i}] value:`, value); // Debug log
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (rowInput === 1 && selectors.every(sel => hasEmptyValue(sel.elements, sel.isChoice))) {
+    return true; // All fields empty when rowInput === 1
+  }
+
+  for (const { elements, isChoice, message } of selectors) {
+    if (hasEmptyValue(elements, isChoice)) {
+      console.log(message);
+      return message; // Return the specific error message
+    }
+  }
+
+  console.log('All fields are filled.');
+  return true; // All fields are valid
+};
+
+
+
+
+function checkTableHmEmptyDrugSet() {
+  const rowInput = document.getElementsByClassName('input-hm-row-drugset').length;
+  // console.log("rowInput "+rowInput)
+  const selectors = [
+    { elements: document.querySelectorAll('.drug-options'), isChoice: true, message: 'ระบุชื่อยา' },
+    { elements: document.querySelectorAll('.dose-options'), isChoice: true, message: 'ระบุวิธีใช้' },
+    { elements: document.querySelectorAll('.input-hm-amount-drugset'), isChoice: false, message: 'ระบุจำนวนยา' }
+  ];
+
+  function hasEmptyValue(elements, isChoice = false) {
+    for (let i = 0; i < elements.length; i++) {
+      const value = isChoice
+        ? elements[i].choicesInstance?.getValue(true)
+        : elements[i].value?.trim() || elements[i].textContent?.trim();
+      // console.log(`Element [${i}] value:`, value); // Debug log
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (rowInput === 1 && selectors.every(sel => hasEmptyValue(sel.elements, sel.isChoice))) {
+    return true; // All fields empty when rowInput === 1
+  }
+
+  for (const { elements, isChoice, message } of selectors) {
+    if (hasEmptyValue(elements, isChoice)) {
+      // console.log(message);
+      return message; // Return the specific error message
+    }
+  }
+
+  // console.log('All fields are filled.');
+  return true; // All fields are valid
+};
+
+
+
+
+
+
+
+
+
+function createObjDataDxTreat() {
+  const inputs = document.querySelectorAll('.input-dx-treat');
+  const dxOptions = document.querySelectorAll('.icd10-options');
+
+  const dxKeys = ['dx1', 'dx2', 'dx3', 'dx4', 'dx5'];
+  const icdKeys = ['icd1', 'icd2', 'icd3', 'icd4', 'icd5'];
+
+  const result = {};
+
+  // Loop through all the ICD10 options
+  for (let i = 0; i < dxOptions.length; i++) {
+    if (i >= dxKeys.length || i >= icdKeys.length) {
+      break;
+    }
+
+    // Check if Choices.js is initialized and if the option value is empty
+    const dxValue = dxOptions[i].choicesInstance?.getValue(true) || '';
+    result[dxKeys[i]] = dxValue;
+  }
+
+  // Get diagnosis inputs
+  const diagnoses = Array.from(inputs).map(input => input.value);
+  console.log(diagnoses);
+
+  // Loop through diagnoses and assign them to the result
+  for (let i = 0; i < diagnoses.length; i += 2) {
+    const dxIndex = Math.floor(i / 2);
+    if (dxIndex >= dxKeys.length || dxIndex >= icdKeys.length) {
+      break;
+    }
+    // const diagnosis = diagnoses[i] || '';
+    result[icdKeys[dxIndex]] = diagnoses[i + 1] || '';
+  }
+
+  // console.log(result);
+
+  // Check if result is empty and return accordingly
+  return Object.keys(result).length === 0 ? { "dx1": "", "icd1": "" } : result;
+}
+
+
+
+
+
+function createObjDataTxTreat() {
+
+  // Select all input elements with the class 'input-tx-treat'
+  const inputs = document.querySelectorAll('.input-tx-treat');
+  // Map the values of these inputs to an array
+  const treatments = inputs.length === 0 ? [] : Array.from(inputs).map(input => input.value);
+
+  const procedureOptions = document.querySelectorAll('.procedure-options');
+
+  // Define keys for treatments, doses, and prices
+  const txKeys = ['tx1', 'tx2', 'tx3', 'tx4', 'tx5', 'tx6', 'tx7', 'tx8', 'tx9', 'tx10'];
+  const doseKeys = ['dose1', 'dose2', 'dose3', 'dose4', 'dose5', 'dose6', 'dose7', 'dose8', 'dose9', 'dose10'];
+  const priceKeys = ['price1', 'price2', 'price3', 'price4', 'price5', 'price6', 'price7', 'price8', 'price9', 'price10'];
+
+  const result = {};
+
+  // Loop through all the procedure options
+  for (let i = 0; i < procedureOptions.length; i++) {
+    if (i >= txKeys.length || i >= doseKeys.length || i >= priceKeys.length) {
+      break;
+    }
+
+    // Check if Choices.js is initialized and if the option value is empty
+    const procedureValue = procedureOptions[i].choicesInstance?.getValue(true) || '';
+    result[txKeys[i]] = procedureValue;
+  }
+
+  // Loop through treatments and assign doses and prices to the result, using Math.floor(i / 3)
+  for (let i = 0; i < treatments.length; i += 3) {
+    const txIndex = Math.floor(i / 3);
+    if (txIndex >= txKeys.length || txIndex >= doseKeys.length || txIndex >= priceKeys.length) {
+      break;
+    }
+    // result[txKeys[txIndex]] = treatments[i] || '';
+    result[doseKeys[txIndex]] = treatments[i + 1] || '';
+    result[priceKeys[txIndex]] = treatments[i + 2] || '';
+  }
+
+  // console.log(result);
+
+  // Check if result is empty and return accordingly
+  return Object.keys(result).length === 0 ? { "tx1": "", "dose1": "", "price1": "" } : result;
+}
+
+
+
+
+
+
+
+
+
+
+
+function createObjDataHmTreat() {
+
+  const inputs = document.querySelectorAll('.input-hm-treat');
+  const homemeds = inputs.length === 0 ? [] : Array.from(inputs).map(input => input.value);
+
+  const drugOptions = document.querySelectorAll('.drug-options'); 
+  const doseOptions = document.querySelectorAll('.dose-options');
+
+  // Define keys for home meds, doses, amounts, and prices
+  const hmKeys = ['hm1', 'hm2', 'hm3', 'hm4', 'hm5', 'hm6', 'hm7', 'hm8', 'hm9', 'hm10'];
+  const doseKeys = ['dose1', 'dose2', 'dose3', 'dose4', 'dose5', 'dose6', 'dose7', 'dose8', 'dose9', 'dose10'];
+  const amountKeys = ['amount1', 'amount2', 'amount3', 'amount4', 'amount5', 'amount6', 'amount7', 'amount8', 'amount9', 'amount10'];
+  const priceKeys = ['price1', 'price2', 'price3', 'price4', 'price5', 'price6', 'price7', 'price8', 'price9', 'price10'];
+
+  const result = {};
+
+  // Loop through all the drug options
+  for (let i = 0; i < drugOptions.length; i++) {
+    if (i >= hmKeys.length) break;
+    
+    // Get drug value and store it in the result
+    const drugValue = drugOptions[i].choicesInstance?.getValue(true) || '';
+    result[hmKeys[i]] = drugValue;
+  }
+
+  // Loop through all the dose options
+  for (let i = 0; i < doseOptions.length; i++) {
+    if (i >= doseKeys.length) break;
+
+    // Get dose value and store it in the result
+    const doseValue = doseOptions[i].choicesInstance?.getValue(true) || '';
+    result[doseKeys[i]] = doseValue;
+  }
+
+  // Loop through homemeds and assign amounts and prices to the result, using Math.floor(i / 3)
+  for (let i = 0; i < homemeds.length; i += 4) {
+    const hmIndex = Math.floor(i / 4);
+    if (hmIndex >= amountKeys.length || hmIndex >= priceKeys.length) break;
+
+    result[amountKeys[hmIndex]] = homemeds[i + 2] || '';
+    result[priceKeys[hmIndex]] = homemeds[i + 3] || '';
+  }
+
+  console.log(result);
+
+  // Check if result is empty and return accordingly
+  return Object.keys(result).length === 0 ? { "hm1": "", "dose1": "", "amount1": "", "price1": "" } : result;
+
+};
+
+
+
+
+
+
+
+function saveDataTreatView(){
+  loadingStart()
+
+  const opdVisitId = document.getElementById('opd_visitid_treat').textContent
+
+  const piObj = {}
+    piObj.wt = document.getElementById('wt_treat').value
+    piObj.ht = document.getElementById('ht_treat').value
+    piObj.bmi = document.getElementById('bmi_treat').value
+    piObj.o2sat = document.getElementById('o2sat_treat').value
+    
+    piObj.bt = document.getElementById('bt_treat').value
+    piObj.sbp = document.getElementById('sbp_treat').value
+    piObj.dbp = document.getElementById('dbp_treat').value
+    piObj.pr = document.getElementById('pr_treat').value
+    piObj.rr = document.getElementById('rr_treat').value
+
+    piObj.cc = document.getElementById('cc_treat').value
+    piObj.pi = document.getElementById('pi_treat').value
+    piObj.ph = document.getElementById('ph_treat').value
+
+    // piObj.previousHosp = document.getElementById('previous_hosp_treat').value
+    piObj.previousHosp = getValueOfChoiceById('previous_hosp_treat')
+    piObj.currentDrug = document.getElementById('current_drug_treat').value
+    piObj.growth = document.getElementById('growth_treat').value
+    piObj.development = document.getElementById('development_treat').value
+    piObj.vaccine = document.getElementById('vaccine_treat').value
+    piObj.vaccineincompleteCause = document.getElementById('vaccine_incomplete_cause_treat').value
+
+
+  const peObj = {}
+    peObj.pe = document.getElementById('pe_treat').value
+    peObj.oe = document.getElementById('oe_treat').value
+
+  const ixObj = {}
+    ixObj.lab = document.getElementById('lab_treat').value
+    ixObj.xray = document.getElementById('xray_treat').value
+    ixObj.us = document.getElementById('us_treat').value
+  
+  const dxObj = createObjDataDxTreat();
+  // console.log(dxObj)
+
+  const txObj = createObjDataTxTreat(); 
+  // console.log(txObj)
+
+  const hmObj = createObjDataHmTreat();
+  // console.log(hmObj)
+
+  const summaryObj = {}
+    summaryObj.sumProcedurePrice = document.getElementById('sum_procedure_price_treat').value
+    summaryObj.sumDfPrice = document.getElementById('sum_df_price_treat').value
+    summaryObj.sumHomemedPrice = document.getElementById('sum_homemed_price_treat').value
+    summaryObj.totalPrice = document.getElementById('total_price_sum_treat').value
+    summaryObj.authenCode = document.getElementById('authen_code_treat').value 
+
+    summaryObj.payType = document.getElementById('pay_type_treat').value
+    summaryObj.payRemain = document.getElementById('pay_remain_treat').value
+    summaryObj.payChannel = document.getElementById('pay_channel_treat').value
+    summaryObj.socialSecurity = document.getElementById('social_security_treat').value
+    summaryObj.doctorNote = document.getElementById('doctor_note_treat').value
+    summaryObj.txPlan = document.getElementById('tx_plan_treat').value
+    summaryObj.doctorName = document.getElementById('user_fullname_status').textContent 
+    summaryObj.doctorId = document.getElementById('user_id_status').textContent  
+
+    summaryObj.dischargeType = document.getElementById('discharge_type_treat').value
+    
+    // summaryObj.refertoHosp =  document.getElementById('referto_hosp_treat').value // getValue of choice   
+
+
+    const choicesInstanceRefertoHosp = elements["referto_hosp_treat"]; 
+ 
+    // get value of Choice js getchoicevalue getvalue of choice
+    // Get the selected value from the Choices.js instance
+    const selectedValueRefertoHosp = choicesInstanceRefertoHosp.getValue(true);  // Passing true returns the value(s) as a string or array
+    // console.log(selectedValueRefertoHosp);
+    summaryObj.refertoHosp = selectedValueRefertoHosp || ""
+
+
+  console.log(summaryObj)
+
+  const opdStatus = document.getElementById('discharge_type_treat').value
+
+  // ส่งไปหลังบ้าน รวมเป็นก้อน obj เพื่อส่งไปหลังบ้าน ภายในแต่ละ obj ต้องเป็น string
+  const treatmentInfo = {}
+    treatmentInfo.opdStatus = opdStatus
+    treatmentInfo.piData = piObj // JSON.stringify(piObj)
+    treatmentInfo.peData = peObj //JSON.stringify(peObj)
+    treatmentInfo.ixData = ixObj //JSON.stringify(ixObj)
+    treatmentInfo.dxData = dxObj //JSON.stringify(dxObj)
+    treatmentInfo.txData = txObj //JSON.stringify(txObj)
+    treatmentInfo.hmData = hmObj //JSON.stringify(hmObj)
+    treatmentInfo.summaryData = summaryObj //JSON.stringify(summaryObj)
+
+  // const treatmentInfo = {...dxInfo,...txInfo}
+  // console.log(treatmentInfo)
+
+
+  // รวม obj ทั้งหมด ส่งไปตารางหน้าบ้าน ส่งเป็น obj
+  const opdVisitInfo = {}
+    opdVisitInfo.opdVisitId = opdVisitId
+    opdVisitInfo.opdStatus = opdStatus
+    opdVisitInfo.piData = piObj
+    opdVisitInfo.peData = peObj
+    opdVisitInfo.ixData = ixObj
+    opdVisitInfo.dxData = dxObj
+    opdVisitInfo.txData = txObj
+    opdVisitInfo.hmData = hmObj
+    opdVisitInfo.summaryData = summaryObj
+
+
+  google.script.run.withSuccessHandler((res)=>{
+    console.log(res) 
+    // resetTableDx();
+    
+    // เปลี่ยนสถานะในตาราง ว่าตรวจเสร็จแล้ว update data
+    elements.tablePending.updateData([opdVisitInfo]);  
+    elements.tableAppointment.updateData([opdVisitInfo]); 
+
+    // showDashboardPending();
+    searchTablePending()
+
+    // loadingEnd();
+    workingEnd('สำเร็จ')
+
+  }).editOpdVisitData(opdVisitId,treatmentInfo);
+  
+
+};
+
+
+
+
+
+
+
+</script>

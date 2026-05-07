@@ -1,0 +1,80 @@
+<script>
+
+
+
+
+
+function searchTableAppointment(){
+    const filterType = document.getElementById("filtertype_table_appointment").value
+
+    let dateInput;
+
+    // Get the input element
+    const dateElement = document.getElementById('datefilter_table_appointment');
+
+    // Check conditions
+    if ( filterType == 1) {
+        // Condition 1: If the input is disabled, use the current date
+        dateInput = getCurrentDate();
+    } else if ( filterType == 3 ) {
+        // Condition 2: If the input is not disabled but empty, use a default date (or handle as needed)
+        dateInput = ""; // Default date (example)
+    } else {
+        // Condition 3: If the input is not disabled and has a value, use its current value
+        dateInput = dateElement.value;
+    }
+    
+    
+    // const dateSelect =  document.getElementById('datefilter_table_appointment').value // วันที่เลือกขณะนั้น
+    // console.log(dateSelect)
+
+    const searchInput = document.getElementById('search_input_table_appointment').value.trim().replace(/\s\s+/g, ' ');
+    // console.log(searchInput)
+    // Removes spaces from the beginning and end of the input and between word
+    // " John   Doe   Smith "  i want this  "John Doe Smith"
+
+    // ค้นหาทั้งตาราง searchtable
+    elements.tableAppointment.setFilter([
+        {field:"appointDate",type: "like",value: dateInput}, // search with and
+        {field:"appointDate",type: "!=",value:""}, // search with and
+        [
+            {field:"hn",type: "like",value: searchInput}, // or
+            {field:"cid",type: "like",value: searchInput}, // or
+            // {field:"firstName",type: "like",value: searchInput}, // or
+            // {field:"lastName",type: "like",value: searchInput}, // or
+            {field:"fullNameSearch",type: "like",value: searchInput}, // or
+        ]
+    ]);
+
+
+    showSideBarStatusForAppointment();
+
+
+};
+
+
+
+
+
+function showAppointDayInTreatView(){
+  const opdVisitId = document.getElementById('opd_visitid_treat').textContent 
+  const opdVisitInfo = elements.tablePending.getRow(opdVisitId).getData(); 
+  // console.log(opdVisitInfo.appointDate)
+
+  const appointDate = opdVisitInfo.appointDate
+
+  const specificDate = new Date(appointDate); // Replace 'YYYY-MM-DD' with your specific date
+  const today = new Date();
+
+  const timeDifference = specificDate - today  ; // Difference in milliseconds
+  const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  // console.log(daysDifference);
+
+  document.getElementById('appointmentday_show_treat').textContent = appointDate
+  document.getElementById('appointmentday_amount_treat').value = daysDifference + 1 // นับรวมวันนี้ด้วย
+  
+
+};
+
+  
+</script>

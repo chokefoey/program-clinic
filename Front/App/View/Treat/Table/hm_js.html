@@ -1,0 +1,105 @@
+
+
+<script>
+
+
+
+
+
+
+function removeEmptyRowsHmTreat() {
+    const rowInput = document.getElementsByClassName('input-hm-row-treat').length
+    console.log(rowInput)
+
+    if( rowInput > 1){
+        // Get all elements with the class '.drug-options' and '.dose-options'
+        const drugOptions = document.querySelectorAll('.drug-options');
+        const doseOptions = document.querySelectorAll('.dose-options');
+
+        // Loop through all the drug options
+        for (let i = 0; i < drugOptions.length; i++) {
+            const drug = drugOptions[i];
+            const dose = doseOptions[i];
+
+            // Check if Choices.js is initialized and if the drug option value is empty or undefined
+            const drugValue = drug.choicesInstance?.getValue(true);
+            const isDrugEmpty = drugValue === undefined || drugValue.length === 0;
+
+            // Check if dose option value is empty or undefined
+            const doseValue = dose.choicesInstance?.getValue(true);
+            const isDoseEmpty = doseValue === undefined || doseValue.length === 0;
+
+            // Only remove the row if both drug and dose options are empty or undefined
+            if (isDrugEmpty && isDoseEmpty) {
+                console.log(`Both drug option ${i + 1} and dose option ${i + 1} are empty or undefined.`);
+
+                // Remove the closest .input-line row
+                const rowToRemove = drug.closest('.input-line');
+                if (rowToRemove) {
+                    rowToRemove.remove();
+                    console.log(`Removed row for empty drug and dose option ${i + 1}.`);
+                }
+            }
+        }
+
+        console.log('Checked all drug and dose options inputs.');
+        return 'done';
+
+    
+    }
+
+    
+};
+
+
+function removeEmptyRowsHmDrugSet() {
+    const rowInput = document.getElementsByClassName('input-hm-row-drugset').length
+    // console.log(rowInput)
+
+    if( rowInput > 1){
+        // Get all elements with the class '.drug-options' and '.dose-options'
+        const drugOptions = document.querySelectorAll('.drug-options');
+        const doseOptions = document.querySelectorAll('.dose-options');
+
+        // Loop through all the drug options
+        for (let i = 0; i < drugOptions.length; i++) {
+            const drug = drugOptions[i];
+            const dose = doseOptions[i];
+
+            // Check if Choices.js is initialized and if the drug option value is empty or undefined
+            const drugValue = drug.choicesInstance?.getValue(true);
+            const isDrugEmpty = drugValue === undefined || drugValue.length === 0;
+
+            // Check if dose option value is empty or undefined
+            const doseValue = dose.choicesInstance?.getValue(true);
+            const isDoseEmpty = doseValue === undefined || doseValue.length === 0;
+
+            // Only remove the row if both drug and dose options are empty or undefined
+            if (isDrugEmpty && isDoseEmpty) {
+                // console.log(`Both drug option ${i + 1} and dose option ${i + 1} are empty or undefined.`);
+
+                // Remove the closest .input-line row
+                const rowToRemove = drug.closest('.input-line');
+                if (rowToRemove) {
+                    rowToRemove.remove();
+                    // console.log(`Removed row for empty drug and dose option ${i + 1}.`);
+                }
+            }
+        }
+
+        // console.log('Checked all drug and dose options inputs.');
+        return 'done';
+
+    
+    }
+
+    
+};
+
+
+
+
+</script>
+
+
+

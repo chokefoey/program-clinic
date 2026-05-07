@@ -1,0 +1,419 @@
+<script>
+
+
+
+
+function showTablePending(tabledata){
+
+    document.getElementById("datefilter_table_pending").value = getCurrentDate();  
+
+    // Modify your tabledata to include the `fullNameSearch` field
+    tabledata.forEach(function(item) {
+        item.fullNameSearch = item.firstName + " " + item.lastName; // Combine first and last name
+    });
+
+
+    // Define the custom formatter function
+    let mergeFormatter = (cell, formatterParams, onRendered)=>{
+        const data = cell.getRow().getData();
+        return data.firstName + " " + data.lastName; // Merge name and surname
+    };
+
+    const currentDay = getCurrentDate();  
+
+    elements.tablePending = new Tabulator("#pending_table", {
+        data:tabledata,           //load row data from array
+        index:"opdVisitId", //set the index field to the "age" field.
+        layout:"fitColumns",      //fit columns to width of table
+        // layout:"fitDataStretch",
+        // layout:"fitDataFill",
+        responsiveLayout:"hide",  //hide columns that don't fit on the table
+        addRowPos:"top",          //when adding a new row, add it to the top of the table
+        selectableRows:1,
+        
+        pagination:"local",       //paginate the data
+        paginationSize:10,         //allow 7 rows per page of data
+        paginationCounter:"rows", //display count of paginated rows in footer
+        movableColumns:true,      //allow column order to be changed
+        initialSort:[             //set the initial sort order of the data
+            {column:"visitTime", dir:"asc"},
+        ],
+
+        initialFilter:[
+            {field:"visitDate", type:"=", value:currentDay}
+        ],
+
+        placeholder:"No Data Available", //display message to user on empty table
+
+    
+        columns:[                 //define the table columns
+            {formatter:"rownum", hozAlign:"center", width:40},
+
+            {title:"VID", field:"opdVisitId", visible:false,download:true},
+            {title:"PID", field:"patientId",visible:false, download:true },
+            {title:"วันที่มา", field:"visitDate", headerFilter:true, formatter:thaiDateFormatterTabu,download:true}, 
+            
+            {title:"เวลา", field:"visitTime" , formatter:timeFormatterTabu,download:true},
+            
+            {title:"ชื่อผู้ป่วย", field:"firstName", visible:false,download:true },
+            {title:"สกุลผู้ป่วย", field:"lastName", visible:false,download:true },
+            
+            // Add the field for searching but keep it hidden
+            {title:"ชื่อ-สกุล (ค้นหา)", field:"fullNameSearch", visible:false, headerFilter:"input",download:true },
+            {title:"ชื่อ-สกุล", field:"fullName",responsive:0, formatter:mergeFormatter,download:false}, // Display the merged result
+            
+
+
+            {title:"HN", field:"incrementHn",download:true },
+            // {title:"CID", field:"cid",download:true },
+
+            {title:"ห้องตรวจ", field:"roomName",download:true }, 
+            {title:"แพทย์", field:"doctorName",download:true },
+            {title:"สถานะ", field:"opdStatus",download:true, formatter:(cell, formatterParams)=>{
+                let value = cell.getValue();
+                // return `<span style='color:#D2691E; '>${value}</span>`
+
+                // if ( value == "นัดแล้ว"){
+                //     return "<span style='color:#7B68EE; '><i class='bi bi-calendar-date'></i> นัดแล้ว</span>";
+
+                // } else 
+                if ( value == "รอตรวจ" || value == "ส่งห้องตรวจ" ) {
+                    return `<span style='color:#D2691E; '><i class='bi bi-hourglass-split'></i> ${value}</span>`
+
+                } else if ( value == "ส่งห้องยา") {
+                    return `<span style='color:#D2691E; '><i class="bi bi-capsule"></i> ${value}</span>`
+
+                } else if ( value == "ส่งการเงิน" ) {
+                    return `<span style='color:#D2691E; '><i class="bi bi-currency-dollar"></i> ${value}</span>`
+
+                } else if ( value == "ส่งนัดหมาย" ) {
+                    return `<span style='color:#D2691E; '><i class="bi bi-calendar-day"></i> ${value}</span>`
+
+                } else if ( value == "จำหน่าย" ) {
+                    return `<span><i class="bi bi-house-check"></i> ${value}</span>`
+
+                } else {
+                    return `<span style='color:#D2691E; '>${value}</span>`
+
+                }
+                    
+            }},
+            
+        ],
+    }); 
+
+
+    elements.tablePending.on("rowClick", (e, row) => {
+        // e - the click event object
+        // row - row component
+        const rowData = row.getData();
+        const patientId = rowData.patientId;
+        const opdVisitId = rowData.opdVisitId;
+
+        // Check if ddOptionsInfo is undefined or not a valid array
+        if (!Array.isArray(ddOptionsInfo) || ddOptionsInfo === undefined) {
+            alert("ยังโหลดข้อมูลไม่เสร็จ รอสักครู่");
+            console.log("Error: ddOptionsInfo is not a valid array or is undefined.")
+            return; // Stop further execution of the function
+
+        } else {
+            loadingStart();
+            setTimeout(() => {
+                loadingEnd();
+
+                // 1. Show view 1 แสดงหน้า 
+                showViewById('treat_view_btn');
+
+                // 2. Get data from tablePatientRegist มาแสดง
+                setDataPatientRegistInfo(patientId, opdVisitId);
+
+                // 3. Get data from tablePending  มาแสดง
+                setDataOpdvisitInfo(opdVisitId);
+
+                // Show appointment day in treat view
+                showAppointDayInTreatView();
+
+                document.getElementById('inlineRadio0_HmTreat').checked = true;
+                document.getElementById('input_amountday_forcalculate').value = 'กำหนดเอง';
+
+                document.getElementById('amountdrugmanual_forhm_input').classList.remove('d-none');
+                document.getElementById('amountday_forhm_input').classList.add('d-none');
+                document.getElementById('appointdate_forhm_input').classList.add('d-none');
+
+                document.getElementById("sidebar_menu").classList.add('d-none');
+                document.getElementById("sidebar_menu").classList.remove('d-lg-block');
+
+                document.getElementById('re_dx_history_btn').classList.remove("invisible");
+                document.getElementById('re_tx_history_btn').classList.remove("invisible");
+                document.getElementById('re_hm_history_btn').classList.remove("invisible");
+
+                setFormInputAndMenuByUserLogin();
+
+            }, 50);
+
+        }
+
+    });
+
+
+
+    elements.tablePending.on("tableBuilt", ()=>{
+        searchTablePending()
+        document.getElementById('section_pending_view').classList.remove('d-none')
+        document.getElementById('placeholder_pending_view').classList.add('d-none')
+
+
+    });
+
+
+};
+
+
+
+
+
+ 
+
+
+
+function searchTablePending(){
+    // ค้นหาภายใต้วันและข้อความค้น
+    const dateInput = document.getElementById('datefilter_table_pending').value
+    // console.log(dateInput)
+    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
+    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
+    // console.log(searchInput)
+   
+    // ค้นหาทั้งตาราง
+    elements.tablePending.setFilter([
+        {field:"visitDate",type: "like",value: dateInput}, // search with and 
+        {field:"visitDate",type: "!=",value: ""}, // search with and // เอาเฉพาะ visit ที่ส่งเข้าห้องตรวจ
+        // {field:"opdStatus",type: "like",value: statusInput}, // search with and
+        [   
+            {field:"hn",type: "like",value: searchInput}, // or
+            {field:"cid",type: "like",value: searchInput}, // or
+            {field:"fullNameSearch",type: "like",value: searchInput}, // or
+            // {field:"firstName",type: "like",value: searchInput}, // or
+            // {field:"lastName",type: "like",value: searchInput}, // or
+
+        ]
+    ]);
+
+    
+    showSideBarStatusForPending();
+    showSideBarStatusForReport();
+
+    showDashboardPending();
+
+};
+
+
+
+
+function filterPendingTotal(){
+    console.log("filterPendingTotal")
+    searchTablePending();
+
+};
+
+     
+function filterPendingWaiting(){
+    // ค้นหาภายใต้วันและข้อความค้น
+    const dateInput = document.getElementById('datefilter_table_pending').value
+    // console.log(dateInput)
+    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
+    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
+    // console.log(searchInput)
+   
+
+    // ค้นหาทั้งตาราง
+    elements.tablePending.setFilter([
+        {field:"visitDate",type: "like",value: dateInput}, // search with and 
+        {field:"visitDate",type: "!=",value: ""}, // search with and // เอาเฉพาะ visit ที่ส่งเข้าห้องตรวจ
+        {field:"opdStatus",type: "like",value: "ส่งห้องตรวจ"}, // search with and
+        [   
+            {field:"hn",type: "like",value: searchInput}, // or
+            {field:"cid",type: "like",value: searchInput}, // or
+            {field:"fullNameSearch",type: "like",value: searchInput}, // or
+ 
+        ]
+    ]);
+
+
+};
+
+
+function filterPendingFinish(){
+    console.log("filterPendingFinish")
+    
+    // ค้นหาภายใต้วันและข้อความค้น
+    const dateInput = document.getElementById('datefilter_table_pending').value
+    // console.log(dateInput)
+    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
+    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
+    // console.log(searchInput)
+   
+    // ค้นหาทั้งตาราง
+    elements.tablePending.setFilter([
+        { field: "visitDate", type: "like", value: dateInput }, // AND
+        { field: "visitDate", type: "!=", value: "" }, // AND
+        // Group the OR conditions
+        [
+            { field: "opdStatus", type: "like", value: "ส่งห้องยา" }, // OR
+            { field: "opdStatus", type: "like", value: "ส่งการเงิน" }, // OR
+            { field: "opdStatus", type: "like", value: "ส่งนัดหมาย" }, // OR
+        ],
+        // Another OR group
+        [
+            { field: "hn", type: "like", value: searchInput }, // OR
+            { field: "cid", type: "like", value: searchInput }, // OR
+            { field: "fullNameSearch", type: "like", value: searchInput } // OR
+        ]
+    ]);
+
+
+};
+
+
+
+
+function filterPendingDischarge(){
+    console.log("filterPendingDischarge")
+     
+    // ค้นหาภายใต้วันและข้อความค้น
+    const dateInput = document.getElementById('datefilter_table_pending').value
+    // console.log(dateInput)
+    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
+    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
+    // console.log(searchInput)
+   
+    // ค้นหาทั้งตาราง
+    elements.tablePending.setFilter([
+        { field: "visitDate", type: "like", value: dateInput }, // AND
+        { field: "visitDate", type: "!=", value: "" }, // AND
+        { field: "opdStatus", type: "like", value: "จำหน่าย" }, // OR
+         
+        // Another OR group
+        [
+            { field: "hn", type: "like", value: searchInput }, // OR
+            { field: "cid", type: "like", value: searchInput }, // OR
+            { field: "fullNameSearch", type: "like", value: searchInput } // OR
+        ]
+    ]);
+
+
+};
+
+
+function filterPendingPharmacy(){
+    console.log("filterPendingPharmacy")
+    // elements.tablePending.setFilter([
+    //     // {field:"visitDate",type: "like",value: dateInput}, // search with and 
+    //     // {field:"visitDate",type: "!=",value: ""}, // search with and // เอาเฉพาะ visit ที่ส่งเข้าห้องตรวจ
+    //     // {field:"opdStatus",type: "like",value: statusInput}, // search with and
+    //     [   
+    //         {field:"opdStatus",type: "like",value: "ส่งห้องยา"}, // or
+    //         // {field:"opdStatus",type: "like",value: "ส่งห้องยา"}, // or
+    //         // {field:"opdStatus",type: "like",value: "ส่งการเงิน"}, // or
+            
+
+    //     ]
+    // ]);
+
+    // ค้นหาภายใต้วันและข้อความค้น
+    const dateInput = document.getElementById('datefilter_table_pending').value
+    // console.log(dateInput)
+    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
+    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
+    // console.log(searchInput)
+   
+    // ค้นหาทั้งตาราง
+    elements.tablePending.setFilter([
+        { field: "visitDate", type: "like", value: dateInput }, // AND
+        { field: "visitDate", type: "!=", value: "" }, // AND
+        { field: "opdStatus", type: "like", value: "ส่งห้องยา" }, // AND
+        
+        // Another OR group
+        [
+            { field: "hn", type: "like", value: searchInput }, // OR
+            { field: "cid", type: "like", value: searchInput }, // OR
+            { field: "fullNameSearch", type: "like", value: searchInput } // OR
+        ]
+    ]);
+
+
+
+};
+
+
+function filterPendingFinance(){
+    console.log("filterPendingFinance")
+    // elements.tablePending.setFilter([
+    //     // {field:"visitDate",type: "like",value: dateInput}, // search with and 
+    //     // {field:"visitDate",type: "!=",value: ""}, // search with and // เอาเฉพาะ visit ที่ส่งเข้าห้องตรวจ
+    //     // {field:"opdStatus",type: "like",value: statusInput}, // search with and
+    //     [   
+    //         {field:"opdStatus",type: "like",value: "ส่งการเงิน"}, // or
+    //         // {field:"opdStatus",type: "like",value: "ส่งห้องยา"}, // or
+    //         // {field:"opdStatus",type: "like",value: "ส่งการเงิน"}, // or
+            
+
+    //     ]
+    // ]);
+
+    // ค้นหาภายใต้วันและข้อความค้น
+    const dateInput = document.getElementById('datefilter_table_pending').value
+    // console.log(dateInput)
+    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
+    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
+    // console.log(searchInput)
+   
+    // ค้นหาทั้งตาราง
+    elements.tablePending.setFilter([
+        { field: "visitDate", type: "like", value: dateInput }, // AND
+        { field: "visitDate", type: "!=", value: "" }, // AND
+        { field: "opdStatus", type: "like", value: "ส่งการเงิน" }, // AND
+        
+        // Another OR group
+        [
+            { field: "hn", type: "like", value: searchInput }, // OR
+            { field: "cid", type: "like", value: searchInput }, // OR
+            { field: "fullNameSearch", type: "like", value: searchInput } // OR
+        ]
+    ]);
+
+};
+        
+
+function filterPendingAppointment(){
+    console.log("filterPendingAppointment")
+    
+    // ค้นหาภายใต้วันและข้อความค้น
+    const dateInput = document.getElementById('datefilter_table_pending').value
+    // console.log(dateInput)
+    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
+    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
+    // console.log(searchInput)
+   
+    // ค้นหาทั้งตาราง
+    elements.tablePending.setFilter([
+        { field: "visitDate", type: "like", value: dateInput }, // AND
+        { field: "visitDate", type: "!=", value: "" }, // AND
+        { field: "opdStatus", type: "like", value: "ส่งนัดหมาย" }, // AND
+        
+        // Another OR group
+        [
+            { field: "hn", type: "like", value: searchInput }, // OR
+            { field: "cid", type: "like", value: searchInput }, // OR
+            { field: "fullNameSearch", type: "like", value: searchInput } // OR
+        ]
+    ]);
+
+};
+
+
+
+
+
+
+</script>

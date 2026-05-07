@@ -1,0 +1,82 @@
+
+
+
+
+
+ 
+
+
+
+<div class="modal fade"  id="dropdown_option_modal"  tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary bg-opacity-10">
+        
+        <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+
+      </div>
+      <div class="modal-body bg-secondary bg-opacity-10">
+        <div class="w-100 text-center mb-2"> 
+          <h3>
+            <span>เพิ่มตัวเลือก</span>
+          </h3>
+        </div>
+
+        <form id="dropdown_option_form">
+          <div class="row mt-1">
+            <div class="col-md-6 mt-2">
+              <label class="form-label">หมวดตัวเลือก</label>
+              <input type="text" class="form-control text-primary" id="dd_option_name" disabled>
+            </div>
+            <div class="col-md-6 mt-2">
+              <label class="form-label">Key</label>
+              <select class="d-none form-control" name="ddOptionCategory" id="dd_option_category" >
+                
+              </select>
+            </div>
+          </div>
+
+          <div class="h4 pb-2 mb-2 mt-3 text-danger border-bottom border-danger">
+            กรอกข้อมูลด้านล่างให้ครบทุกช่อง
+          </div>
+
+          <div class="row mt-1">
+            <div class="col-md mt-2">
+              <label class="form-label">
+                <span id="option_val1_name">ค่าที่ 1</span>
+              </label>
+              <input type="text" class="form-control text-primary" name="ddOptionVal1" oninput="this.value = this.value.replace(/\//g, '')" id="dd_option_val1" >
+            </div>
+          </div>
+          <div class="row mt-1">
+            <div class="col-md mt-2">
+              <label class="form-label">
+                <span id="option_val2_name">/ค่าที่ 2</span>
+              </label>
+              <input type="text" class="form-control text-primary" name="ddOptionVal2" oninput="this.value = this.value.replace(/\//g, '')"   id="dd_option_val2" >
+            </div>
+          </div>
+          <div class="row mt-1">
+            <div class="col-md mt-2">
+              <label class="form-label">
+                <span id="option_val3_name">/ค่าที่ 3</span>
+              </label>
+              <input type="text" class="form-control text-primary" name="ddOptionVal3" oninput="this.value = this.value.replace(/\//g, '')"   id="dd_option_val3" >
+            </div>
+          </div>
+          
+        </form>
+       
+
+       
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary"  id="add_option_btn">เพิ่มตัวเลือก</button>
+        <button type="button" class="d-none btn btn-danger" id="delete_option_btn">ลบตัวเลือก</button>
+       </div>
+    </div>
+  </div>
+</div>
+ 
+

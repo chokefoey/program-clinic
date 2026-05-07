@@ -1,0 +1,91 @@
+
+
+
+<div class="modal fade" id="calendar_view_modal"  tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary bg-opacity-10">
+
+        <button type="button" class="d-none btn btn-secondary shadow my-btn"  onclick="calendarModalToAppointmentModal()" id="calendarModal_To_AppointmentModal_btn"><i class="bi bi-arrow-return-left"></i> ย้อนกลับ</button>
+
+        <div class="w-100 text-center"> <!-- Added a div with w-100 and text-center -->
+          <h5 class="modal-title">คลิ๊กวันที่ในปฏิทิน</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- <button type="button" class="btn btn-success shadow my-btn"  onclick="closeModalCalendar()" ><i class="bi bi-x-lg"></i> ปิดหน้าต่าง</button> -->
+        
+      </div>
+      <div class="modal-body">
+        <div class="row mt-1">
+          
+           
+            <div class="input-group mb-3 g-3">
+              <span>
+                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                  <input type="radio" class="btn-check" name="btnradio_amountday_calendar" id="btnradio1_amountday_calendar" autocomplete="off" >
+                  <label class="btn btn-outline-secondary" for="btnradio1_amountday_calendar">ตัวเลือก</label>
+                  <input type="radio" class="btn-check" name="btnradio_amountday_calendar" id="btnradio2_amountday_calendar" autocomplete="off">
+                  <label class="btn btn-outline-secondary" for="btnradio2_amountday_calendar">ระบุจำนวน</label>
+                </div>
+              </span>
+              &nbsp;
+              <div class="col-md-6">
+                <div class="d-none" id="select_amountday_calendar_div">
+                  <select class="form-select" id="select_amountday_calendar"> 
+                    <option value="" selected></option>
+                    <option value="1">1 Wk (1 Wk)</option>
+                    <option value="2">2 Wk (2 Wk)</option>
+                    <option value="3">3 Wk (3 Wk)</option>
+                    <option value="4">1 Mo (4 Wk)</option>
+                    <option value="8">2 Mo (8 Wk)</option>
+                    <option value="12">3 Mo (12 Wk)</option>
+                    <option value="16">4 Mo (16 Wk)</option>
+                    <option value="20">5 Mo (20 Wk)</option>
+                    <option value="24">6 Mo (24 Wk)</option>
+                  </select>
+                </div>
+                
+                <div class="d-none" id="input_amountday_calendar_div" >
+                  <div class="input-group ">
+                    <input type="number" class="form-control" placeholder="จำนวนวันที่ต้องการ..." id="input_amountday_calendar">
+                    <span class="input-group-text" id="basic-addon2">วัน</span>
+                  </div>
+                   
+                </div>
+                
+              </div>
+              
+              
+            </div>
+           
+            
+          
+        </div>
+
+
+        <div class="row mt-1 mb-1 justify-content-center" >
+          <div class="col-sm-12 mb-1 mb-sm-0 ">
+              <div class="card bg-secondary bg-opacity-10">
+                  <div class="card-body">
+                      <div class="row">
+                          <div class="col">
+                              <center><div class="col-12"  id="calendar_2"></div></center>
+                          </div>
+                      </div>
+                          
+                  </div>
+              </div>
+          </div>
+      </div>
+        
+        
+        <!-- <center><div class="col mt-2"  id="calendar_2"></div></center> -->
+
+          
+      </div>
+       
+    </div>
+  </div>
+</div>
+ 
+

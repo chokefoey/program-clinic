@@ -1,0 +1,805 @@
+
+
+<div class="col d-none" id="treat_view">
+  <div class="" id="non_selected_patient_view_treat">
+    <div class="d-flex justify-content-end">
+      <button type="button" class="btn btn-danger shadow my-btn mt-2"  onclick="closeTreatView_afterpageload()"><i class="bi bi-x-lg"></i> ปิดหน้าต่าง</button>
+    </div>
+    <div class="container-fluid">
+      <div class="row min-vh-100 align-items-center">
+        <div class="col-12 text-center">
+          <h1>ยังไม่ได้เลือกผู้ป่วย!</h1>
+          <p>กรุณาเลือกผู้ป่วยในหน้ารอรับบริการ</p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+
+  <div class="d-none" id="selected_patient_view_treat">
+
+    <div class="col-md mt-2 text-end" style="position: fixed; top: 50px; left: 12px; z-index: 1000;">
+      <div class="col-md">
+        <div class="btn-group " role="group"  >
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-success dropdown-toggle my-btn" data-bs-toggle="dropdown" aria-expanded="false">
+              พิมพ์
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item pointer" id="open_modal_opdcard_btn">OPD Card</a></li>
+              
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item pointer" id="print_sticker_drug_btn">สติ๊กเกอร์ยา</a></li>
+              
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item pointer" id="open_modal_medcernorm_btn" >ใบรับรองแพทย์ 5 โรค</a></li>
+              <li><a class="dropdown-item pointer" id="open_modal_medcerdrive_btn">ใบรับรองแพทย์ ขับขี่</a></li>
+              <li><a class="dropdown-item pointer" id="open_modal_medcersick_btn">ใบรับรองแพทย์ ป่วย</a></li>
+
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item pointer" id="open_modal_receipt_btn">ใบเสร็จรับเงิน</a></li>
+              
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item pointer" id="open_modal_refer_btn">ใบส่งตัว</a></li>
+            </ul>
+          </div>
+        </div>
+        <button type="button" class="btn btn-success shadow my-btn" id="open_modal_history_treat_btn">ประวัติ</button>
+        <button type="button" class="btn btn-success shadow my-btn" id="open_modal_appointment_btn">นัดหมาย</button>
+        <button type="button" class="btn btn-success shadow my-btn" onclick="openModalPatientInfoFromTreatView()" id="open_modal_patientinfo_from_treat_view_btn">ข้อมูลทั่วไป</button>
+        <button type="button" class="btn btn-success shadow my-btn" id="open_modal_changeroom_btn">เปลี่ยนห้อง</button>
+
+        
+      </div>
+    </div>
+
+    <div class="col-md mt-2 text-end" style="position: fixed; top: 50px; right: 12px; z-index: 1000;">
+      <button type="button" class="btn btn-danger shadow my-btn" onclick="closeTreatView()">
+        <i class="bi bi-x-lg"></i> ปิดหน้าต่าง
+      </button>
+    </div>
+
+    <!-- ข้อมูลทั่วไป ---------------------->
+    <div class="card mb-1 mt-5 bg-success bg-opacity-25 shadow" >
+      <div class="row gx-1" >
+        <div class="col-md-2">
+          <div class="card-body">
+            <center><img src="" width="50" height="50" class="img-fluid rounded-center" id="patient_pic" ></center>
+            <center>
+              <span id="patient_fname_treat"></span>&nbsp;
+              <span id="patient_lname_treat"></span>
+            </center>
+          </div>
+        </div>
+        <div class="col-md-2"> 
+          <div class="card-body">
+              <p class="d-none" id="devmodeshow_referenceid_treat_form">
+                <span class="fw-bold">PID: </span>
+                <span class="" id="patient_id_treat"></span>
+                <br>
+                <span class=" fw-bold">VID: </span>
+                <span class="" id="opd_visitid_treat"></span>
+              </p>
+              <p class="mt-3"  >
+                <span class="">วันที่มา </span>
+                <span class="" id="date_visit_treat"></span>
+                <br>
+                <span class="">เวลา </span>
+                <span class="" id="time_visit_treat"></span>
+                <span class=""> น.</span>
+              </p>
+          </div>
+        </div>
+        <div class="col-md-8"> 
+          <div class="card-body">
+            <p class="card-text">
+              <!-- <span class="fw-bold">ชื่อไทย: </span>
+              <span id="patient_fname_treat"></span> 
+              <span id="patient_lname_treat"></span>&nbsp; -->
+              <!-- <span class="fw-bold">ชื่ออังกฤษ:</span>
+              <span id="patient_fname_eng_treat"></span>
+              <span id="patient_lname_eng_treat"></span>&nbsp; -->
+              <span class="fw-bold">วันเกิด: </span>
+              <span id="patient_birthday_treat"></span>&nbsp;
+              <span class="fw-bold">อายุ: </span>
+              <span id="patient_age_treat"></span>&nbsp;
+              <span class="fw-bold">เพศ: </span>
+              <span id="patient_gender_treat"></span>
+              <span class="fw-bold">HN: </span>
+              <span id="patient_hn_treat"></span>&nbsp;
+
+              <br>
+              <span class="fw-bold">CID: </span>
+              <span id="patient_cid_treat"></span>&nbsp;
+              <span class="fw-bold">เบอร์โทร: </span>
+              <span id="patient_tel_treat"></span>&nbsp;
+              <span class="fw-bold">สิทธิการรักษา: </span>
+              <span id="patient_healthwelfare_treat"></span>
+
+              <br>
+              <span class="fw-bold">ที่อยู่: </span>
+              <span id="patient_address_treat"></span>&nbsp;
+              <!-- <span class="fw-bold">Address: </span>
+              <span id="patient_address_eng_treat"></span> -->
+              <br>
+              <span class="fw-bold">โรคประจำตัว: </span>
+              <span id="patient_ud_treat"></span>&nbsp;
+              <span class="fw-bold" id="patient_fname_treat">แพ้ยา: </span>
+              <span id="patient_allergy_treat"></span>&nbsp;
+              <span class="fw-bold" >หมายเหตุ: </span>
+              <span id="patient_note_treat"></span>
+              
+            </p>
+          </div>
+        </div>
+
+        
+
+         
+      </div>
+    </div>
+
+    <!-- menu print button ---------------------->
+    <div class="row mt-2">
+      <p class="text-end">
+        <span>ค่าหัตถการ</span>
+        <span class="fw-bold" id="sum_procedure_price_small_treat"></span>
+        <span>บาท,</span>
+        
+        <span>ค่าแพทย์(DF)</span>
+        <span class="fw-bold" id="sum_df_price_small_treat"></span>
+        <span>บาท,</span>
+
+        <span>ค่ายากลับบ้าน</span>
+        <span class="fw-bold" id="sum_homemed_price_small_treat"></span>
+        <span>บาท,</span>
+
+        <span>รวมราคา</span>
+        <span class="fw-bold" id="total_price_sum_small_treat"></span>
+        <span>บาท</span>
+      </p>
+      
+    </div>
+
+    
+    <!-- nav-tabs ---------------------->
+    <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="ccpi-tab" data-bs-toggle="tab" data-bs-target="#ccpi-tab-pane" type="button" role="tab" aria-controls="ccpi-tab-pane" aria-selected="true"><i class="bi bi-chat-dots-fill"></i> Present Ill</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="pe-tab" data-bs-toggle="tab" data-bs-target="#pe-tab-pane" type="button" role="tab" aria-controls="pe-tab-pane" aria-selected="false"><i class="bi bi-universal-access"></i> Physical Ex</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="ix-tab" data-bs-toggle="tab" data-bs-target="#ix-tab-pane" type="button" role="tab" aria-controls="ix-tab-pane" aria-selected="false"><i class="bi bi-lungs-fill"></i> Investigate</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="dx-tab" data-bs-toggle="tab" data-bs-target="#dx-tab-pane" type="button" role="tab" aria-controls="dx-tab-pane" aria-selected="false"><i class="bi bi-heart-pulse-fill"></i> Diagnosis</button>
+      </li>
+      
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tx-tab" data-bs-toggle="tab" data-bs-target="#tx-tab-pane" type="button" role="tab" aria-controls="tx-tab-pane" aria-selected="false"><i class="bi bi-tools"></i> Procedure</button>
+      </li>
+
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="hm-tab" data-bs-toggle="tab" data-bs-target="#hm-tab-pane" type="button" role="tab" aria-controls="hm-tab-pane" aria-selected="false"><i class="bi bi-capsule"></i> HomeMed</button>
+      </li>
+      
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary-tab-pane" type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="false"><i class="bi bi-receipt"></i> Summary</button>
+      </li>
+      <li class="nav-item d-none" role="presentation">
+        <button class="nav-link" id="appointment-tab" data-bs-toggle="tab" data-bs-target="#appointment-tab-pane" type="button" role="tab" aria-controls="appointment-tab-pane" aria-selected="false"><i class="bi bi-calendar-plus"></i> Appointment</button>
+      </li>
+      
+      
+    </ul>
+
+    <div class="tab-content shadow p-3 mb-3 rounded bg-success bg-opacity-10" >
+
+      <!-- ซักประวัติ ---------------------->
+      <div class="tab-pane fade show active " id="ccpi-tab-pane" role="tabpanel" aria-labelledby="ccpi-tab" tabindex="0">
+        <form id="ccpi_form_treat">
+          <div class="h4 pb-2 mb-2 mt-2 text-danger border-bottom border-danger">
+            V/S
+          </div>
+          <div class="row mt-1">
+              <div class="col-md">
+                <label class="form-label">น้ำหนัก(kg)</label>
+                <input type="text" maxlength="5" oninput="formatWtHt(this)" class="form-control" id="wt_treat">   
+              </div>
+              <div class="col-md">
+                <label class="form-label">ส่วนสูง(cm)</label>
+                <input type="text" maxlength="5" oninput="formatWtHt(this)" class="form-control" id="ht_treat">
+              </div>
+              <div class="col-md">
+                <label class="form-label">BMI</label>
+                <input type="number" max="200" class="form-control" id="bmi_treat" disabled>
+              </div>
+              <div class="col-md">
+                <label class="form-label">O2Sat</label>
+                <input type="text" maxlength="3" oninput="formatSat(this)" class="form-control" id="o2sat_treat">
+              </div>
+          </div>
+          <div class="row mt-1">
+            <div class="col-md">
+              <label class="form-label">อุณหภูมิ</label> 
+              <input type="text" maxlength="5" oninput="formatBT(this)" class="form-control" id="bt_treat">
+            </div>
+            <div class="col-md">
+              <label class="form-label">SBP</label>
+              <input type="text" maxlength="3" oninput="formatSBP(this)" class="form-control" id="sbp_treat">
+            </div>
+            <div class="col-md">
+              <label class="form-label">DBP</label>
+              <input type="text" maxlength="3" oninput="formatDBP(this)" class="form-control" id="dbp_treat">
+            </div>
+            <div class="col-md">
+                <label class="form-label">ชีพจร</label>
+                <input type="text" maxlength="3" oninput="formatPR(this)" class="form-control" id="pr_treat">
+            </div>
+            <div class="col-md">
+                <label class="form-label">หายใจ</label>
+                <input type="text" maxlength="2" oninput="formatRR(this)" class="form-control" id="rr_treat">
+            </div>
+          </div>
+          <div class="row mt-1">
+            <div class="col-md">
+              
+            </div>
+          </div>
+
+          <div class="h4 pb-2 mb-2 mt-3 text-danger border-bottom border-danger">
+            ซักประวัติ
+          </div>
+
+          <div class="row mt-1">
+            <div class="col-md-6">
+              <label for="cc_treat" class="form-label mt-2">อาการสำคัญ</label>
+              <input type="search" class="form-control" list="datalistOptions_cc" id="cc_treat" >
+              <datalist id="datalistOptions_cc">
+                
+              </datalist>
+              <label class="form-label">อาการ</label>
+              <textarea class="form-control" id="pi_treat" style="height: 140px"></textarea>
+              <label class="form-label">การรักษาก่อนหน้า</label>
+              <select class="form-control " id="previous_hosp_treat" >
+                
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label mt-2">ประวัติอดีต</label>
+              <textarea class="form-control" id="ph_treat" style="height: 120px"></textarea>
+              <label class="form-label mt-2">ยาที่ใช้ปัจจุบัน</label>
+              <textarea class="form-control" id="current_drug_treat" style="height: 120px"></textarea>
+            </div>
+          </div>
+           
+
+          <div class="h4 pb-2 mb-2 mt-3 text-danger border-bottom border-danger">
+            กรณีเด็กอายุ 0-12 ปี
+          </div>
+           
+
+          <div class="row ">
+            <div class="col-md" >
+              <label class="form-label">การเจริญเติบโต</label>
+              <select class="form-select" id="growth_treat">
+                <option value="" selected></option>
+                <option value="สมวัย" >สมวัย</option>
+                <option value="ไม่สมวัย">ไม่สมวัย</option>
+              </select>
+            </div>
+            <div class="col-md" >
+              <label class="form-label">พัฒนาการ</label>
+              <select class="form-select" id="development_treat">
+                <option value="" selected></option>
+                <option value="ปกติ">ปกติ</option>
+                <option value="ไม่ปกติ">ไม่ปกติ</option>
+              </select>
+            </div>
+            <div class="col-md" >
+              <label class="form-label">ประวัติการรับวัคซีน</label>
+              <select class="form-select" id="vaccine_treat">
+                <option value="" selected></option>
+                <option value="ครบ" >ครบ</option>
+                <option value="ไม่ครบ">ไม่ครบ</option>
+              </select>
+            </div>
+            <div class="col-md" >
+              <label class="form-label">กรณีไม่ครบ ระบุ..</label>
+              <input type="text" class="form-control" id="vaccine_incomplete_cause_treat" >
+            </div>
+
+          </div>
+
+        </form>
+        
+      </div>
+
+      <!-- ตรวจร่างกาย -------------------->
+      <div class="tab-pane fade" id="pe-tab-pane" role="tabpanel" aria-labelledby="pe-tab" tabindex="0">
+        <form id="pe_form_treat">
+          <div class="row mt-1">
+            <div class="col-md-6">
+              <label class="form-label">ตรวจร่างกาย</label>
+              <textarea class="form-control" id="pe_treat" style="height: 200px"></textarea> 
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ตรวจช่องปาก(Oral exam)</label>
+              <textarea class="form-control" id="oe_treat" style="height: 200px"></textarea>
+            </div>
+          </div>
+        </form>
+        
+      </div>
+
+      <!-- Investigation --------------->
+      <div class="tab-pane fade" id="ix-tab-pane" role="tabpanel" aria-labelledby="ix-tab" tabindex="0">
+        <form id="ix_form_treat">
+          <div class="row mt-1">
+            <div class="col">
+              <label class="form-label">ผล LAB</label>
+              <textarea class="form-control" id="lab_treat" style="height: 90px"></textarea>
+            </div>
+          </div>
+          <div class="row mt-1">
+            <div class="col">
+              <label class="form-label">ผล IMAGING(X-ray/CT/MRI)</label>
+              <textarea class="form-control" id="xray_treat" style="height: 90px"></textarea>
+            </div>
+          </div>
+          <div class="row mt-1">
+            <div class="col">
+              <label class="form-label">ผล U/S</label>
+              <textarea class="form-control" id="us_treat" style="height: 90px"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- วินิจฉัย ----------------------->
+      <div class="tab-pane fade" id="dx-tab-pane" role="tabpanel" aria-labelledby="dx-tab" tabindex="0">
+        <div class="row mt-1 justify-content-end">
+          <div>
+            <button type="button" class="btn btn-secondary" onclick="openModalDropDownOptions();" id="openmodal_add_icd10_treatview_btn">
+              <i class="bi bi-folder-plus"></i> เพิ่มวินิฉัยใหม่
+            </button>
+          </div>
+        </div>
+
+        <form class="row mt-1 p-1 text-black" id="form_table_dx_treat">
+          
+          <table class="table table-bordered table-sm table-hover" id="table_dx_treat"> 
+            <thead class ="table-secondary">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">วินิจฉัย</th>
+                <th scope="col">รายละเอียด</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+              
+            <tbody id="input_dx_treat"> 
+              <!-- Rows will be added here -->
+
+            </tbody>
+
+            
+ 
+            <template id="input_dx_template_treat">
+              <tr class="input-line input-dx-row-treat">
+                <td class="text-center align-middle" style="max-width: 100px;" ></td>
+                <td class="col-5">
+                  <div>
+                    <select class="icd10-options form-control input-dx-treat" > 
+                      
+                    </select>
+                  </div>
+                </td>
+                <td class="col-6"> 
+                  <div>
+                    <input type="text" class="form-control input-dx-treat" >
+                  </div>
+                </td>
+                <td class="col-1 text-center align-middle">
+                  <div>
+                    <button type="button" class="btn btn-outline-danger remove-input-dx-treat">ลบ</button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+
+          </table>
+
+          <div class="row justify-content-end">
+            <div>
+              <button type="button" class="btn btn-secondary add-input-dx-treat">+ เพิ่ม</button>
+            </div>
+          </div>
+          
+        </form>
+
+      </div>
+
+      <!-- รักษา หัตถการ ------------------------>
+      <div class="tab-pane fade" id="tx-tab-pane" role="tabpanel" aria-labelledby="tx-tab" tabindex="0">
+        <div class="row mt-1 justify-content-end">
+          <div>
+            <button type="button" class="btn btn-secondary" onclick="openModalProcedureAdd();" id="openmodal_add_procedure_treatview_btn">
+              <i class="bi bi-folder-plus"></i> เพิ่มหัตถการใหม่
+            </button>
+          </div>
+        </div>
+        <form class="row mt-1 p-1 text-black" id="form_table_tx_treat">
+          <table class="table table-bordered table-sm table-hover" id="table_tx_treat"> 
+            <thead class ="table-secondary">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">สั่งการรักษา</th>
+                <th scope="col">รายละเอียด</th>
+                <th scope="col">ราคา</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+              
+            <tbody id="input_tx_treat">
+              <!-- Rows will be added here -->
+
+            </tbody>
+              
+ 
+            <template id="input_tx_template_treat">
+              <tr class="input-line input-tx-row-treat">
+                <td class="text-center align-middle" style="max-width: 50px;"></td>
+                <td class="col-4">
+                  <div>
+                    <select class="procedure-options form-control input-tx-treat" >
+
+                    </select>
+                  </div>
+                </td>
+                <td class="col-5">
+                  <input class="form-control input-tx-treat" list="datalistOptions_detail_treat" type="search">
+                  <datalist id="datalistOptions_detail_treat"> </datalist>
+                </td>
+                <td class="col-2"><input type="number" min="0" class="form-control input-tx-treat input-price-procedure"></td>
+                <td class="col-1 text-center align-middle">
+                  <div>
+                    <button type="button" class="btn btn-outline-danger remove-input-tx-treat">ลบ</button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+              
+          </table>
+
+          <div class="row justify-content-end">
+            <div>
+              <button type="button" class="btn btn-secondary add-input-tx-treat">+ เพิ่ม</button>
+            </div>
+          </div>
+
+
+        </form>
+      </div>
+
+      <!-- homemed ยากลับบ้าน ----------------------->
+      <div class="tab-pane fade" id="hm-tab-pane" role="tabpanel" aria-labelledby="hm-tab" tabindex="0">
+        <div class="row mt-1 d-flex justify-content-between">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-secondary"  onclick="openModalAddDrug()"  id="openmodal_drugsinfo_treatview_btn">
+              <i class="bi bi-folder-plus"></i> เพิ่มยาใหม่
+            </button>
+            <button type="button" class="btn btn-secondary"  onclick="openModalDropDownOptions()" id="openmodal_add_dose_treatview_btn">
+              <i class="bi bi-folder-plus"></i> เพิ่มวิธีใช้ใหม่
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="openModalDrugSets()" id="openmodal_drugsset_treatview_btn">
+              <i class="bi bi-eye"></i> ดูยาชุด
+            </button>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check form-check-inline ">
+              <span class="text-black">คำนวนจำนวนยา</span>
+            </div>
+            <div class="form-check form-check-inline ">
+              <input class="form-check-input pointer inlineRadioOptionsHmTreat" type="radio" name="inlineRadioOptionsHmTreat" id="inlineRadio0_HmTreat" value="" checked>
+              <label class="form-check-label pointer text-black" for="inlineRadio0_HmTreat">กำหนดเอง</label>
+            </div>
+            <div class="form-check form-check-inline ">
+              <input class="form-check-input pointer inlineRadioOptionsHmTreat" type="radio" name="inlineRadioOptionsHmTreat" id="inlineRadio1_HmTreat" value="" >
+              <label class="form-check-label pointer text-success" for="inlineRadio1_HmTreat">ตามจำนวนวัน</label>
+            </div>
+            <div class="form-check form-check-inline pointer">
+              <input class="form-check-input pointer inlineRadioOptionsHmTreat" type="radio" name="inlineRadioOptionsHmTreat" id="inlineRadio2_HmTreat" value="อัตโนมัติตามวันนัด">
+              <label class="form-check-label pointer text-danger" for="inlineRadio2_HmTreat">อัตโนมัติตามวันนัด</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row mt-1 justify-content-end">
+          <!-- *** ซ่อนไว้ เอาไว้คำนวนเท่านั้น ***  -->
+          <div class="d-none col-md-5 text-end" id="amountday_forcalculate_input">
+            <div class="input-group flex-nowrap">
+              <span class="input-group-text">จำนวนวันสำหรับอ้างอิง</span>
+              <input type="text" class="form-control text-success" placeholder="0" value="กำหนดเอง"  id="input_amountday_forcalculate" >
+              <span class="input-group-text text-success" >วัน</span>
+            </div>
+          </div>
+          
+          <div class="d-none col-md-5 text-end" id="amountdrugmanual_forhm_input">
+            <div class="input-group flex-nowrap">
+              <!-- <span class="input-group-text text-success">กรุณาระบุชื่อยา การใช้และจำนวน ให้ครบ</span> -->
+              <input type="text" class="form-control text-black" placeholder="กรุณาระบุชื่อยา การใช้และจำนวน ให้ครบ" disabled>
+            </div>
+          </div>
+
+          <div class="d-none col-md-5 text-end" id="amountday_forhm_input">
+            <div class="input-group flex-nowrap">
+              <span class="input-group-text text-success" >ระบุจำนวนวันที่ต้องการ</span>
+              <input type="number" min="0" class="form-control text-success" placeholder="0" id="input_amountday_forhm" >
+              <span class="input-group-text text-success" >วัน</span>
+            </div>
+          </div>
+
+          <div class="d-none col-md-5 text-end" id="appointdate_forhm_input">
+            <div class="input-group flex-nowrap">
+              <span class="input-group-text text-danger">วันนัด</span>
+              <span class="input-group-text text-danger" id="appointmentday_show_treat"></span>
+              <span class="input-group-text text-danger" >จำนวน</span>
+              <input type="number" class="form-control text-danger" placeholder="0" id="appointmentday_amount_treat" disabled>
+              <span class="input-group-text text-danger" >วัน</span>
+            </div>
+          </div>
+
+          
+        </div>
+
+        <form class="row mt-1 p-1 text-black" id="form_table_hm_treat">
+          <table class="table table-bordered table-sm table-hover" id="table_hm_treat"> 
+            <thead class ="table-secondary">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">ชื่อยา/หน่วย/ราคาต่อหน่วย/ข้อบ่งชี้/รหัส</th>
+                <th scope="col">วิธีใช้/ชื่อเต็ม/จน.ต่อวัน</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-title="จน.หน่วยทั้งหมด = จน.หน่วยต่อวัน x จำนวนวัน">จำนวน</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-title="ราคารวมต่อรายการ = ราคาต่อหน่วย x จน.หน่วยทั้งหมด">ราคารวม</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+              
+            <tbody id="input_hm_treat">
+              <!-- Rows will be added here -->
+
+            </tbody>
+              
+            <template id="input_hm_template_treat">
+              <tr class="input-line input-hm-row-treat">
+                <td class="text-center align-middle" ></td>
+                <td class="col-4">
+                  <div>
+                    <select class="drug-options form-control input-hm-treat" >
+                       
+                    </select>
+                  </div>
+                </td>
+                <td class="col-4">
+                  <div>
+                    <select class="dose-options form-control input-hm-treat input-hm-dose-treat" >
+                       
+                    </select>
+                  </div>
+                </td>
+                <td class="col-2">
+                  <div class="input-group">
+                    <input type="number" min="0" class="form-control bg-opacity-10 input-hm-treat input-amount-homemed" >
+                    <span class="input-group-text homemed-type-treat" style="width: 80px;"></span>
+                  </div>
+                </td>
+                <td class="col-1">
+                  <input type="text" class="form-control input-hm-treat input-price-homemed" disabled> 
+                </td>
+                <td class="col-1 text-center align-middle">
+                  <div>
+                    <button type="button" class="btn btn-outline-danger remove-input-hm-treat">ลบ</button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+              
+          </table>
+
+          <div class="row justify-content-end">
+            <div>
+              <button type="button" class="btn btn-secondary" id="add_input_hm_row_treat_btn">+ เพิ่ม</button>
+            </div>
+          </div>
+
+          
+        </form>
+  
+      </div>
+
+      <!-- สรุป ค่ารักษา และการรักษา ---------------->
+      <div class="tab-pane fade" id="summary-tab-pane" role="tabpanel" aria-labelledby="summary-tab" tabindex="0">
+        <form id="summary_form_treat">
+
+          <div class="h4 pb-2 mb-2 mt-1 text-danger border-bottom border-danger">
+            สรุปค่ารักษา  
+          </div>
+
+          <div class="row mt-1">
+            <div class="col-md">
+              <label  class="form-label">ค่าหัตถการ</label>
+              <input type="text" class="form-control" id="sum_procedure_price_treat" disabled> 
+            </div>
+            <div class="col-md">
+              <label  class="form-label">ค่าแพทย์(DF)</label>
+              <input type="text" class="form-control" id="sum_df_price_treat" disabled>
+            </div>
+            <div class="col-md">
+              <label  class="form-label">ค่ายากลับบ้าน</label>
+              <input type="text" class="form-control" id="sum_homemed_price_treat" disabled>
+            </div>
+            <div class="col-md">
+                <label  class="form-label">รวมราคา</label>
+                <input type="text" class="form-control" id="total_price_sum_treat" disabled>
+            </div>
+          </div>
+
+          <div class="row mt-1">
+            <div class="col-md-3">
+                <label  class="form-label">รูปแบบการจ่าย</label>
+                <select class="form-select"  id="pay_type_treat">  
+                  <option value="" selected></option>
+                  <option value="เต็มจำนวน" >เต็มจำนวน</option>
+                  <option value="บางส่วน">บางส่วน</option>
+                  <option value="ฟรี" >ฟรี</option>
+                  <option value="อื่นๆ">อื่นๆ</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label  class="form-label">คงเหลือ</label>
+                <input type="text" class="form-control" id="pay_remain_treat">
+            </div>
+
+            <div class="col-md-3">
+                <label  class="form-label">ผ่านช่องทาง</label>
+                <select class="form-select"  id="pay_channel_treat"> 
+                  <option value="" selected></option>
+                  <option value="เงินสด" >เงินสด</option>
+                  <option value="พร้อมเพย์">พร้อมเพย์</option>
+                  <option value="บัญชีธนาคาร">บัญชีธนาคาร</option>
+                  <option value="รูดบัตร">รูดบัตร</option>
+                  <option value="ประกันสังคม">ประกันสังคม</option>
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <label class="form-label">ประกันสังคม</label>
+                <select class="form-select"  id="social_security_treat">  
+                  <option value="" selected></option>
+                  <option value="yes" >Yes</option>
+                  <option value="no">No</option>
+                </select>
+            </div>
+            
+          </div>
+
+          <div class="h4 pb-2 mb-2 mt-3 text-danger border-bottom border-danger">
+            แผนการรักษา
+          </div>
+
+          <div class="row mt-1">
+            <div class="col-md">
+                <label class="form-label">หมายเหตุ</label> 
+                <div class="col mt-1">
+                  <textarea class="form-control" id="doctor_note_treat" style="height: 100px"></textarea>
+                </div>
+            </div>
+            <div class="col-md">
+              <label class="form-label">แผนการรักษา</label>
+              <div class="col mt-1">
+                <textarea class="form-control" id="tx_plan_treat" style="height: 100px"></textarea>
+              </div>
+            </div>
+            
+          </div>
+          <div class="row mt-1">
+            <div class="col-md">
+                <label  class="form-label">สถานะ</label>
+                <select class="form-select" id="discharge_type_treat">  
+                  <option value="" selected></option>
+                  <option value="ส่งห้องตรวจ" >ส่งห้องตรวจ</option>
+                  <option value="ส่งห้องยา" >ส่งห้องยา</option>
+                  <option value="ส่งการเงิน" >ส่งการเงิน</option>
+                  <option value="ส่งนัดหมาย" >ส่งนัดหมาย</option>
+                  <option value="จำหน่าย" >จำหน่าย</option>
+                </select>
+            </div>
+            <div class="col-md">
+              <label class="form-label">ส่งต่อไปที่</label>
+              <select class="form-control " id="referto_hosp_treat" >
+                
+              </select>
+            </div>
+             
+            <div class="col-md">
+                <label  class="form-label">Authen Code</label>
+                <input type="text" class="form-control" id="authen_code_treat">
+            </div>
+           
+          </div>
+
+        </form>
+      </div>
+
+      <!-- นัดหมาย ---------------->
+      <div class="tab-pane fade d-none" id="appointment-tab-pane" role="tabpanel" aria-labelledby="appointment-tab" tabindex="0">
+        <form id="appointment_form_treat">
+          <div class="row mt-2">
+            <div class="col">
+                <label for="exampleFormControlInput1" class="form-label">วันนัด</label>
+                <input type="date" class="form-control" id="fu_date_treat" >
+            </div>
+            <div class="col">
+                <label for="exampleFormControlInput1" class="form-label">เวลานัดหมาย</label>
+                <input type="time" class="form-control" id="fu_time_treat" >
+            </div>
+            <div class="col-6">
+              <label class="form-label">เพื่อ</label>
+              <input type="search" class="form-control text-primary" list="datalistOptions_purpose_calendar" id="fu_plan_treat" >
+              <datalist id="datalistOptions_purpose_calendar">
+                 
+                 
+              </datalist>
+               
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-3 mt-2">
+              <label class="form-label">นัดไปห้องตรวจ</label>
+              <input type="search" class="form-control" list="datalistOptions_doctorroom" id="room_name_treat" required>
+              <datalist id="datalistOptions_doctorroom">
+              </datalist>
+            </div>
+            <div class="col-md-3 mt-2">
+              <label class="form-label">พบแพทย์</label>
+              <input type="search" class="form-control" list="datalistOptions_doctorname" id="doctor_appoint_treat" required>
+              <datalist id="datalistOptions_doctorname">
+                
+              </datalist>
+            </div>
+            <div class="col-md-6 mt-2">
+              <label class="form-label">Comment</label>
+              <input type="text" class="form-control" id="comment_treat" >
+            </div>
+            
+          </div>
+
+
+        </form>
+      </div>
+
+
+      
+
+      
+    </div>
+
+    <div class="col d-flex justify-content-center g-2">
+      <button type="button" class="d-none btn btn-primary shadow my-btn mb-4 me-2" id="treat_view_save_btn">บันทึก</button>
+      <button type="button" class="d-none btn btn-primary shadow my-btn mb-4 me-2" id="treat_view_saveandclose_btn">บันทึกและปิดหน้า</button>
+      <button type="button" class="btn btn-primary shadow my-btn mb-4 me-2" id="treat_view_save_and_send_btn">บันทึกและส่งต่อ</button>
+    </div>
+
+    <div class="col d-flex justify-content-end">
+      <button type="button" class="d-none btn btn-danger shadow my-btn mb-4" id="treat_view_delete_btn">ลบ</button>
+    </div>
+
+
+
+  </div>
+    
+</div>

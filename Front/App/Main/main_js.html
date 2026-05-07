@@ -1,0 +1,334 @@
+
+
+<script>
+
+
+const elements = {}             // for tabulator , full calendar , choice.js และอื่นๆ
+var clinicInfo
+var ddOptionsInfo  // array of obj
+var drugCatalogInfo   // จาก Sheet DrugCatalog
+var doctorNames
+var proceduresInfo
+
+var dayOffInfo
+
+// var jsonStringDb = document.getElementById('db_setting_config').textContent;
+// var dbInfo = jsonStringDb ? JSON.parse(jsonStringDb) : {};
+// // var dbInfo = JSON.parse()
+// console.log("dbInfo",dbInfo)
+
+
+
+// for PDF setting ตั้งค่า pdf
+var logo_clinic = document.getElementById('logo_app_config').innerHTML
+var logo_check = 'https://lh5.googleusercontent.com/d/187GziK1o9O45pgsUiQ1-ll0Ymc_T97mR'
+var logo_uncheck = 'https://lh5.googleusercontent.com/d/1VhyVjE3y-FF8VSuz5OPK16h6WZUCNFrZ'
+var qrcode_pay_receipt = document.getElementById('qrcode_pay_receipt_config').innerHTML
+
+
+
+
+
+
+document.getElementById("program_name_status_nb").textContent = document.getElementById('program_name_config').textContent
+document.getElementById("program_name_status_oc").textContent = document.getElementById('program_name_config').textContent
+
+document.getElementById('logo_app_oc').src = document.getElementById('logo_app_config').innerHTML
+document.getElementById('logo_app_sb').src = document.getElementById('logo_app_config').innerHTML
+document.getElementById('logo_app_nosidebar').src = document.getElementById('logo_app_config').innerHTML
+
+document.getElementById('room_area_status').innerHTML = document.getElementById('room_area_config').innerHTML
+document.getElementById('user_fullname_status').innerHTML = document.getElementById('first_name_config').innerHTML + " " + document.getElementById('last_name_config').innerHTML
+document.getElementById('user_pic_small').src = document.getElementById('user_pic_config').innerHTML
+document.getElementById('user_pic_medium').src = document.getElementById('user_pic_config').innerHTML
+document.getElementById('user_id_status').innerHTML = document.getElementById('user_id_config').innerHTML
+document.getElementById('user_level_status').innerHTML = document.getElementById('user_level_config').innerHTML
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Function สำหรับ ตั้งค่าตาม ระดับของผู้ใช้งาน
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function setAppByUserLevel(){
+  const userLevel = document.getElementById('user_level_status').innerHTML
+  const userId = document.getElementById('user_id_status').innerHTML
+  // console.log(userLevel)
+  if ( userId == '000'){
+    document.getElementById("user_pic_medium").classList.add("d-none")
+    document.getElementById("user_menu_li").classList.add("d-none")
+
+  } else {
+     document.getElementById("user_level").textContent = userLevel
+
+  }
+  // else if ( userLevel == 'admin_p' || userLevel == 'admin_a'){
+  //   // document.getElementById("admin_menu_li").classList.remove("d-none")
+  //   // document.getElementById("sidebar_setting_li").classList.remove("d-none")
+  //   // document.getElementById("setting_view_oc_li").classList.remove("d-none")
+  //   document.getElementById("user_level").innerHTML = 'Admin'
+
+  // } else if ( userLevel == 'user_p' || userLevel == 'user_a') {
+  //   // document.getElementById("admin_menu_li").classList.add("d-none")
+  //   // document.getElementById("sidebar_setting_li").classList.add("d-none")
+  //   // document.getElementById("setting_view_oc_li").classList.add("d-none")
+  //   document.getElementById("user_level").innerHTML = 'User'
+
+  // } else {
+  //   document.getElementById("user_level").innerHTML = 'Super admin'
+
+  // }
+  
+
+};
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Function สำหรับ ตั้งค่าตาม sheet control
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function setAppBySuperAdminControl(){ 
+  if( document.getElementById('sidebar_control').innerHTML == 'OFF'){
+    document.getElementById("sidebar_menu").classList.add("d-none") 
+    document.getElementById("sidebar_menu").classList.remove("d-lg-block")
+    
+    document.getElementById("oc_sidebar_menu_toggle").classList.add("d-none")
+    document.getElementById("logo_program_small").classList.remove("d-none")
+
+    // remove session เพื่อกำหนดให้แสดงเฉพาะหน้าที่กำหนดใน Sheet Control
+    sessionStorage.removeItem("sLastView")
+
+  } else {
+    document.getElementById("sidebar_menu").classList.add("d-lg-block")
+  }
+
+  if( document.getElementById('dologin_control').innerHTML == 'OFF'){
+    document.getElementById("user_dropdown_menu").classList.add("d-none")
+    document.getElementById("user_menu_btn").classList.remove("dropdown-toggle")
+
+  }
+
+  if( document.getElementById('user_profile_edit_config').innerHTML == 'OFF'){
+    document.getElementById("user_pic_medium").classList.add("d-none")
+    document.getElementById("user_level").classList.remove("d-none")
+    
+    document.getElementById("msg_menu_li").classList.add("d-none")
+    document.getElementById("user_menu_li").classList.add("d-none")
+    // document.getElementById("admin_menu_li").classList.add("d-none")
+
+  }
+
+};
+
+ 
+
+function showAnnouncementPopup(){
+  const announcementCheck =  localStorage.getItem("announcement")
+
+  const announcementId_local =  localStorage.getItem("idAnnouncement")
+  const announcementId_config =  document.getElementById('announcementId_config').textContent
+
+  const userId_config =  document.getElementById('user_id_config').textContent
+  const userId_local =  localStorage.getItem("userId")
+
+  
+  // const announcementCheck =  sessionStorage.getItem("announcement")   
+   
+  // ตรวจสอบว่ามีการบันทึกค่าไว้ใน local storage
+  // console.log("announcementId_local: "+ announcementId_local)
+  // console.log("announcementCheck: "+ announcementCheck)
+  // console.log("userId_local: "+ userId_local)
+
+
+  if ( announcementId_local === null || announcementId_local !== announcementId_config || userId_local !== userId_config ){
+    if( document.getElementById('announcement_config').innerHTML != ''){
+      new bootstrap.Modal(document.getElementById('announcement_modal'), {keyboard: false }).show()
+      document.getElementById('announcement_text_modal').innerHTML = document.getElementById('announcement_config').innerHTML
+
+    }
+
+  } else if ( announcementCheck !== 'checked' ){
+    if( document.getElementById('announcement_config').innerHTML != ''){
+      new bootstrap.Modal(document.getElementById('announcement_modal'), {keyboard: false }).show()
+      document.getElementById('announcement_text_modal').innerHTML = document.getElementById('announcement_config').innerHTML
+
+    }
+
+  }
+    
+
+};
+
+
+ 
+ 
+
+ 
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Function สำหรับ ดึงข้อมูล Hosprofile
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+function getHosProfile(){
+  google.script.run.withSuccessHandler((res)=>{
+    // console.log(res)
+
+    clinicInfo = res[0]   // clinicInfo global var
+
+  }).getHosProfile()
+
+};
+
+ 
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Function สำหรับ autocomplete ที่อยู่
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+$.Thailand({
+  $district: $('#tumbon_pt_regist'), // input ของตำบล
+  $amphoe: $('#amphoe_pt_regist'), // input ของอำเภอ
+  $province: $('#province_pt_regist'), // input ของจังหวัด
+  $zipcode: $('#zipcode_pt_regist'), // input ของรหัสไปรษณีย์
+});
+
+$.Thailand({
+  $district: $('#tumbon2_pt_regist'), // input ของตำบล
+  $amphoe: $('#amphoe2_pt_regist'), // input ของอำเภอ
+  $province: $('#province2_pt_regist'), // input ของจังหวัด
+  $zipcode: $('#zipcode2_pt_regist'), // input ของรหัสไปรษณีย์
+});
+
+ 
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Function สำหรับ ตรวจสอบสถานนะ internet connection
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+window.addEventListener("offline", (e) => {
+  console.log("offline");
+  const myText = "ไม่มีสัญญาณ internet 🛜 \n การเปลี่ยนแปลงอาจไม่ถูกบันทึก" 
+  workingStart(myText)
+
+  // document.getElementById('show_status_online').classList.remove('d-none')
+  // document.getElementById('show_status_offline').classList.add('d-none')
+
+
+});
+
+window.addEventListener("online", (e) => {
+  console.log("online");
+  const myText = "สัญญาณ internet กลับมาแล้ว"
+  workingEnd(myText)
+
+  // document.getElementById('show_status_online').classList.add('d-none')
+  // document.getElementById('show_status_offline').classList.remove('d-none')
+
+});
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Function ตรวจสอบ ประกาศ
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function checkAnnouncement(){
+  console.log("checkAnnouncement")
+
+  const keyAnnouncement = "announcement"
+  const valueAnnouncement = "checked"
+
+  const idAnnouncement = "idAnnouncement"
+  const valueId = document.getElementById('announcementId_config').textContent
+
+  const keyUser = "userId"
+  // const userId = "123456"
+  const userId = document.getElementById('user_id_config').textContent
+
+  localStorage.setItem("myCat", "Tom");
+
+  localStorage.setItem(keyAnnouncement,valueAnnouncement)
+  localStorage.setItem(idAnnouncement,valueId)
+  localStorage.setItem(keyUser,userId)
+  // sessionStorage.setItem(keyAnnouncement,valueAnnouncement)
+  // sessionStorage.setItem(keyAnnouncement,valueAnnouncement)
+  
+};
+
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// แสดงสถานะ หรือ จำนวนตรง sidebar
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function showSideBarStatusForPatientRegist(){
+  document.getElementById('loading_patientregist_sb').classList.add("d-none")
+  document.getElementById('loading_patientregist_oc').classList.add("d-none")
+
+  // const currentData = elements.tablePatientRegist.getData();
+  // // Log the data to the console
+  // console.log(currentData);
+  // Get the displayed (visible) data แสดงข้อมูลที่่แสดงในตาราง
+  const displayDataTablePatientRegist = elements.tablePatientRegist.getData("active")
+
+  document.getElementById('show_patientregist_count_sb').textContent = displayDataTablePatientRegist.length
+  document.getElementById('show_patientregist_count_oc').textContent = displayDataTablePatientRegist.length
+
+};
+
+
+function showSideBarStatusForAppointment(){
+  document.getElementById('loading_appointment_sb').classList.add("d-none")
+  document.getElementById('loading_appointment_oc').classList.add("d-none")
+
+  const displayDataTableAppointment = elements.tableAppointment.getData("active")
+  
+  document.getElementById('show_appointment_count_sb').textContent = displayDataTableAppointment.length
+  document.getElementById('show_appointment_count_oc').textContent = displayDataTableAppointment.length
+
+};
+
+
+function showSideBarStatusForPending(){
+  document.getElementById('loading_pending_sb').classList.add("d-none")
+  document.getElementById('loading_pending_oc').classList.add("d-none")
+
+  const displayDataTablePending = elements.tablePending.getData("active")
+
+  document.getElementById('show_pending_count_sb').textContent = displayDataTablePending.length
+  document.getElementById('show_pending_count_oc').textContent = displayDataTablePending.length
+
+};
+ 
+ 
+function showSideBarStatusForReport(){
+  document.getElementById('loading_report_sb').classList.add("d-none")
+  document.getElementById('loading_report_oc').classList.add("d-none")
+
+  // const displayDataTablePending = elements.tablePending.getData("active")
+
+  document.getElementById('show_report_count_sb').textContent = "✔️"
+  document.getElementById('show_report_count_oc').textContent = "✔️"
+
+};
+
+
+ 
+
+ 
+
+
+document.addEventListener('DOMContentLoaded',pageLoad)
+
+
+
+
+</script>
+

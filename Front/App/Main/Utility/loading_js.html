@@ -1,0 +1,142 @@
+<script>
+
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// LOADING WORKING PROGRESS
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+function loadingStart(mytext) {
+  let startTime;
+  let timerInterval;
+  let timeoutAlert; // To handle timeout for changing the content
+
+  Swal.fire({
+      html: 
+          '<h4>กรุณารอสักครู่... </h4>' +
+          '<h6>ใช้เวลา <span id="elapsed_time2">0</span> วินาที</h6>' +
+          '<div id="progress-bar-container" style="width: 100%; background-color: #e9ecef; border-radius: 5px;">' +
+          '<div id="progress-bar" class="swal2-progress-bar" style="width: 0%"></div>' +
+          '</div>',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        startTime = Date.now(); // Record the start time
+
+        let progressBar = document.getElementById('progress-bar');
+        let elapsedTime2Display = document.getElementById('elapsed_time2');
+        let width = 0;
+
+        // Update the progress bar every 0.1 second
+        let interval = setInterval(() => {
+            width += 2.5; // Increments width by 2.5% every 0.1 second
+            progressBar.style.width = width + '%';
+
+            if (width >= 100) {
+                clearInterval(interval);
+            }
+        }, 100); // Updates every 0.1 second
+
+        // Update the elapsed time every second
+        timerInterval = setInterval(() => {
+            const elapsedTime2 = Math.floor((Date.now() - startTime) / 1000); // Calculate elapsed time in seconds
+            elapsedTime2Display.textContent = elapsedTime2;
+        }, 1000); // Updates every second
+
+        // Set a timeout for 30 seconds to change the content
+        // timeoutAlert = setTimeout(() => {
+        //     // Check if Swal is still visible before running the update
+        //     if (Swal.isVisible()) {
+        //         // Dynamically change the Swal's content
+        //         Swal.update({
+        //             html: 
+        //                 '<h4>ดูเหมือนว่าจะใช้เวลานานเกินไป</h4>' +
+        //                 '<h6>เครือข่ายอาจมีปัญหา กรุณาตรวจสอบหรือกดปุ่ม Refresh</h6>' +
+        //                 '<div id="progress-bar-container" style="width: 100%; background-color: #e9ecef; border-radius: 5px;">' +
+        //                 '<div id="progress-bar" class="swal2-progress-bar" style="width: ' + width + '%"></div>' +
+        //                 '</div>'
+        //         });
+        //     }
+        // }, 30000); // 30 seconds timeout
+      },
+      didClose: () => {
+        // Clear intervals and timeout when the Swal is closed
+        clearInterval(timerInterval);
+        clearTimeout(timeoutAlert);
+      }
+  });
+}
+
+
+
+
+
+
+
+function loadingEnd(){
+  Swal.close()
+  
+};
+
+
+
+
+function workingStart(mytext){
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-start",  // top-start  bottom-end
+    showConfirmButton: false,
+    // timer: 10000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      Swal.showLoading();
+    
+    }
+  });
+  Toast.fire({
+    // icon: "question",
+    title: mytext
+  });
+
+};
+
+
+
+function workingEnd(mytext){
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-start", // top-start  bottom-end
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: false,
+    didOpen: (toast) => {
+    
+    }
+  });
+  Toast.fire({
+    icon: "success",
+    title: mytext
+  });
+
+};
+
+
+function progressbarStart(){
+  document.getElementById("progressbar_refresh_data").classList.remove('invisible')
+
+}
+
+function progressbarEnd(){
+  document.getElementById("progressbar_refresh_data").classList.add('invisible')
+
+}
+
+
+
+
+
+</script>
+
+

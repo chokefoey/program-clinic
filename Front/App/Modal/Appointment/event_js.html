@@ -1,0 +1,77 @@
+<script>
+
+
+
+function patientInfoModalToAppointmentModal(){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('patient_info_modal')) // Returns a Bootstrap modal instance
+  // modal1.show();
+  modal1.hide();
+
+  let modal2 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal')) // Returns a Bootstrap modal instance
+  modal2.show();
+  // modal.hide();
+
+};
+
+
+
+
+
+function inputEventHandlerCalendarAddEditModal(e){
+  if (e.target.matches("#doctor_appoint_calendar")  ){
+    console.log('doctor_appoint_calendar')
+
+  }
+  if (e.target.matches("#comment_calendar")  ){
+    console.log('comment_calendar')
+    
+    // console.log(document.getElementById('doctor_appoint_calendar').value)
+
+  }
+    
+
+};
+
+
+
+function clickEventHandlerCalendarAddEditModal(e){
+  if (e.target.matches("#openvisit_event_btn")  ){
+    console.log('openvisit_event_btn')
+    const patientId = document.getElementById('patientid_calendar').value 
+    // console.log(patientId)
+    const opdVisitId = document.getElementById('opd_visitid_calendar').value
+    // console.log(opdVisitId)
+    
+    document.getElementById('send_treat_room_btn').classList.remove('d-none')
+    document.getElementById('change_treat_room_btn').classList.add('d-none')
+
+    let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal'))  
+    // modal1.show();
+    modal1.hide(); 
+
+    openModalPatientSendRoom(patientId,opdVisitId) 
+
+  }
+    
+    
+
+};
+
+
+
+
+document.getElementById('calendar_event_addedit_modal').addEventListener("input", inputEventHandlerCalendarAddEditModal)
+document.getElementById('calendar_event_addedit_modal').addEventListener("click", clickEventHandlerCalendarAddEditModal)
+
+
+
+
+
+
+
+
+</script>
+
+
+
+

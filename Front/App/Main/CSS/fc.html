@@ -1,0 +1,198 @@
+<style>
+
+
+/* ******************************************* */
+/* Full calendar  */
+/* ******************************************* */
+/* Container for the calendar */
+.calendar-container {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Adjust the shadow properties as needed */
+  border-radius: 10px; /* Optional: Add rounded corners */
+  border: 1px solid #ddd; /* Optional: Add a border */
+}
+
+.fc .fc-button {
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: inherit;
+  margin: 0px;
+  overflow: visible;
+  text-transform: none;
+  width: 70px;
+  height: 30px;
+}
+
+/* ชื่อปฏิทิน ชื่อเดือน */
+.fc .fc-toolbar-title {
+  font-size: 1.2em;
+  margin: 0px;
+}
+
+
+/* ชื่อวัน จ. - อา หัวตาราง */
+.fc .fc-col-header-cell-cushion {
+  display: inline-block;
+  padding: 2px 4px;
+  color: black;
+  font-weight: normal;
+}
+
+.fc-daygrid-day-frame fc-scrollgrid-sync-inner {
+  background-color: Aqua; /* Change this to the desired color */
+}
+
+
+
+/* .fc-direction-ltr .fc-daygrid-event.fc-event-end, .fc-direction-rtl .fc-daygrid-event.fc-event-start {
+    margin-right: 2px;
+    background-color: Aqua;
+} */
+
+  
+
+  /* body {
+      background-color: #E8F8F5;
+      color: black;
+      font-weight: normal;
+      font-size: 15px;
+      font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
+      margin: 0;
+      
+  } */
+
+
+// สีของวันธรรมดา
+.fc-day {
+  background-color: #EEFFFF;
+  color: black;  // font color
+
+}
+
+/* สีของ current day */
+.fc-day-today {
+  background-color: #FFFF00 !important;
+}
+
+
+.fc .fc-view-harness {
+  flex-grow: 1;
+  position: relative;
+  cursor: pointer;
+}
+
+.fc .fc-daygrid-day-number {
+  padding: 4px;
+  position: relative;
+  z-index: 4;
+  text-decoration: none;
+    
+}
+
+/* .fc .fc-col-header-cell-cushion {
+  display: inline-block;
+  padding: 2px 4px;
+  text-decoration: none;
+  cursor: auto;
+    
+} */
+
+/* .fc-col-header-cell fc-day fc-day-sat {
+  background-color: Red;
+} */
+
+.fc-scrollgrid-sync-inner .fc-col-header-cell fc-day fc-day-sat{
+  background-color: Red;
+}
+
+
+
+/* .fc th {
+  text-align: center;
+  background-color: Aqua;
+  font-size: 14px;
+} */
+
+.fc, .fc *, .fc ::after, .fc ::before {
+  box-sizing: border-box;
+  border-radius: 3px;
+    
+}
+
+.fc .fc-button-group > .fc-button {
+  color: black;  // font color
+  flex: 1 1 auto;
+  position: relative;
+  background-color: Bisque;
+}
+
+
+.fc .fc-button-primary:disabled {
+  background-color: Bisque;
+  border-color: var(--fc-button-border-color);
+  color: black; // font color
+}
+
+
+/* เปลี่ยนสีเมื่อ mouse hover  */
+.fc-daygrid-day :hover {
+  background-color: #00FFFF !important;
+  /* color: #f44336 !important; */
+  /* color: white !important; Change to your desired color */
+  color: black !important;
+}
+
+
+/* .fc-scrollgrid-sync-inner :hover {
+  background-color: #00FFFF !important;
+  color: black !important;
+} */
+
+
+/* สี column ของวันเสาร์ อาทิตย์  */
+.fc-day-sat {
+  background-color: rgb(240, 230, 220);
+  /*your styles goes here*/
+}
+
+.fc-day-sun {
+  background-color: rgb(240, 230, 220);  
+  /*your styles goes here*/
+}
+
+
+
+/* ******************************************* */
+/* disabled  */
+/* ******************************************* */
+
+/* Style for disabled days */
+.fc-day-disabled {
+  background-color: Red !important;  /* Red background */
+  pointer-events: none;     /* Disable interactions */
+  opacity: 0.5;             /* Reduce opacity */
+    
+}
+
+
+/* ******************************************* */
+/* Next appointment  */
+/* ******************************************* */
+
+.fc-bg-event p {
+  color: white !important; /* Change to your desired color */
+}
+
+
+
+
+
+
+
+
+
+
+</style>
+
+
+

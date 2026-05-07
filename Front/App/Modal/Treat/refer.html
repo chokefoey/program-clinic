@@ -1,0 +1,84 @@
+
+
+ 
+
+<div class="modal fade" id="refer_modal" tabindex="-1" data-bs-focus="false" >
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary bg-opacity-10">
+         
+        <!-- <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">Close</button> -->
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body bg-secondary bg-opacity-10">
+
+        <div class="w-100 text-center mb-2"> 
+          <h6>ใบส่งตัว</h6>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-md-12">
+            <label class="form-label">อาการที่มา</label>
+            <textarea class="form-control" id="cc_refer" rows="3">
+
+            </textarea>
+          </div> 
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-12">
+            <!-- <label class="form-label">ตรวจร่างกาย</label>
+            <input type="text" class="form-control" id="pe_refer" >  -->
+            
+            <label class="form-label">ตรวจร่างกาย</label>
+            <textarea class="form-control" id="pe_refer" rows="3"></textarea>
+            
+          </div> 
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-12">
+            <label class="form-label">การวินิจฉัย</label>
+            <textarea class="form-control" id="dx_refer" rows="3">
+
+            </textarea>
+          </div> 
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-12">
+            <!-- <label class="form-label">การรักษา</label>
+            <input type="text" class="form-control" id="tx_refer" >  -->
+            
+            <label class="form-label">การรักษาที่ให้ไว้</label>
+            <textarea class="form-control" id="tx_refer" rows="3"></textarea>
+            
+          </div> 
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-12">
+            <label class="form-label">สาเหตุที่ส่งตัว</label>
+            <!-- <input type="text" class="form-control" id="cause_refer" >  -->
+            <input type="search" class="form-control" list="datalistOptions_cause_refer" id="cause_refer" >
+            <datalist id="datalistOptions_cause_refer">
+                
+            </datalist>
+          </div> 
+        </div>
+        
+          
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="my-btn btn btn-secondary shadow" id="makepdf_refer_th_btn">พิมพ์</button>
+      </div>
+
+
+      
+    </div>
+      
+  </div>
+</div>
+
+
+
+

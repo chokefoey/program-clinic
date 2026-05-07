@@ -1,0 +1,144 @@
+<script>
+
+
+function clickEventHandlerDrugsView(e){
+  if (e.target.matches("#show_drugs_catalog_btn") ){
+    console.log("show_drugs_catalog_btn")
+    // loadDashboardView()
+    getDrugCatalog()
+
+  }
+  if (e.target.matches("#open_modal_add_drug_btn") ){
+    // console.log("open_modal_add_drug_btn")
+    openModalAddDrug()
+    
+  }
+  if (e.target.matches("#openmodal_add_drugset_btn") ){
+    openModalDrugSetsAdd()
+ 
+  }
+  // if (e.target.matches("#openmodal_drugsset_btn") ){
+  //   openModalDrugSets()
+
+    
+  // }
+
+  
+ 
+};
+
+
+
+
+
+
+function inputEventHandlerDrugsView(e){
+  if (e.target.matches("#search_input_table_drugscatalog") ){
+    // console.log("search_input_table_drugscatalog")
+    searchTableDrugsCatalog();
+    // loadDashboardView()
+    // getDrugCatalog()
+
+  }
+  if (e.target.matches("#search_input_drugset") ){
+    // console.log("search_input_drugset")
+    searchTableDrugsSet();
+
+   
+
+  }
+  
+ 
+};
+
+
+
+
+
+function clickEventHandlerDrugInfoModal(e){
+  if (e.target.matches("#add_drug_btn") ){
+    console.log("add_drug_btn")
+
+    const checkForm = checkFormInputRequired("drug_info_form")   // ถ้าถูกต้องให้ return true ไม่ถูกต้อง false และ highlight
+
+    if ( checkForm == false ){
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณากรอกให้ครบ</h5>"});
+
+    } 
+    else {
+      // loadingStart();
+      addDrug();
+
+    }
+
+  }
+  if (e.target.matches("#edit_drug_btn") ){
+    // console.log("edit_drug_btn")
+    const checkForm = checkFormInputRequired("drug_info_form")   // ถ้าถูกต้องให้ return true ไม่ถูกต้อง false และ highlight
+
+    if ( checkForm == false ){
+      Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณากรอกให้ครบ</h5>"});
+
+    } 
+    else {
+      Swal.fire({
+        title: "Do you want to save the changes?",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        denyButtonText: `Don't save`
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          // loadingStart();
+          editDrug();
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info")
+        }
+      })
+
+    }
+    
+  }
+  if (e.target.matches("#delete_drug_btn") ){
+    // console.log("delete_drug_btn")
+    Swal.fire({
+      title: "Do you want to delete the drug?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Don't delete`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        // loadingStart();
+        deleteDrug();
+      } else if (result.isDenied) {
+        Swal.fire("Don't delete", "", "info")
+      }
+    })
+    
+  }
+  
+
+  
+ 
+  
+
+};
+
+
+
+
+
+
+
+document.getElementById('drugs_view').addEventListener("click", clickEventHandlerDrugsView)
+document.getElementById('drugs_view').addEventListener("input", inputEventHandlerDrugsView)
+
+document.getElementById('druginfo_modal').addEventListener("click", clickEventHandlerDrugInfoModal)
+
+
+
+
+</script>

@@ -1,0 +1,494 @@
+
+
+<script>
+
+
+function openModalMedcerNorm(){
+  // console.log("openModalMedcerNorm")
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('medcer_norm_modal'))  
+  // Show or hide:
+  modal.show();
+  // modal.hide();
+
+};
+
+
+function makePdfMedCerNormTh(){
+  console.log(clinicInfo) // global var
+
+  const providerInfo = {}
+  providerInfo.fullName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
+  providerInfo.license = document.getElementById('user_license_config').textContent 
+
+  const patientId = document.getElementById('patient_id_treat').textContent
+  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();  
+  console.log(patientRegistInfo)
+
+  const opdVisitInfo = {}
+    opdVisitInfo.wt = document.getElementById('wt_treat').value 
+    opdVisitInfo.ht = document.getElementById('ht_treat').value 
+    opdVisitInfo.sbp = document.getElementById('sbp_treat').value 
+    opdVisitInfo.dbp = document.getElementById('dbp_treat').value  
+    opdVisitInfo.pr = document.getElementById('pr_treat').value
+
+  const medcerNormInfo = {}
+    medcerNormInfo.underlyingYes = document.getElementById('medcer_norm_underlying_check').checked ? logo_check : logo_uncheck
+    medcerNormInfo.underlyingNo = document.getElementById('medcer_norm_underlying_check').checked ? logo_uncheck : logo_check
+    medcerNormInfo.underlyingDetail = document.getElementById('medcer_norm_underlying_detail').value
+
+    medcerNormInfo.traumaYes = document.getElementById('medcer_norm_trauma_check').checked ? logo_check : logo_uncheck
+    medcerNormInfo.traumaNo = document.getElementById('medcer_norm_trauma_check').checked ? logo_uncheck : logo_check
+    medcerNormInfo.traumaDetail = document.getElementById('medcer_norm_trauma_detail').value
+
+    medcerNormInfo.admitYes = document.getElementById('medcer_norm_admit_check').checked ? logo_check : logo_uncheck
+    medcerNormInfo.admitNo = document.getElementById('medcer_norm_admit_check').checked ? logo_uncheck : logo_check
+    medcerNormInfo.admitDetail = document.getElementById('medcer_norm_admit_detail').value
+  
+    medcerNormInfo.healthyYes = document.getElementById('medcer_norm_health_condition').value === 'ปกติ(Normal)' ? 'ปกติ' : 'ผิดปกติ'
+    medcerNormInfo.comment = document.getElementById('medcer_norm_doc_comment').value 
+
+    medcerNormInfo.otherhxYes = document.getElementById('medcer_norm_otherhx_check').checked ? logo_check : logo_uncheck
+    medcerNormInfo.otherhxNo = document.getElementById('medcer_norm_otherhx_check').checked ? logo_uncheck : logo_check
+    medcerNormInfo.otherhxDetail = document.getElementById('medcer_norm_otherhx_detail').value
+
+    medcerNormInfo.doctorName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
+    
+ 
+
+  runPdfMakeMedCerNormTh(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,medcerNormInfo);
+
+} 
+
+
+
+function runPdfMakeMedCerNormTh(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,medcerNormInfo){
+  const currentDate = toThaiDateString(new Date())
+
+  const dateStamp = toThaiDateString(new Date());
+  const timeStamp = getCurrentTime();
+
+  const visitDate = document.getElementById('date_visit_treat').textContent
+  const visitTime = document.getElementById('time_visit_treat').textContent
+
+  const fileName = patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName + ' CID ' + patientRegistInfo.identityData.cid
+  const medCerId = generateUniqueId();
+
+  pdfMake.fonts = {
+    THSarabunNew:{
+      normal: "https://Pichit-Raetai.github.io/font/THSarabunNew.ttf",
+      bold: "https://Pichit-Raetai.github.io/font/THSarabunNew Bold.ttf",
+      italics: "https://Pichit-Raetai.github.io/font/THSarabunNew Italic.ttf",
+      bolditalics: "https://Pichit-Raetai.github.io/font/THSarabunNew BoldItalic.ttf",
+      
+    }
+
+  }
+  const docDefinition = {
+    pageSize: 'A4',
+    images: {
+      // bg: {
+      //   url: 'https://lh5.googleusercontent.com/d/1_TwiPierrDmO2VIwOXAf0uH5fWHug-GG',
+      //   // width: 100,
+      //   // height: 100,
+      //   // margin: [100,100,100,100], // [ซ้าย,บน,ขวา,ล่าง]
+      //   // width: 150,
+      //   // height: 150,
+      // },
+      logo:{
+        url: logo_clinic,
+      },
+      check:{
+        url: logo_check,
+      },
+      uncheck:{
+        url: logo_uncheck,
+      },
+      
+      underlyingYes:{
+        url:medcerNormInfo.underlyingYes,
+      },
+      underlyingNo:{
+        url:medcerNormInfo.underlyingNo,
+      },
+
+      traumaYes:{
+        url:medcerNormInfo.traumaYes,
+      },
+      traumaNo:{
+        url:medcerNormInfo.traumaNo,
+      },
+
+      admitYes:{
+        url:medcerNormInfo.admitYes,
+      },
+      admitNo:{
+        url:medcerNormInfo.admitNo,
+      },
+
+      otherhxYes:{
+        url:medcerNormInfo.otherhxYes,
+      },
+      otherhxNo:{
+        url:medcerNormInfo.otherhxNo,
+      },
+
+       
+       
+      
+    },
+    // watermark: { text: clinicInfo.hosName, color: 'blue', opacity: 0.1, bold: true, italics: false },
+    // background: function(currentPage, pageSize) {
+    //   return [{
+    //     image:'bg',
+    //     width: pageSize.width,
+    //     height: pageSize.height
+    //   }]
+    // },
+    content: [
+      {
+        columns: [
+          {
+            image: 'logo',
+            width: 65,
+            height: 65
+          },
+          {
+            text: [ 
+              {text: clinicInfo.hosName + '\n', bold: false, fontSize: 14,margin: [0,0,0,0],},
+              {text: clinicInfo.hosAddress + '\n' , fontSize: 14},
+              {text: 'โทร: '  + clinicInfo.hosPhone + ', FB: ' + clinicInfo.faceBook + ', LineID: ' + clinicInfo.lineId, fontSize: 14},
+
+               
+            ],
+            alignment: 'right',
+            margin: [0,10,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+          },
+           
+
+        ]
+
+      },
+      {
+        text: 'ใบรับรองแพทย์',
+        style: 'header',
+        alignment: 'center',
+        bold: true,
+        // italics: true,
+        fontSize: 20,
+        margin: [0,10,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+       
+      {
+        text: [
+          'วันที่ ' + visitDate + '\n',
+          ],
+        style: ['quote', 'small'],
+        bold: false,
+        fontSize: 16,
+        alignment: 'center',
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          'ส่วนที่ 1 ของผู้รับรองสุขภาพ'
+          ],
+         
+        bold: true,
+        decoration: 'underline', //'underline' or 'lineThrough' or 'overline'
+        fontSize: 16,
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ข้าพเจ้า นาย/นาง/นางสาว ' , fontSize: 16},
+          {text: patientRegistInfo.identityData.firstName + ' ' , bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
+          {text: patientRegistInfo.identityData.lastName + ' ', bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
+          {text: 'เลขประจำตัวประชาชน ' , fontSize: 16},
+          {text:  patientRegistInfo.identityData.cid + '\n' , bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'สถานที่อยู่ (ที่สามารถติดต่อได้) ' , fontSize: 16},
+          {text: document.getElementById("patient_address_treat").textContent , bold:true, fontSize: 16,decoration:'underline',decorationStyle:'dotted'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+            'ข้าพเจ้าขอใบรับรองสุขภาพ โดยมีประวัติสุขภาพดังนี้' + '\n',
+          ],
+        bold: false,
+        fontSize: 16,
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        columns: [
+          {text: '1. โรคประจำตัว ',width:160, fontSize: 16},
+          {image: 'underlyingNo', width: 18,height: 18 },
+          {text: ' ไม่มี ',width:20, fontSize: 16},
+          {image: 'underlyingYes', width:18,height: 18 },
+          {text: ' มี ',width:20, fontSize: 16},
+          {text: medcerNormInfo.underlyingDetail ,width:'*', style:'textinput'},
+        ]
+      },
+      {
+        columns: [
+          {text: '2. อุบัติเหตุและผ่าตัด ',width:160, fontSize: 16},
+          {image: 'traumaNo', width: 18,height: 18 },
+          {text: ' ไม่มี ',width:20, fontSize: 16},
+          {image: 'traumaYes', width:18,height: 18 },
+          {text: ' มี ',width:20, fontSize: 16},
+          {text: medcerNormInfo.traumaDetail ,width:'*', style:'textinput'},
+        ]
+      },
+      {
+        columns: [
+          {text: '3. เคยเข้ารับการรักษาในโรงพยาบาล ',width:160, fontSize: 16},
+          {image: 'admitNo', width: 18,height: 18 },
+          {text: ' ไม่มี ',width:20, fontSize: 16},
+          {image: 'admitYes', width:18,height: 18 },
+          {text: ' มี ',width:20, fontSize: 16},
+          {text: medcerNormInfo.admitDetail, width:'*' , style:'textinput'},
+        ]
+      },
+      {
+        columns: [
+          {text: '4. ประวัติอื่นที่สำคัญ ',width:160, fontSize: 16},
+          {image: 'otherhxNo', width: 18,height: 18 },
+          {text: ' ไม่มี ',width:20, fontSize: 16},
+          {image: 'otherhxYes', width:18,height: 18 },
+          {text: ' มี ',width:20, fontSize: 16},
+          {text: medcerNormInfo.otherhxDetail, width:'*', style:'textinput'},
+        ]
+      },
+ 
+      {
+        text: [
+          'ลงชื่อ............................................ผู้รับการตรวจ'
+          ],
+        style: 'header',
+        bold: false,
+        alignment: 'right',
+        fontSize: 16,
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          'ในกรณีเด็กที่ไม่สามารถรับรองตนเองได้ ให้ผู้ปกครองสามารถรับรองแทนได้'
+          ],
+        style: 'header',
+        bold: false,
+        italics: true,
+        fontSize: 12,
+        alignment: 'right',
+        margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          'ส่วนที่ 2 ของแพทย์'
+          ],
+         
+        bold: true,
+        decoration: 'underline', //'underline' or 'lineThrough' or 'overline'
+        fontSize: 16,
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: '( 1 ) ข้าพเจ้า นายแพทย์/แพทย์หญิง ', fontSize: 16},
+          {text: providerInfo.fullName + ' ', bold: true, style:'textinput'},
+          {text: ' ใบอนุญาตประกอบเวชกรรมเลขที่ ', fontSize: 16},
+          {text: providerInfo.license  + '\n', bold: true, style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'สถานพยาบาลชื่อ ', fontSize: 16},
+          {text: clinicInfo.hosName  + ' ', style:'textinput'},
+          {text: 'ที่อยู่ ', fontSize: 16},
+          {text: clinicInfo.hosAddress + '\n', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ได้ตรวจรักษารักษา นาย/นาง/นางสาว ', fontSize: 16},
+          {text: patientRegistInfo.identityData.firstName + ' ', style:'textinput'},
+          {text: patientRegistInfo.identityData.lastName + ' ', style:'textinput'},
+          {text: ' แล้วเมื่อวันที่ '  + ' ' , fontSize: 16},
+          {text: visitDate  + '\n', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+       
+      {
+        text: [
+            'มีรายละเอียดดังนี้' + '\n',
+          ],
+         
+        bold: false,
+        fontSize: 16,
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'น้ำหนักตัว ', fontSize: 16},
+          {text: opdVisitInfo.wt , style:'textinput'},
+          {text: ' กก. ' + ' ', fontSize: 16},
+
+          {text: ' ความสูง ', fontSize: 16},
+          {text: opdVisitInfo.ht , style:'textinput'},
+          {text: ' เซนติเมตร. ' , fontSize: 16},
+          
+          {text: ' ความดันโลหิต. ' , fontSize: 16},
+          {text: opdVisitInfo.sbp + "/" + opdVisitInfo.dbp , style:'textinput'},
+          {text: ' มม.ปรอท. ' , fontSize: 16},
+
+          {text: ' ชีพจร. ' , fontSize: 16},
+          {text: opdVisitInfo.pr , style:'textinput'},
+          {text: ' ครั้ง/นาที. ' , fontSize: 16},
+          
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'สภาพร่างกายทั่วไปอยู่ในเกณฑ์ ', fontSize: 16},
+          {text: medcerNormInfo.healthyYes , style:'textinput'},
+          
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ขอรับรองว่า บุคคลดังกล่าว ไม่เป็นผู้มีร่างกายทุพพลภาพจนไม่สามารถปฏิบัติหน้าที่ได้ ไม่ปรากฏอาการของโรคจิต' + '\n', fontSize: 16},
+        ],
+        margin: [20,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'หรือจิตฟั่นเฟือน หรือปัญญาอ่อน ไม่ปรากฏอาการของการติดยาเสพติดให้โทษ และอาการของโรคพิษสุราเรื้อรัง และไม่'+ '\n', fontSize: 16},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ปรากฏอาการและอาการแสดงของโรคต่อไปนี้'+ '\n', fontSize: 16},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: '1. โรคเรื้อนในระยะติดต่อ หรือในระยะที่ปรากฏอาการเป็นที่รังเกียจแก่สังคม'+ '\n', fontSize: 14},
+        ],
+        margin: [20,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: '2. วัณโรคในระยะอันตราย'+ '\n', fontSize: 14},
+        ],
+        margin: [20,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: '3. โรคเท้าช้างในระยะที่ปรากฏอาการเป็นที่รังเกียจแก่สังคม'+ '\n', fontSize: 14},
+        ],
+        margin: [20,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: '4. อื่น ๆ (ถ้ามี)...'+ '\n', fontSize: 14},
+        ],
+        margin: [20,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: '( 2 ) สรุปความเห็นและข้อแนะนำของแพทย์ ' , fontSize: 16},
+          {text: medcerNormInfo.comment  + '\n', style:'textinput'},
+        ],
+        margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ลงชื่อ..........................................' , fontSize: 16},
+          {text: 'แพทย์ผู้ตรวจร่างกาย ' , fontSize: 16},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        alignment: 'right'
+      },
+      {
+        text: [
+          {text: 'หมายเหตุ    (1) ต้องเป็นแพทย์ซึ่งได้ขึ้นทะเบียนรับใบอนุญาตประกอบวิชาชีพเวชกรรม' + '\n' , fontSize: 12},
+        ],
+        margin: [0,20,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: '(2) ใหแ้สดงว่าเป็นผูม้ีร่างกายสมบูรณ์เพียงใด ใบรบัรองแพทย์ฉบบันีใ้หใ้ช้ได้1 เดือนนบัแต่วนัทีต่ รวจร่างกาย' , fontSize: 12},
+        ],
+        margin: [40,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: '(3) คำรับรองนี้เป็นการตรวจวินิจฉัยเบื้องต้น' , fontSize: 12},
+        ],
+        margin: [40,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      // {
+      //   text: [
+      //     {text: 'รหัสอ้างอิง ' + medCerId , },
+      //     {text: ' วันที่พิมพ์: ' },
+      //     {text:  dateStamp, },
+      //     {text: 'เวลา ' + timeStamp + ' น.', },
+      //   ],
+      //   fontSize: 12,
+      //   margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      //   alignment: 'right'
+      // },
+       
+       
+    ],
+
+
+    footer: function (currentPage, pageCount) {
+      return {
+        text: [
+          {text: 'รหัสอ้างอิง ' + medCerId , },
+          {text: ' วันที่พิมพ์: ' },
+          {text:  dateStamp, },
+          {text: 'เวลา ' + timeStamp + ' น.', },
+          
+        ],
+        fontSize: 12,
+        alignment: 'right',
+        margin: [0,0,40,0], // [ซ้าย,บน,ขวา,ล่าง]
+        
+      };
+    },
+
+    defaultStyle:{
+      font: "THSarabunNew",
+    },
+    styles: {
+      textinput: {
+        fontSize: 16,
+        bold: true,
+        decoration: 'underline',
+        decorationStyle:'dotted'
+      },
+      
+    }
+  }
+
+   
+  // สั่งให้สร้าง pdf พร้อมกับ download
+  pdfMake.createPdf(docDefinition).open()
+  pdfMake.createPdf(docDefinition).download( fileName +'.pdf');
+
+};
+
+
+</script>

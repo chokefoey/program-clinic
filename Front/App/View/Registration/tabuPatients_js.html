@@ -1,0 +1,118 @@
+<script>
+    
+
+
+
+    function showTablePatientsRegist(tabledata){
+
+        // Modify your tabledata to include the `fullNameSearch` field
+        tabledata.forEach((item)=>{
+            item.fullNameSearch = item.firstName + " " +  item.lastName;   // Combine first and last name
+        });
+
+        // Define the custom formatter function
+        let mergeNameFormatter = function(cell, formatterParams, onRendered){
+            var data = cell.getRow().getData();
+            return data.identityData.firstName + " " + data.identityData.lastName; // Merge name and surname
+        };
+
+        let thaiDateFormatter = function(cell, formatterParams, onRendered){
+            try { 
+                const data = cell.getRow().getData();
+                const thaiDateStr = toThaiDateStringShort(new Date(data.dateStamp)) 
+                return thaiDateStr
+
+            } catch(er){
+
+            }
+            
+        };
+
+        //create Tabulator on DOM element with id "example-table"
+        elements.tablePatientRegist = new Tabulator("#table_patient_regist", {
+            data:tabledata,           //load row data from array
+            index:"patientId", //set the index field to the "age" field.
+            layout:"fitColumns",      //fit columns to width of table
+            // layout:"fitDataStretch",
+            // layout:"fitDataFill",
+            // layout:"fitDataTable",
+            // layout:"fitData",
+            responsiveLayout:"hide",  //hide columns that don't fit on the table
+            // responsiveLayout:"collapse", // collapse columns that no longer fit on the table into a list under the row
+
+            addRowPos:"top",          //when adding a new row, add it to the top of the table
+            selectableRows:1,
+            
+            pagination:"local",       //paginate the data
+            paginationSize:10,         //allow 7 rows per page of data
+            paginationCounter:"rows", //display count of paginated rows in footer
+
+            
+
+            // initialFilter:[
+            //     {field:"patientId", type:"=", value:"xxxx"}
+            // ],
+
+            initialSort:[
+                {column:"incrementHn", dir:"desc"}, //sort by this first
+                // {column:"height", dir:"desc"}, //then sort by this second
+            ],
+            
+            placeholder:"หากไม่พบรายชื่อ กรุณาลงทะเบียน", //display message to user on empty table
+
+   
+            columns:[  
+                {formatter:"rownum", hozAlign:"center", width:40,download:false, responsive:3,},
+                {title:"patientId", field:"patientId", visible:false, download:true },
+                // {title:"วันขึ้นทะเบียน", field:"dateStamp", visible:true, download:true },
+                {title:"วันขึ้นทะเบียน", field:"dateRegist",  visible:true, download:true,responsive:3, formatter:thaiDateFormatter },
+
+                {title:"คำนำหน้า", field:"identityData.prefixName",  visible:false, download:true},
+                
+                {title:"ชื่อ", field:"firstName", visible:false, download:true},
+                {title:"สกุล", field:"lastName" , visible:false, download:true},
+                
+                // Add the field for searching but keep it hidden
+                {title:"ชื่อ-สกุล (ค้นหา)", field:"fullNameSearch", visible:false, headerFilter:"input",download:true },
+                {title:"ชื่อ-สกุล", field:"fullName",minWidth:140, formatter:mergeNameFormatter, download:false, responsive:0,}, // Display the merged result
+                
+                {title:"เพศ", field:"identityData.gender", visible:true, download:true},
+                // {title:"อายุ", field:"identityData.age", visible:true, download:true}, // อายุไม่ต้องใช้เพราะว่าเปลี่ยนแปลงไปเรื่อยๆไม่คงที่
+
+                {title:"HN", field:"incrementHn",   responsive:3, download:true},
+                {title:"CID", field:"cid",visible:true, download:true, responsive:3,},
+
+            ],
+        });
+
+        elements.tablePatientRegist.on("rowClick", (e, row)=>{
+            //e - the click event object
+            //row - row component
+            const rowData = row.getData();
+            // console.log(rowData)
+            const patientId = rowData.patientId
+            // console.log(`patientId ${patientId}`)
+            // console.log(rowData.generalData) // string
+            openModalPatientMenu(patientId)
+
+        });
+
+ 
+
+        elements.tablePatientRegist.on("tableBuilt", ()=>{
+            searchTablePatientRegist()
+
+            document.getElementById('section_registration_view').classList.remove('d-none')
+            document.getElementById('placeholder_registration_view').classList.add('d-none')
+
+
+        });
+
+ 
+
+    };
+
+</script>
+
+
+

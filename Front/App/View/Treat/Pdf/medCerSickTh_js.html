@@ -1,0 +1,398 @@
+
+
+<script>
+
+
+function openModalMedcerSick(){
+  console.log("openModalMedcerSick")
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('medcer_sick_modal')) // Returns a Bootstrap modal instance
+  modal.show(); // modal.hide(); modal.show();
+
+  // CC
+  document.getElementById('cc_medcer_sick').value = document.getElementById('cc_treat').value
+  
+  // DX
+  const data = getArrDataDxTreatByClass(); // ดึงค่าจากตารางการวินิจฉัยมาเก็บเป็น array
+  // Filter out empty strings and undefined values
+  const filteredData = data.filter(item => item && item.trim() !== "");
+  // Format output or return an empty string if no valid data
+  const formattedResult = filteredData.length ? filteredData.map((item, index) => `${index + 1}. ${item}`).join("\n") : "";
+  console.log(formattedResult);
+
+  document.getElementById('dx_medcer_sick').value = formattedResult // 
+
+  
+};
+
+
+function getArrDataDxTreatByClass() {
+  // Select all elements with the class '.input-dx-treat'
+  const inputsDx = document.querySelectorAll('.input-dx-treat');
+
+  // Create an array to hold the values
+  const dxArray = Array.from(inputsDx).map(input => {
+    // If Choice.js is applied, get the selected value
+    return input.choicesInstance 
+      ? input.choicesInstance.getValue(true) 
+      : input.value || "";
+  });
+
+  // Filter out undefined and empty values
+  const filteredArray = dxArray.filter(item => item !== undefined && item !== "");
+
+  console.log(filteredArray);
+
+  return filteredArray;
+};
+
+
+
+
+
+function makePdfMedCertSickTh(){
+  console.log(clinicInfo) // global var
+
+  const providerInfo = {}
+    providerInfo.fullName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
+    providerInfo.license = document.getElementById('user_license_config').textContent 
+
+
+  const patientId = document.getElementById('patient_id_treat').textContent
+  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();  
+  console.log(patientRegistInfo)
+
+
+  const opdVisitInfo = {}
+    opdVisitInfo.wt = document.getElementById('wt_treat').value 
+    opdVisitInfo.ht = document.getElementById('ht_treat').value 
+    opdVisitInfo.bt = document.getElementById('bt_treat').value 
+     
+    opdVisitInfo.sbp = document.getElementById('sbp_treat').value 
+    opdVisitInfo.dbp = document.getElementById('dbp_treat').value  
+    opdVisitInfo.pr = document.getElementById('pr_treat').value
+    opdVisitInfo.rr = document.getElementById('rr_treat').value
+
+ 
+
+  const medcerSickInfo = {}
+    medcerSickInfo.cc = document.getElementById('cc_medcer_sick').value
+    // medcerSickInfo.pe = document.getElementById('pe_medcer_sick').value
+    medcerSickInfo.dx = document.getElementById('dx_medcer_sick').value
+    // medcerSickInfo.tx = document.getElementById('tx_medcer_sick').value
+
+    medcerSickInfo.comment = document.getElementById('comment_favorite_medcer_sick').value + " " + document.getElementById('comment_medcer_sick').value
+
+    medcerSickInfo.dayOffStart = toThaiDateString(new Date(document.getElementById('since_date_treat').value))
+    medcerSickInfo.dayOffEnd = toThaiDateString(new Date(document.getElementById('to_date_treat').value))
+    medcerSickInfo.dayOffTotal = document.getElementById('total_date_treat').value
+
+     
+
+    
+   
+
+  runPdfMakeMedCertSick(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,medcerSickInfo)
+
+};
+
+
+
+
+  function runPdfMakeMedCertSick(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,medcerSickInfo){
+    const date = toThaiDateString(new Date())
+    const currentDate = toThaiDateString(new Date())
+    
+    const dateStamp = toThaiDateString(new Date());
+    const timeStamp = getCurrentTime();
+
+    const visitDate = document.getElementById('date_visit_treat').textContent
+    const visitTime = document.getElementById('time_visit_treat').textContent
+
+    const fileName = patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName + ' CID ' + patientRegistInfo.identityData.cid
+    const medCerId = generateUniqueId();
+    
+    const patientAge = calculateAge(patientRegistInfo.identityData.birthDay); // คำนวนอายุ return obj
+
+        // document.getElementById("age_pt_regist").value = `${patientAge.years}`
+
+    pdfMake.fonts = {
+      THSarabunNew:{
+        normal: "https://Pichit-Raetai.github.io/font/THSarabunNew.ttf",
+        bold: "https://Pichit-Raetai.github.io/font/THSarabunNew Bold.ttf",
+        italics: "https://Pichit-Raetai.github.io/font/THSarabunNew Italic.ttf",
+        bolditalics: "https://Pichit-Raetai.github.io/font/THSarabunNew BoldItalic.ttf",
+        
+      }
+
+    }
+    const docDefinition = {
+      pageSize: 'A4',
+      
+      images: {
+        // bg: {
+        //   url: 'https://lh5.googleusercontent.com/d/1FeMKOWqyshLdarXuYzLRvc3NduzWA3p6',
+        //   // width: 100,
+        //   // height: 100,
+        //   // margin: [100,100,100,100], // [ซ้าย,บน,ขวา,ล่าง]
+        //   // width: 150,
+        //   // height: 150
+
+        // },
+        logo:{
+          url: logo_clinic,
+        }
+        
+        
+      },
+      // background: function(currentPage, pageSize) {
+      //   return [{
+      //     image:'bg',
+      //     width: pageSize.width,
+      //     height: pageSize.height
+      //   }]
+      // },
+      watermark: { text: clinicInfo.name, color: 'blue', opacity: 0.1, bold: true, italics: false },
+
+      
+      
+      content: [
+        // {
+        //   image: 'logo',
+        //   width: 100,
+        //   height: 100
+        // },
+        {
+          columns: [
+            {
+              image: 'logo',
+              width: 65,
+              height: 65
+            },
+            {
+              text: [
+                {text: clinicInfo.hosName + '\n', bold: false, fontSize: 14,margin: [0,0,0,0],},
+                {text: clinicInfo.hosAddress + '\n' , fontSize: 14},
+                {text: 'โทร: '  + clinicInfo.hosPhone + ', FB: ' + clinicInfo.faceBook + ', LineID: ' + clinicInfo.lineId, fontSize: 14},
+
+                
+              ],
+              alignment: 'right',
+              margin: [0,10,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+            },
+            
+
+          ]
+
+        },
+        {
+          text: 'ใบรับรองแพทย์ป่วย',
+          style: 'header',
+          alignment: 'center',
+          bold: true,
+          // italics: true,
+          fontSize: 20,
+          margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        // {
+        //   text: 'คลินิกนายแพทย์พิชิตเวชกรรม',
+        //   style: 'header',
+        //   alignment: 'right',
+        //   bold: false,
+        //   fontSize: 16,
+        // },
+        // {
+        //   text: '123/3 ม.3 ต.เมืองเก่า อ.เมือง จ.สกลนคร 32322',
+        //   style: 'header',
+        //   alignment: 'right',
+        //   bold: false,
+        //   fontSize: 16,
+        // },
+        
+        {
+          text: [
+            'วันที่ ' + visitDate + '\n',
+            ],
+          style: ['quote', 'small'],
+          bold: false,
+          fontSize: 16,
+          alignment: 'center',
+          margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        
+        
+        {
+          text: [
+            {text: 'ข้าพเจ้า นายแพทย์/แพทย์หญิง ', fontSize: 16},
+            {text: providerInfo.fullName  + ' ', style:'textinput'},
+            {text: ' ใบอนุญาตประกอบเวชกรรมเลขที่ ', fontSize: 16},
+            {text: providerInfo.license  + '\n', style:'textinput'},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: 'สถานพยาบาลชื่อ ', fontSize: 16},
+            {text: clinicInfo.hosName  + ' ', style:'textinput'},
+            {text: 'ที่อยู่ ', fontSize: 16},
+            {text: clinicInfo.hosAddress  + '\n', style:'textinput'},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: 'ได้ตรวจรักษารักษา นาย/นาง/นางสาว ', fontSize: 16},
+            {text: patientRegistInfo.identityData.firstName + ' ', style:'textinput'},
+            {text: patientRegistInfo.identityData.lastName + ' ', style:'textinput'},
+            {text: ' อายุ '  + ' ' , fontSize: 16},
+            {text: patientAge.years  , style:'textinput'},
+            {text: ' ปี '  + '\n' , fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: 'ที่อยู่ ', fontSize: 16},
+            {text: document.getElementById("patient_address_treat").textContent + ' ', style:'textinput'},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+              'มีรายละเอียดดังนี้' + '\n',
+            ],
+          
+          bold: false,
+          fontSize: 16,
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        
+        {
+          text: [
+            {text: 'น้ำหนัก ', fontSize: 16},
+            {text: opdVisitInfo.wt + ' ', style:'textinput'},
+            {text: 'กก, ', fontSize: 16},
+            {text: 'ส่วนสูง ', fontSize: 16},
+            {text: opdVisitInfo.ht + ' ', style:'textinput'},
+            {text: 'ซม, ', fontSize: 16},
+            {text: 'BT ', fontSize: 16},
+            {text: opdVisitInfo.bt + ' ', style:'textinput'},
+            {text: 'องศา, ', fontSize: 16},
+            {text: 'BP ', fontSize: 16},
+            {text: opdVisitInfo.sbp + "/" + opdVisitInfo.dbp + ' ', style:'textinput'},
+            {text: 'mmHg, ', fontSize: 16},
+            {text: 'PR ', fontSize: 16},
+            {text: opdVisitInfo.pr + ' ', style:'textinput'},
+            {text: 'ครั้ง/นาที, ', fontSize: 16},
+            {text: 'RR ', fontSize: 16},
+            {text: opdVisitInfo.rr + ' ', style:'textinput'},
+            {text: 'ครั้ง/นาที, ', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+
+        {
+          text: [
+            {text: 'อาการที่มา ', fontSize: 16},
+            {text: medcerSickInfo.cc + ' ', style:'textinput'},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        
+        {
+          text: [
+            {text: 'วินิจฉัยเบื้องต้น:', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: medcerSickInfo.dx + ' ', style:'textinput'},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        
+        {
+          text: [
+            {text: 'ความเห็นแพทย์ฺ ', fontSize: 16},
+            {text: medcerSickInfo.comment + ' ', style:'textinput'},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+        {
+          text: [
+            {text: 'เห็นควรหยุดพัก ตั้งแต่วันที่ ', fontSize: 16},
+            {text: medcerSickInfo.dayOffStart  + ' ', style:'textinput'},
+            {text: 'ถึงวันที่ ', fontSize: 16},
+            {text: medcerSickInfo.dayOffEnd  + ' ', style:'textinput'},
+            {text: 'รวมทั้งสิ้น ', fontSize: 16},
+            {text: medcerSickInfo.dayOffTotal  + ' ', style:'textinput'},
+            {text: 'วัน ', fontSize: 16},
+          ],
+          margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        },
+
+        {
+          columns: [
+                    {text: 'ลงชื่อ..............................................ผู้ป่วย' + '\n' + patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName, alignment: 'center' }, 
+                    {text: 'ลงชื่อ..............................................แพทย์ผู้ตรวจร่างกาย' + '\n' + providerInfo.fullName + ' ' + providerInfo.license  , alignment: 'center' }, 
+          ],
+          margin: [0, 60, 0, 0]
+          
+        },
+        
+        
+      ],
+
+      defaultStyle:{
+        font: "THSarabunNew",
+      },
+      styles: {
+        textinput: {
+          fontSize: 16,
+          bold: true,
+          decoration: 'underline',
+          decorationStyle:'dotted'
+        },
+        
+      },
+
+      footer: function (currentPage, pageCount) {
+        return {
+          text: [
+            {text: 'รหัสอ้างอิง ' + medCerId , },
+            {text: ' วันที่พิมพ์: ' },
+            {text:  dateStamp, },
+            {text: 'เวลา ' + timeStamp + ' น.', },
+            
+          ],
+          fontSize: 12,
+          alignment: 'right',
+          margin: [0,0,40,0], // [ซ้าย,บน,ขวา,ล่าง]
+          
+        };
+      },
+      // styles: {
+      //   header: {
+      //     fontSize: 18,
+      //     bold: true,
+      //     alignment: 'right',
+      //     margin: [0, 190, 0, 80]
+      //   },
+      //   subheader: {
+      //     fontSize: 14
+      //   },
+      //   superMargin: {
+      //     margin: [20, 0, 40, 0],
+      //     fontSize: 15
+      //   }
+      // }
+    }
+
+    // สั่งให้สร้าง pdf พร้อมกับ download
+    pdfMake.createPdf(docDefinition).open()
+    pdfMake.createPdf(docDefinition).download( fileName +'.pdf');
+
+  };
+
+
+</script>

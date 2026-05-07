@@ -1,0 +1,119 @@
+<script>
+
+
+
+function openModalCalendar(){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal')) // Returns a Bootstrap modal instance
+  // modal1.show();
+  modal1.hide();
+
+  let modal2 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_view_modal')) // Returns a Bootstrap modal instance
+  modal2.show();
+  // modal.hide();
+
+
+  document.getElementById('calendarModal_To_AppointmentModal_btn').classList.remove('d-none')
+  setTimeout(clickCalendarBtn, 200); 
+
+}; 
+
+
+function closeModalCalendar(){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_view_modal'))  
+  // modal1.show();
+  modal1.hide();
+
+
+};
+
+
+function closeModalCalendarEventEdit(){
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal')) // Returns a Bootstrap modal instance
+  // Show or hide:
+  // modal.show();
+  modal.hide();
+
+
+};
+
+
+// function closeModalCalendarEventEdit(){
+//   let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal')) // Returns a Bootstrap modal instance
+//   // Show or hide:
+//   // modal.show();
+//   modal.hide();
+
+// };
+
+
+function calendarModalToAppointmentModal(){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_view_modal'))  
+  // modal1.show();
+  modal1.hide();
+
+  let modal2 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal'))  
+  modal2.show();
+  // modal.hide();
+
+
+};
+
+
+function appointmentModalToPatientInfoModal(){
+  const patientId = document.getElementById('patientid_calendar').value
+  console.log("patientId "+ patientId)
+  // openModalCalendar()
+
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal'))  
+  modal1.hide(); 
+  // modal1.show();
+
+  // document.getElementById('back_to_appointmentmodal_btn').classList.remove("d-none")
+  // document.getElementById('back_to_appointmentmodal_btn').classList.add("d-none")
+
+  // document.getElementById('close_patientinfomodal_btn').classList.remove('d-none')
+  document.getElementById('back_to_appointmentmodal_btn').classList.remove('d-none')
+
+  openPatientEditModal(patientId)
+
+
+};
+
+
+function openModalAddCalendarEvent(info){
+  let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_view_modal')) // Returns a Bootstrap modal instance
+  // Show or hide:
+  // modal1.show();
+  modal1.hide();
+
+  let modal2 = bootstrap.Modal.getOrCreateInstance(document.getElementById('calendar_event_addedit_modal')) // Returns a Bootstrap modal instance
+  // Show or hide:
+  modal2.show();
+  // modal2.hide();
+
+  console.log(info)
+  document.getElementById('start_date_calendar').value = formatDateYYYYMMDD(info.dateStr) 
+  document.getElementById('start_time_calendar').value = convertDateToTime(info.dateStr)
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+

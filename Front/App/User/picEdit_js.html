@@ -1,0 +1,206 @@
+<script>
+
+
+
+
+function openModalUserPic(){
+  console.log("open user pic")
+  new bootstrap.Modal(document.getElementById('user_pic_modal'), {keyboard: false }).show()
+
+  document.getElementById('user_pic_large').src = document.getElementById('user_pic_small').src
+
+};
+
+
+var urlPdfLogo =  'https://lh5.googleusercontent.com/d/1qJCZsVqWzhxDnqK7yLO2E5yg5nSCiDdI'
+
+
+// สร้าง template obj รอแทนค่าแล้วส่งเข้าไปลหลังบ้าน
+let fileInfo =  
+                {
+                  file1: {
+                    inputId: "file_upload_user_pic", // input id 
+                    name: '',               // file name ว่างไว้
+                    base64: '',             // file base64 ว่างไว้
+                    header: "userPic"      // ต้องตรงกับในหัวตารางใน Sheet 
+                  } 
+                }
+
+
+
+async function createBase64Data(e) {
+  const files = e.target.files; // FileList object
+  const fileName = files[0].name
+  // console.log(files) 
+  // console.log(fileName) 
+
+  const base64File = await convertToBase64(files[0]) // return file base64 
+
+  // Example usage to find "file_input1" and return key file1
+  let fileFound = findFileByInputId(e);
+
+  if (fileFound) {
+    // console.log(fileFound)  // return file obj
+    fileFound.name = fileName;
+    fileFound.base64 = base64File;
+
+  } else {
+    console.log("File not found with inputId:", inputIdToFind);
+  }
+
+  console.log(fileInfo) 
+
+};
+
+
+
+
+
+function checkFileTypeAndSize(e) {
+  const inputId = e.target.id
+  const fileInput = document.getElementById(inputId);
+  const file = fileInput.files[0];
+  
+  const acceptedTypes = ["image/jpeg", "image/png"]
+  const acceptedSize = 0.3 * 1024 * 1024; // 0.3 MB (in bytes)
+  
+  const fileType = file.type;
+  const fileSize = file.size;
+  // const fileSizeMB = file.size / (1024 * 1024).toFixed(2);
+  const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+
+  const checkTypeResult = acceptedTypes.includes(fileType)   // true or false
+
+  if ( checkTypeResult == false )  {
+    const output = [{ 
+                      result: "Incorrect",
+                      detail: "Invalid file type. Only JPG, and PNG files are accepted",
+                      fileTypeInput: fileType
+                    }] 
+    // console.log(output)
+    return output
+     
+  } else if (fileSize > acceptedSize) {
+    const output = [{
+                      result: "Incorrect",
+                      detail: "Please upload a file < 0.3 MB" + " But your file is " + fileSizeMB + " MB",
+                      fileTypeInput: fileType
+                    }] 
+    // console.log(output)
+    
+    return output
+    
+  } else {
+    const output = [{ 
+                      result: "Correct",
+                      detail: "Good!! File type and size is correct",
+                      fileTypeInput: fileType
+                    }] 
+    console.log(output)
+    return output
+
+  }
+
+};
+
+
+
+function convertToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
+};
+
+
+
+
+
+// หา key ใน fileInfo object ด้วย input id
+// Example usage to find "file_input1" and return key file1
+function findFileByInputId(e) {
+  // fileInfo is global var
+  let inputIdToFind = e.target.id;
+  
+  for (let key in fileInfo) {
+    if (fileInfo[key].inputId === inputIdToFind) {
+      return fileInfo[key];
+    }
+  }
+  return null;
+
+};
+
+
+function cancelFile(e){
+  // fileInfo is global var
+  let inputIdToFind = e.target.id;
+
+  for (let key in fileInfo) {
+    if (fileInfo[key].inputId === inputIdToFind) {
+      fileInfo[key].name = ""
+      fileInfo[key].base64 = ""
+      document.getElementById(inputIdToFind).value = ""
+    }
+  }
+  
+  // console.log(fileInfo) 
+
+};
+
+
+function editUserPic(){
+  // console.log(fileInfo) // global var
+  const userId = document.getElementById('user_id_status').textContent 
+  const userFolderLink = document.getElementById('user_folder_config').textContent 
+  const userFolderId = userFolderLink.split('/')[5] 
+  // console.log(userFolderId)
+  const oldUserPicLink = document.getElementById('user_pic_config').textContent 
+  // console.log(oldUserPicLink)
+  const oldUserPicId = oldUserPicLink.split('/')[4]
+  // console.log(oldUserPicId)
+
+  if ( userFolderLink == ''){
+    Swal.fire({icon: 'error',title: 'User folder is not found!!'})
+
+  } else {
+    loadingStart("กำลังบันทึก")
+    
+    google.script.run.withSuccessHandler((res)=>{
+      console.log(res) // obj
+
+      const picId = res[0].userPic.split('/')[5] 
+      const urlPic = 'https://lh5.googleusercontent.com/d/' + picId
+      
+      // const userPicUrl = res[0].userPic 
+      // console.log(userPicUrl)  // return url https://drive.google.com/file/d/xxxxxxxxx
+
+      document.getElementById('user_pic_small').src = urlPic
+      document.getElementById('user_pic_medium').src = urlPic
+      document.getElementById('user_pic_large').src = urlPic
+      document.getElementById('user_pic_config').innerHTML = urlPic
+
+      loadingEnd()
+
+      Swal.fire({icon: 'success',title: 'Files have been uploaded!!'})
+
+    }).editUserPic(userId,fileInfo,userFolderId,oldUserPicId)
+
+  }
+  
+
+};
+
+
+
+
+
+
+
+
+
+</script>
+

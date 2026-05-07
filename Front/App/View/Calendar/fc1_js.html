@@ -1,0 +1,250 @@
+
+
+
+<script>
+
+
+
+
+var eventDataTest = 
+                [ 
+                  { id: '230909-762218',
+                    title: 'มานะ รักเรียน',
+                    start: '2024-05-11 08:00:00',
+                    // end: '2024-05-11 16:00:00',
+                    description: {
+                      firstName:'มานะ',
+                      lastName:'รักเรียน',
+                      purpose: 'นัดติดตามอาการ',
+                      doctorName: 'นพ.พิชิต แร่ถ่าย',
+                      roomName: 'OPD REHAB',
+                      sign: 'มานี มีตา', // ผู้นัด
+                      comment: 'ให้นำยาเดิมมาด้วย', // ผู้นัด
+
+                    },
+                  },
+                  { id: '230909-111111',
+                    title: 'ปิติ เรียนดี',
+                    start: '2024-05-11 09:00:00',
+                    // end: '2024-05-11 16:00:00',
+                    description: { 
+                      firstName:'ปิติ',
+                      lastName:'เรียนดี',
+                      purpose: 'นัดติดตามอาการ',
+                      doctorName: 'พญ.ชูใจ คนสวย',
+                      roomName: 'OPD MED',
+                      sign: 'มานี มีตา', // ผู้นัด
+                      comment: 'ให้นำยาเดิมมาด้วย', // ผู้นัด
+
+                    },
+                  },
+                ]
+
+
+
+
+
+var disabledDays = []; // Dates to disable
+
+
+
+
+
+
+
+
+
+function createCalendar1(eventsData) {
+  elements.calendar1 = new FullCalendar.Calendar(document.getElementById('calendar_1'), {
+    locale: 'th',
+    firstDay: "1",
+    initialView: 'dayGridMonth',
+    // validRange: {
+    //   start: '2023-09-10',
+    //   end: '2023-09-20'
+    // },
+    // hiddenDays: [ 0 ], // 0 = อาทิตย์
+    // height: "auto",  // 800,// ถ้าต้องการให้แต่ละช่องไม่ยาวไปเรื่อยๆ ให้ comment นี้ไว้
+    contentHeight: 780, 
+    // aspectRatio: 3, 
+
+    allDaySlot: false,
+    headerToolbar: {
+        right: "prev,next today",
+        center: "title",
+        left: "dayGridMonth,timeGridWeek,timeGridDay", // 
+        // left: "dayGridMonth,timeGridWeek,timeGridDay,listMonth" // 
+    },
+    buttonText: {
+      today:    'วันนี้',
+      month:    'เดือน',
+      week:     'สัปดาห์',
+      day:      'วัน',
+      // list:     'รายการ'
+    },
+
+    defaultAllDayEventDuration:   { days: 1 },
+
+    eventTimeFormat: { // like '14:30:00'
+      hour: '2-digit',
+      minute: '2-digit',
+      // second: '2-digit',
+      hour12: false
+    },
+      
+    slotMinTime: '07:00:00',
+    slotMaxTime: '20:00:00',
+    slotDuration: '00:30:00',
+
+    slotLabelFormat: {
+      hour: 'numeric', 
+      minute: '2-digit', 
+      hour12: false
+    },
+      
+    dayMaxEventRows: true, // for all non-TimeGrid views
+    views: {
+      timeGrid: {
+        dayMaxEventRows: 8 // adjust to 6 only for timeGridWeek/timeGridDay
+      }
+    },
+
+    events: eventsData, // eventsData, eventDataTest  
+    eventStartEditable: false,  // disable drag drop
+
+ 
+    dateClick: (info)=>{
+      const dateSelect = info.dateStr // 2025-01-07
+      console.log(dateSelect)
+
+      const thaiDate = toThaiDateString(new Date(dateSelect));
+
+      if (disabledDays.includes(dateSelect)) {
+        Swal.fire({
+          title: thaiDate,
+          html: `
+            <h5 align='center'>วันหยุด</h5>
+            <h5 align='center'>ต้องการยกเลิกวันหยุด?</h5>
+          `,
+          showCancelButton: true,
+          confirmButtonText: "ยืนยัน"
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            console.log("ยืนยันยกเลิกวันหยุด")
+            deleteDayOff(dateSelect)
+          }
+        })
+
+      } else {
+        Swal.fire({
+          title: thaiDate ,
+          html: `
+            <h5 align='center'>ต้องการเพิ่มวันนี้เป็นวันหยุด?</h5>
+          `,
+          // showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "ยืนยัน",
+           
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            console.log("ยืนยันเพิ่มวันหยุด")
+            addDayOff(dateSelect)
+          } 
+        })
+      }
+    },
+    datesSet: (info)=>{
+      let days = document.querySelectorAll('.fc-daygrid-day');
+      days.forEach((day)=>{
+        let date = day.getAttribute('data-date');
+        if (disabledDays.includes(date)) {
+          // Add a disabled class and set pointer behavior
+          day.classList.add('fc-day-disabled');
+          day.style.cursor = 'not-allowed';
+        }
+      });
+    },
+
+    // datesSet: (info) => {
+    //   var days = document.querySelectorAll('.fc-daygrid-day');
+    //   days.forEach((day) => {
+    //     var date = day.getAttribute('data-date');
+
+    //     // Check if the date exists in the disabledDays array
+    //     if (disabledDays.some(dayOffObj => dayOffObj.dayOff === date)) {
+    //       // Add a disabled class and set pointer behavior
+    //       day.classList.add('fc-day-disabled');
+    //       day.style.cursor = 'not-allowed';
+    //       day.style.backgroundColor = "#f8d7da"; // Optional: Light red background
+    //       day.style.opacity = "0.6"; // Optional: Reduce visibility
+    //     }
+    //   });
+    // },
+
+
+    eventClick: (info)=>{
+      console.log("eventClick")
+      // change the border color just for fun
+      // info.el.style.borderColor = 'red';
+      // closeModal()
+      // openFormEventEdit(info)
+      // console.log(info)
+      // console.log(info.event._instance.range.start)
+      // console.log(info.event._def)
+      const eventInfo = info.event._def
+      console.log(eventInfo)
+      document.getElementById('openvisit_event_btn').classList.remove('d-none');
+      document.getElementById('add_calendar_event_btn').classList.add("d-none")
+      document.getElementById('print_calendar_event_btn').classList.remove("d-none")
+      document.getElementById('edit_calendar_event_btn').classList.remove("d-none")
+      document.getElementById('delete_calendar_event_btn').classList.remove("d-none")
+
+      openModalCalendarEventEdit(eventInfo)
+      
+    },
+  
+    editable: false, // ป้องกันไม่ให้ลาก event หรือ ขยาย event
+
+    eventContent: (arg)=>{
+      // console.log(arg)
+      // console.log(arg.timeText) // eg.08:00 
+      // console.log(arg.event._def.title) // eg.Room 1
+      // console.log(arg.event._def.extendedProps.description)
+      // console.log(arg.event._def.extendedProps.description.split('|X|')[3].trim() )
+
+      const patientName = arg.event._def.title // ชื่อ ผป
+      const purpose = arg.event._def.extendedProps.description.purpose
+      // console.log(purpose)
+
+      const time = arg.timeText  // eg.08:00
+      
+      let elemP = document.createElement('p')
+
+        elemP.innerHTML = '&nbsp;' + time + ' ' + patientName + '&nbsp;'
+        // elemP.style.backgroundColor = '#3498DB';  // backgroundColor
+        elemP.style.color = '#1A5276'; // font color
+        elemP.style.padding = "0px 0px 0px 0px";
+        elemP.style.margin = "-2px 0px -2px 0px";
+        elemP.style.overflow =  'hidden';
+
+      let arrayOfDomNodes = [ elemP ]
+      return { domNodes: arrayOfDomNodes }
+      
+    },
+
+    
+  });
+  elements.calendar1.render();
+
+  // Load disabled days after initialization
+  getDayOffToCalendar();
+
+};
+
+
+
+</script>
+
+
