@@ -1,367 +1,295 @@
 <script>
 
 
+  function showTableHistory(tabledata){
+    // let thaiDateFormatter = function(cell, formatterParams, onRendered){
+    //   try {
+    //     const data = cell.getRow().getData();
+        
+    //     const thaiDateStr = toThaiDateString(new Date(data.visitDate)) 
+    //     return thaiDateStr
 
+    //   } catch(er){
 
-function showTableHistory(tabledata){
-  elements.tableHistory = new Tabulator("#history_table", {
-    data:tabledata,           //load row data from array
-    index:"opdVisitId", //set the index field to the "age" field.
-    layout:"fitColumns",      //fit columns to width of table
-    // layout:"fitDataStretch",
-    // layout:"fitDataFill",
-    responsiveLayout:"hide",  //hide columns that don't fit on the table
-    addRowPos:"top",          //when adding a new row, add it to the top of the table
+    //   }
+        
+    // };
 
-    selectableRows:1,
-    selectableRowsRollingSelection:true, // disable rolling selection
-    
-    pagination:"local",       //paginate the data
-    paginationSize:10,         //allow 7 rows per page of data
-    // paginationCounter:"rows", //display count of paginated rows in footer
-    // movableColumns:true,      //allow column order to be changed
-    initialSort:[             //set the initial sort order of the data
-        {column:"visitDate", dir:"dsc"},
-    ],
-
-    // initialFilter:[
-    //     {field:"patientId", type:"=", value:patientId}
-    // ],
-
-    columns:[               //define the table columns
-      {title:"VID", field:"opdVisitId" , visible:false},
-      {title:"วันที่มา", field:"visitDate",hozAlign:"right",  minWidth:90, formatter:thaiDateFormatterTabu},
-      {title:"เวลา", field:"visitTime",hozAlign:"right", },
-      {title:"roomName", field:"roomName", visible:false },
-      {title:"HN", field:"patientId" , visible:false },
+    elements.tableHistory = new Tabulator("#history_table", {
+      data:tabledata,           //load row data from array
+      index:"opdVisitId", //set the index field to the "age" field.
+      layout:"fitColumns",      //fit columns to width of table
+      // layout:"fitDataStretch",
+      // layout:"fitDataFill",
+      responsiveLayout:"hide",  //hide columns that don't fit on the table
+      addRowPos:"top",          //when adding a new row, add it to the top of the table
       
-      {title:"firstName", field:"firstName", visible:false },
-      {title:"lastName", field:"lastName", visible:false },
+      pagination:"local",       //paginate the data
+      paginationSize:10,         //allow 7 rows per page of data
+      paginationCounter:"rows", //display count of paginated rows in footer
+      // movableColumns:true,      //allow column order to be changed
+      initialSort:[             //set the initial sort order of the data
+          {column:"visitDate", dir:"dsc"},
+      ],
+
+      // initialFilter:[
+      //     {field:"patientId", type:"=", value:patientId}
+      // ],
+  
+      columns:[               //define the table columns
+        {title:"VID", field:"opdVisitId" , visible:false},
+        {title:"วันที่มา", field:"visitDate",formatter:thaiDateFormatterTabu},
+        {title:"เวลา", field:"visitTime" },
+        {title:"roomName", field:"roomName", visible:false },
+        {title:"HN", field:"patientId" , visible:false },
+        
+        {title:"firstName", field:"firstName", visible:false },
+        {title:"lastName", field:"lastName", visible:false },
+        
+        {title:"opdStatus", field:"opdStatus", visible:false },
+        {title:"doctorName", field:"doctorName", visible:false },
+
+        {title:"generalData", field:"generalData", visible:false },
+
+      ],
+    });
+
+    elements.tableHistory.on("rowClick", function(e, row){
+      //e - the click event object
+      //row - row component
+      const rowData = row.getData();
+      // console.log(rowData)
+      // console.log(rowData.generalData) // string
+
+      const opdVisitId = rowData.opdVisitId
+      // console.log(opdVisitId)
+
+      const patientId = row.getData().patientId;
+      // console.log(patientId)
+
+      // showTreatmentView(rowData);
+      resetFormHistory();
+      setDataHistoryById(opdVisitId)
+      // getPatientRegistInfoById(patientId,opdVisitId);
+
+    });
+
+    elements.tableHistory.on("dataLoaded", function(data){
+      //data - all data loaded into the table
+      searchTableHistory()
+
+    });
+
+  };
+
+
+
+
+  function searchTableHistory(){
+    const patientId = document.getElementById('patient_id_history').textContent
+
+    // elements.tableHistory.setFilter([
+    //     {field:"patientId", type:"=", value:patientId}, 
+        
+    // ]);
+
+    elements.tableHistory.setFilter([
+      {field:"visitDate",type: "!=",value: ""}, // search with and
+      {field:"patientId",type: "like",value: patientId}, // search with and
       
-      {title:"opdStatus", field:"opdStatus", visible:false },
-      {title:"doctorName", field:"doctorName", visible:false },
+    ]);
 
-      {title:"generalData", field:"generalData", visible:false },
+  };
 
-    ],
-  });
 
-  elements.tableHistory.on("rowClick", (e, row)=>{
-    //e - the click event object
-    //row - row component
-    const rowData = row.getData();
-    console.log(rowData)
-    // console.log(rowData.generalData) // string
 
-    const opdVisitId = rowData.opdVisitId
+
+
+
+  function setDataHistoryById(opdVisitId){
     // console.log(opdVisitId)
 
-    const patientId = row.getData().patientId;
-    // console.log(patientId)
+    document.getElementById('opdvisit_id_history').textContent = opdVisitId
+    
+    const historyInfo = elements.tableHistory.getRow(opdVisitId).getData();
+    // console.log(historyInfo)
 
-    // showTreatmentView(rowData);
-    resetFormHistory();
-    setDataHistoryById(opdVisitId)
-      
-    enableReDxTxHmBtn();
+    document.getElementById('datetime_selected_history').textContent = toThaiDateString(new Date(historyInfo.visitDate)) + 'เวลา ' + historyInfo.visitTime + ' น.' 
 
-  });
 
+    // set data ccpi *********************
+    document.getElementById('wt_history').value = historyInfo.piData.wt || "";
+    document.getElementById('ht_history').value = historyInfo.piData.ht || "";
+    document.getElementById('bt_history').value = historyInfo.piData.bt || "";
+    document.getElementById('sbp_history').value = historyInfo.piData.sbp || "";
+    document.getElementById('dbp_history').value = historyInfo.piData.dbp || "";
+    document.getElementById('pr_history').value = historyInfo.piData.pr || "";
+    document.getElementById('rr_history').value = historyInfo.piData.rr || "";
+
+    document.getElementById('cc_history').value = historyInfo.piData.cc || "";
+    document.getElementById('pi_history').value = historyInfo.piData.pi || "";
+    document.getElementById('ph_history').value = historyInfo.piData.ph || "";
+
+    // set data pe *********************
+    document.getElementById('pe_history').value = historyInfo.peData.pe || "";
+    document.getElementById('oe_history').value = historyInfo.peData.oe || "";
+
+    // set data ix *********************
+    document.getElementById('lab_history').value = historyInfo.ixData.lab || "";
+    document.getElementById('xray_history').value = historyInfo.ixData.xray || "";
+    document.getElementById('us_history').value = historyInfo.ixData.us || "";
+
+    // set data dx *********************
+    const dataDx = historyInfo.dxData
+
+    if( dataDx == ""){
+        addRowDxHistory("", ""); // ให้เป็นแถวว่าง
+    } else {
+        // Dynamically add rows based on the data object
+        for (let i = 1; i <= Object.keys(dataDx).length / 2; i++) {
+            addRowDxHistory(dataDx[`dx${i}`], dataDx[`icd${i}`]);
+        }
+    }
+
+
+    // set data tx *********************
+    const dataTx = historyInfo.txData
+    if( dataTx == ""  ){
+        addRowTxHistory("", "", ""); // ให้เป็นแถวว่าง
+    } else {
+      for (let i = 1; i <= Object.keys(dataTx).length / 3; i++) {
+        addRowTxHistory(dataTx[`tx${i}`], dataTx[`dose${i}`], dataTx[`price${i}`]);
+      }
+    }
+
+    // set data hm *********************
+    const dataHm = historyInfo.hmData
+    if( dataHm == ""  ){
+        addRowHmHistory("", "", "", ""); // ให้เป็นแถวว่าง
+    } else {
+      for (let i = 1; i <= Object.keys(dataHm).length / 4; i++) {
+          addRowHmHistory(dataHm[`hm${i}`], dataHm[`dose${i}`], dataHm[`amount${i}`], dataHm[`price${i}`]);
+      }
+    }
+
+    // set data summary *********************
+    document.getElementById('total_price_sum_history').value = historyInfo.summaryData.totalPrice || ""; 
+    document.getElementById('pay_type_history').value = historyInfo.summaryData.payType || ""; 
+    document.getElementById('pay_remain_history').value = historyInfo.summaryData.payRemain || ""; 
+    document.getElementById('pay_channel_history').value = historyInfo.summaryData.payChannel || ""; 
+    document.getElementById('social_security_history').value = historyInfo.summaryData.socialSecurity || ""; 
+    document.getElementById('doctor_note_history').value = historyInfo.summaryData.doctorNote || ""; 
+    document.getElementById('tx_plan_history').value = historyInfo.summaryData.txPlan || ""; 
+
+    // set data appointment *********************
+    if ( historyInfo.appointmentData){
+      document.getElementById('fu_date_history').value = historyInfo.appointmentData.description.startDate || ""; 
+      document.getElementById('fu_time_history').value = historyInfo.appointmentData.description.startTime || ""; 
+      document.getElementById('fu_plan_history').value = historyInfo.appointmentData.description.purpose || ""; 
+      document.getElementById('room_name_history').value = historyInfo.appointmentData.description.roomName || ""; 
+      document.getElementById('doctor_appoint_history').value = historyInfo.appointmentData.description.doctorName || ""; 
+      document.getElementById('comment_history').value = historyInfo.appointmentData.description.comment || ""; 
+
+    }
+    
  
-  elements.tableHistory.on("tableBuilt", ()=>{
-    searchTableHistory();
-    // elements.tableHistory.setPage(1);  // Navigate to the first page
 
-  })
+
+
+  };
+
+
+
+
+
+  // Function to add a row with given dx and icd values
+  function addRowDxHistory(dx, icd) {
+    // Get the template and table body
+    const template = document.getElementById("input_dx_template_history").content;
+    const tableBody = document.getElementById("table_dx_history").querySelector("tbody");
+        
+    const clone = document.importNode(template, true);
+    const inputs = clone.querySelectorAll("input");
+    inputs[0].value = dx; // dx value
+    inputs[1].value = icd; // icd value
+    tableBody.appendChild(clone);
+
+  };
+
+
+  function addRowTxHistory(tx, dose, price) {
+    // Get the template and table body
+    const template = document.getElementById("input_tx_template_history").content;
+    const tableBody = document.getElementById("table_tx_history").querySelector("tbody");
+        
+    const clone = document.importNode(template, true);
+    const inputs = clone.querySelectorAll("input");
+    inputs[0].value = tx; // tx value
+    inputs[1].value = dose; // dose value
+    inputs[2].value = price; // price value
+    tableBody.appendChild(clone);
+
+  };
+
+
+  function addRowHmHistory(tx, dose, amount, price) {
+    // Get the template and table body
+    const template = document.getElementById("input_hm_template_history").content;
+    const tableBody = document.getElementById("table_hm_history").querySelector("tbody");
+        
+    const clone = document.importNode(template, true);
+    const inputs = clone.querySelectorAll("input");
+    inputs[0].value = tx; // tx value
+    inputs[1].value = dose; // dose value
+    inputs[2].value = amount; // amount value
+    inputs[3].value = price; // price value
+    tableBody.appendChild(clone);
+
+  };
+
+
+
+
+
+  function resetFormHistory(){
+    document.getElementById('datetime_selected_history').textContent = ""
+
+    // form ซักประวัติ
+    document.getElementById('ccpi_form_history').reset();
+    document.getElementById('pe_form_history').reset();
+    document.getElementById('ix_form_history').reset();
+
+    const tbodyDx = document.getElementById('input_dx_history');
+    while (tbodyDx.firstChild) {tbodyDx.removeChild(tbodyDx.firstChild);}
+
+    const tbodyTx = document.getElementById('input_tx_history');
+    while (tbodyTx.firstChild) {tbodyTx.removeChild(tbodyTx.firstChild);}
+
+    const tbodyHm = document.getElementById('input_hm_history');
+    while (tbodyHm.firstChild) {tbodyHm.removeChild(tbodyHm.firstChild);}
+
   
-
-  
-
-};
+    document.getElementById('summary_form_history').reset();
+    document.getElementById('appointment_form_history').reset();
 
 
- 
+  };
 
-function searchTableHistory(){
-  const patientId = document.getElementById('patient_id_history').textContent
 
-  elements.tableHistory.setFilter([
-    {field:"visitDate",type: "!=",value: ""}, // search with and
-    {field:"patientId",type: "like",value: patientId}, // search with and
+
+  // function searchTableHistory(){ 
     
-  ]);
+  //   const patientId = document.getElementById('patient_id_history').textContent
+  //   // console.log(patientId)
 
-};
-
-
-
-
-
-
-function setDataHistoryById(opdVisitId){
-  // console.log(opdVisitId)
-
-  document.getElementById('opdvisit_id_history').textContent = opdVisitId
-  
-  const historyInfo = elements.tableHistory.getRow(opdVisitId).getData();
-  // console.log(historyInfo)
-
-  document.getElementById('datetime_selected_history').textContent = toThaiDateString(new Date(historyInfo.visitDate)) + 'เวลา ' + historyInfo.visitTime + ' น.' 
-
-
-  // set data ccpi *********************
-  document.getElementById('wt_history').value = historyInfo.piData.wt || "";
-  document.getElementById('ht_history').value = historyInfo.piData.ht || "";
-  document.getElementById('bmi_history').value = historyInfo.piData.bmi || "";
-  document.getElementById('o2sat_history').value = historyInfo.piData.o2sat || "";
-
-  document.getElementById('bt_history').value = historyInfo.piData.bt || "";
-  document.getElementById('sbp_history').value = historyInfo.piData.sbp || "";
-  document.getElementById('dbp_history').value = historyInfo.piData.dbp || "";
-  document.getElementById('pr_history').value = historyInfo.piData.pr || "";
-  document.getElementById('rr_history').value = historyInfo.piData.rr || "";
-
-  document.getElementById('cc_history').value = historyInfo.piData.cc || "";
-  document.getElementById('pi_history').value = historyInfo.piData.pi || "";
-  document.getElementById('ph_history').value = historyInfo.piData.ph || "";
-
-
-  document.getElementById('previous_hosp_history').value = historyInfo.piData.previousHosp || "";
-  document.getElementById('current_drug_history').value = historyInfo.piData.currentDrug || "";
-  document.getElementById('growth_history').value = historyInfo.piData.growth || "";
-  document.getElementById('development_history').value = historyInfo.piData.development || "";
-  document.getElementById('vaccine_history').value = historyInfo.piData.vaccine || "";
-  document.getElementById('vaccine_incomplete_cause_history').value = historyInfo.piData.vaccineincompleteCause || "";
-
-
-
-
-
-
-
-  // set data pe *********************
-  document.getElementById('pe_history').value = historyInfo.peData.pe || "";
-  document.getElementById('oe_history').value = historyInfo.peData.oe || "";
-
-  // set data ix *********************
-  document.getElementById('lab_history').value = historyInfo.ixData.lab || "";
-  document.getElementById('xray_history').value = historyInfo.ixData.xray || "";
-  document.getElementById('us_history').value = historyInfo.ixData.us || "";
-
-  
-
-  // set data dx **************
-
-  // Clean the dataDx object remove undefind
-  const cleanedDataDx = cleanData(historyInfo.dxData);
-
-  // Check if cleanedDataDx is empty or if dx1 is empty
-  if (Object.keys(cleanedDataDx).length === 0 || cleanedDataDx.dx1 === "") {
-      addRowDxHistory("", ""); // Add an empty row if no valid data is found
-  } else {
-      // Dynamically add rows based on the cleaned data object
-      for (let i = 1; i <= Object.keys(cleanedDataDx).length / 2; i++) {
-          const dx = cleanedDataDx[`dx${i}`];
-          const icd = cleanedDataDx[`icd${i}`];
-          
-          if (dx !== undefined && icd !== undefined) { // Ensure both dx and icd are defined
-              addRowDxHistory(dx, icd);
-          }
-      }
-  }
-
-
-
-
-  // set data tx  **************
-    
-  // Clean the dataDx object remove undefind
-  const cleanedDataTx = cleanData(historyInfo.txData);
-
-  // Check if cleanedDataTx is empty or if tx1 is empty
-  if (Object.keys(cleanedDataTx).length === 0 || cleanedDataTx.tx1 === "") {
-      addRowTxHistory("", "", ""); // Add an empty row if no valid data is found
-  } else {
-      // Dynamically add rows based on the cleaned data object
-      for (let i = 1; i <= Object.keys(cleanedDataTx).length / 3; i++) {
-          const tx = cleanedDataTx[`tx${i}`];
-          const dose = cleanedDataTx[`dose${i}`];
-          const price = cleanedDataTx[`price${i}`];
-          
-          if (tx !== undefined && dose !== undefined && price !== undefined) { // Ensure both dx and icd are defined
-              addRowTxHistory(tx, dose, price);
-          }
-      }
-  }
-
-
-
-  // set data hm *************************
-    
-  // Clean the dataDx object remove undefind
-  const cleanedDataHm = cleanData(historyInfo.hmData);
-
-  // Check if cleanedDataHm is empty or if tx1 is empty
-  if (Object.keys(cleanedDataHm).length === 0 || cleanedDataHm.hm1 === "") {
-      addRowHmHistory("", "", "", ""); // Add an empty row if no valid data is found
-  } else {
-      // Dynamically add rows based on the cleaned data object
-      for (let i = 1; i <= Object.keys(cleanedDataHm).length / 4; i++) {
-          const hm = cleanedDataHm[`hm${i}`];
-          const dose = cleanedDataHm[`dose${i}`];
-          const amount = cleanedDataHm[`amount${i}`];
-          const price = cleanedDataHm[`price${i}`];
-          
-          if (hm !== undefined && dose !== undefined && amount !== undefined && price !== undefined) { // Ensure both dx and icd are defined
-              addRowHmHistory(hm, dose,amount, price);
-          }
-      }
-  }
-
-  
-
-    
-
-  // set data summary *********************
-
-  document.getElementById('sum_procedure_price_history').value = historyInfo.summaryData.sumProcedurePrice || ""; 
-  document.getElementById('sum_df_price_history').value = historyInfo.summaryData.sumDfPrice || ""; 
-  document.getElementById('sum_homemed_price_history').value = historyInfo.summaryData.sumHomemedPrice || ""; 
-  document.getElementById('total_price_sum_history').value = historyInfo.summaryData.totalPrice || ""; 
-  document.getElementById('authen_code_history').value = historyInfo.summaryData.authenCode || ""; 
-
-
-  document.getElementById('pay_type_history').value = historyInfo.summaryData.payType || ""; 
-  document.getElementById('pay_remain_history').value = historyInfo.summaryData.payRemain || ""; 
-  document.getElementById('pay_channel_history').value = historyInfo.summaryData.payChannel || ""; 
-  document.getElementById('social_security_history').value = historyInfo.summaryData.socialSecurity || ""; 
-  document.getElementById('doctor_note_history').value = historyInfo.summaryData.doctorNote || ""; 
-  document.getElementById('tx_plan_history').value = historyInfo.summaryData.txPlan || ""; 
-
-  document.getElementById('discharge_type_history').value = historyInfo.summaryData.dischargeType || ""; 
-  document.getElementById('referto_hosp_history').value = historyInfo.summaryData.refertoHosp || ""; 
-
-
+  //   elements.tableHistory.setFilter([
+  //     {field:"visitDate",type: "!=",value: ""}, // search with and
+  //     {field:"patientId",type: "like",value: patientId}, // search with and
       
-
-  // set data appointment *********************
-  if ( historyInfo.appointmentData){
-    document.getElementById('fu_date_history').value = historyInfo.appointmentData.description.startDate || ""; 
-    document.getElementById('fu_time_history').value = historyInfo.appointmentData.description.startTime || ""; 
-    document.getElementById('fu_plan_history').value = historyInfo.appointmentData.description.purpose || ""; 
-    document.getElementById('room_name_history').value = historyInfo.appointmentData.description.roomName || ""; 
-    document.getElementById('doctor_appoint_history').value = historyInfo.appointmentData.description.doctorName || ""; 
-    document.getElementById('comment_history').value = historyInfo.appointmentData.description.comment || ""; 
-
-  }
+  //   ]);
 
 
-  // setHomemedTypeHistory()
-  setHomemedType('input-hm-history', 'homemed-type-history');
-  
-
-
-
-
-};
-
-
-
-
-
-// Function to add a row with given dx and icd values
-function addRowDxHistory(dx, icd) {
-  // Get the template and table body
-  const template = document.getElementById("input_dx_template_history").content;
-  const tableBody = document.getElementById("table_dx_history").querySelector("tbody");
-      
-  const clone = document.importNode(template, true);
-  const inputs = clone.querySelectorAll("input");
-  inputs[0].value = dx; // dx value
-  inputs[1].value = icd; // icd value
-  tableBody.appendChild(clone);
-
-};
-
-
-function addRowTxHistory(tx, dose, price) {
-  // Get the template and table body
-  const template = document.getElementById("input_tx_template_history").content;
-  const tableBody = document.getElementById("table_tx_history").querySelector("tbody");
-      
-  const clone = document.importNode(template, true);
-  const inputs = clone.querySelectorAll("input");
-  inputs[0].value = tx; // tx value
-  inputs[1].value = dose; // dose value
-  inputs[2].value = price; // price value
-  tableBody.appendChild(clone);
-
-};
-
-
-function addRowHmHistory(tx, dose, amount, price) {
-  // Get the template and table body
-  const template = document.getElementById("input_hm_template_history").content;
-  const tableBody = document.getElementById("table_hm_history").querySelector("tbody");
-      
-  const clone = document.importNode(template, true);
-  const inputs = clone.querySelectorAll("input");
-  inputs[0].value = tx; // tx value
-  inputs[1].value = dose; // dose value
-  inputs[2].value = amount; // amount value
-  inputs[3].value = price; // price value
-  tableBody.appendChild(clone);
-
-};
-
-
-
-
-
-function resetFormHistory(){
-  document.getElementById('datetime_selected_history').textContent = ""
-
-  // form ซักประวัติ
-  document.getElementById('ccpi_form_history').reset();
-  document.getElementById('pe_form_history').reset();
-  document.getElementById('ix_form_history').reset();
-
-  const tbodyDx = document.getElementById('input_dx_history');
-  while (tbodyDx.firstChild) {tbodyDx.removeChild(tbodyDx.firstChild);}
-
-  const tbodyTx = document.getElementById('input_tx_history');
-  while (tbodyTx.firstChild) {tbodyTx.removeChild(tbodyTx.firstChild);}
-
-  const tbodyHm = document.getElementById('input_hm_history');
-  while (tbodyHm.firstChild) {tbodyHm.removeChild(tbodyHm.firstChild);}
-
-
-  document.getElementById('summary_form_history').reset();
-  document.getElementById('appointment_form_history').reset();
-
-
-  document.getElementById('re_dx_history_btn').disabled = true;
-  document.getElementById('re_tx_history_btn').disabled = true;
-  document.getElementById('re_hm_history_btn').disabled = true;
-
-
-};
-
-
-
-// function searchTableHistory(){ 
-  
-//   const patientId = document.getElementById('patient_id_history').textContent
-//   // console.log(patientId)
-
-//   elements.tableHistory.setFilter([
-//     {field:"visitDate",type: "!=",value: ""}, // search with and
-//     {field:"patientId",type: "like",value: patientId}, // search with and
-    
-//   ]);
-
-
-// };
+  // };
 
 
 

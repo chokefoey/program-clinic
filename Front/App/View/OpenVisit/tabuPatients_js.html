@@ -1,0 +1,204 @@
+<script>
+    
+    // Custom formatter for the action buttons
+    // function buttonFormatter(cell, formatterParams, onRendered) {
+    //     // Create the buttons
+    //     let editButton = document.createElement('button');
+    //     editButton.innerHTML = "<i class='bi bi-wrench'></i> ดูข้อมูล";
+    //     editButton.classList.add('btn', 'btn-warning','p-1', 'btn-sm', 'shadow');
+    
+    //     let openVisitButton = document.createElement('button');
+    //     openVisitButton.innerHTML = "<i class='bi bi-file-earmark-plus-fill'></i> เปิด visit";
+    //     openVisitButton.classList.add('btn', 'btn-primary','p-1', 'btn-sm', 'shadow');
+
+    //     // Append buttons to the cell
+    //     let container = document.createElement('div');
+    //     container.classList.add('button-container');
+    //     container.appendChild(editButton);
+    //     container.appendChild(openVisitButton);
+    //     cell.getElement().appendChild(container);
+
+    //     // Add event listeners to the buttons
+    //     editButton.addEventListener('click', function (e) {
+    //         e.stopPropagation(); // Prevent triggering the cellClick event
+    //         const rowData = cell.getData();
+    //         // console.log(rowData)
+    //         // alert('Edit button clicked for row id: ' + rowData.patientId );
+    //         // console.log("openshowEditForm " + rowData.patientId)
+               
+    //         openPatientEditModal(rowData)
+    //     });
+
+    //     openVisitButton.addEventListener('click', function (e) {
+    //         e.stopPropagation(); // Prevent triggering the cellClick event
+    //         const rowData = cell.getData();
+    //         console.log(rowData)
+
+    //         // const patientId = rowData.patientId
+    //         // console.log(patientId)
+    //         // // alert('Delete button clicked for row id: ' + rowData.patientId);
+    //         // openModalPatientSendRoom(patientId)
+    //     });
+
+    //     return container;
+    // };
+
+
+
+
+
+    function loadTablePatientsRegist(tabledata){
+        // Define the custom formatter function
+        let mergeNameFormatter = function(cell, formatterParams, onRendered){
+            var data = cell.getRow().getData();
+            return data.identityData.firstName + " " + data.identityData.lastName; // Merge name and surname
+        };
+
+        //create Tabulator on DOM element with id "example-table"
+        elements.tablePatientRegist = new Tabulator("#table_patient_regist", {
+            data:tabledata,           //load row data from array
+            index:"patientId", //set the index field to the "age" field.
+            layout:"fitColumns",      //fit columns to width of table
+            // layout:"fitDataStretch",
+            // layout:"fitDataFill",
+            // layout:"fitDataTable",
+            // layout:"fitData",
+            responsiveLayout:"hide",  //hide columns that don't fit on the table
+            // responsiveLayout:"collapse", // collapse columns that no longer fit on the table into a list under the row
+
+            addRowPos:"top",          //when adding a new row, add it to the top of the table
+            
+            pagination:"local",       //paginate the data
+            paginationSize:10,         //allow 7 rows per page of data
+            paginationCounter:"rows", //display count of paginated rows in footer
+
+            initialFilter:[
+                {field:"patientId", type:"=", value:"xxxx"}
+            ],
+            
+            placeholder:"หากไม่พบรายชื่อ กรุณาลงทะเบียน", //display message to user on empty table
+
+   
+
+            columns:[  
+                {title:"patientId", field:"patientId", visible:false, download:true },
+                {title:"วันที่ขึ้นทะเบียน", field:"dateStamp", visible:false, download:true },
+                {title:"ชื่อ", field:"identityData.firstName", visible:false, download:true},
+                {title:"นามสกุล", field:"identityData.lastName" , visible:false, download:true},
+                {title:"ชื่อ-สกุล", field:"fullName", formatter:mergeNameFormatter, download:false}, // Display the merged result
+                {title:"HN", field:"identityData.hn",  responsive:3, download:true},
+                
+                // ต้องการให้ download ได้ 
+                {title:"cid", field:"identityData.cid",visible:false, download:true},
+                {title:"phoneNumber1", field:"contactData.phoneNumber1",visible:false, download:true},
+                {title:"province", field:"addressData.province",visible:false, download:false},
+                {title:"underlyingDz", field:"medicalData.underlyingDz",visible:false, download:true},
+                {title:"ผู้บันทึก", field:"userStamp",visible:false, download:true},
+
+                
+ 
+                // ปุ่ม ******************
+                { title: "", width:290, formatter: function(cell, formatterParams, onRendered) {
+                    // Create the buttons
+                    let editButton = document.createElement('button');
+                    editButton.innerHTML = "<i class='bi bi-person-vcard'></i> ข้อมูล";
+                    editButton.classList.add('btn', 'btn-secondary','p-1', 'btn-sm', 'shadow');
+                    editButton.style.width = '90px';
+
+                    let historyButton = document.createElement('button');
+                    historyButton.innerHTML = "<i class='bi bi-person-vcard'></i> ประวัติ";
+                    historyButton.classList.add('btn', 'btn-secondary','p-1', 'btn-sm', 'shadow');
+                    historyButton.style.width = '90px';
+
+                    let appointButton = document.createElement('button');
+                    appointButton.innerHTML = "<i class='bi bi-calendar-plus'></i> ลงนัด";
+                    appointButton.classList.add('btn', 'btn-warning','p-1', 'btn-sm', 'shadow'); 
+                    appointButton.style.width = '90px';
+                
+                    let openVisitButton = document.createElement('button');
+                    openVisitButton.innerHTML = "<i class='bi bi-file-earmark-plus-fill'></i> Visit";
+                    openVisitButton.classList.add('btn', 'btn-primary','p-1', 'btn-sm', 'shadow');
+                    openVisitButton.style.width = '90px';
+
+                    // Append buttons to the cell
+                    let container = document.createElement('div');
+                    container.classList.add('button-container');
+                    container.appendChild(editButton);
+                    container.appendChild(historyButton);
+                    container.appendChild(appointButton);
+                    container.appendChild(openVisitButton);
+                    cell.getElement().appendChild(container);
+
+                    // Add event listeners to the buttons
+                    editButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // Prevent triggering the cellClick event
+                        const rowData = cell.getData();
+                        // console.log(rowData)
+                        document.getElementById('back_to_appointmentmodal_btn').classList.add("d-none")
+
+                        const patientId = rowData.patientId
+                        // console.log(`patientId ${patientId}`)
+                        openPatientEditModal(patientId)
+                    });
+
+                    historyButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // Prevent triggering the cellClick event
+                        const rowData = cell.getData();
+                        // console.log(rowData)
+                        document.getElementById('back_to_appointmentmodal_btn').classList.add("d-none")
+
+                        const patientId = rowData.patientId
+                        // console.log(`patientId ${patientId}`)
+                        resetFormHistory()
+                        openModalHistoryTreat(patientId);
+                    });
+
+                    appointButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // Prevent triggering the cellClick event
+                        const rowData = cell.getData();
+                        // console.log(rowData)
+                        const patientId = rowData.patientId
+                        const opdVisitId = ""
+                        // console.log(`patientId ${patientId}`)
+                        // console.log(`opdVisitId ${opdVisitId}`)
+                        openModalAppointment(patientId,opdVisitId);
+
+                     });
+
+                    openVisitButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // Prevent triggering the cellClick event
+                        const rowData = cell.getData();
+                        // console.log(rowData)
+                        const patientId = rowData.patientId
+                        // console.log(`patientId ${patientId}`)
+                        openModalPatientSendRoom(patientId);
+                    });
+
+                    return container;
+                }  },
+
+                
+            ],
+        });
+
+
+        // elements.tablePatientRegist.on("tableBuilding", function(){
+        //     // alert("table built")
+        //     searchTablePatientRegistAfterRefresh()
+
+        // });
+
+        elements.tablePatientRegist.on("dataLoaded", function(data){
+            //data - all data loaded into the table
+            searchDataPatientRegist()
+
+        });
+
+ 
+
+    };
+
+</script>
+
+
+

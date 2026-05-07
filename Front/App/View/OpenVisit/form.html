@@ -1,0 +1,147 @@
+ 
+
+
+<div class="col d-none " id="openvisit_view">
+
+  
+  <div class=" row mt-4"> 
+    <center><h3 class="">ห้องบัตร</h3></center>
+    <div class="col">
+      <nav>
+        <div class="nav nav-tabs" role="tablist">
+          <button class="nav-link active" id="nav-openvisit-tab" data-bs-toggle="tab" data-bs-target="#nav-openvisit" type="button" role="tab" aria-controls="nav-openvisit" aria-selected="false"><i class="bi bi-people-fill"></i> ตามการขึ้นทะเบียน</button>
+          <button class="nav-link" id="nav-appointment-tab" data-bs-toggle="tab" data-bs-target="#nav-appointment" type="button" role="tab" aria-controls="nav-appointment" aria-selected="false"><i class="bi bi-calendar3-week"></i> ตามการนัดหมาย</button>
+
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-openvisit" role="tabpanel" aria-labelledby="nav-openvisit-tab" tabindex="0">
+          <center><p class="mt-2">ค้นหารายชื่อผู้ป่วยทั้งหมดที่ลงทะเบียนไว้</p></center>
+           
+          <div class="row mt-2 justify-content-center" id="openvisit_form"  >
+             <div class="col-sm-10 mb-3 mb-sm-0">
+                <div class="card bg-secondary bg-opacity-10 shadow">
+                    <div class="card-body">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <input type="search" class="form-control" id="searchinput_openvisit" placeholder="ค้นด้วยชื่อ หรือ HN...">
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+          </div>
+
+          <div class="row mt-2 justify-content-center" >
+            <div class="col-sm-10 mb-3 mb-sm-0 ">
+              <div class="col-md-6 mt-2">
+                <div>
+                  <!-- <button type="button" class="btn btn-secondary shadow my-btn" onclick="reportTablePatient()"><i class="bi bi-file-earmark-spreadsheet-fill"></i> รายงาน</button> -->
+                  <button type="button" class="btn btn-secondary shadow my-btn" id="open_ptnewregist_form_btn" onclick="openPatientAddModal()"><i class="bi bi-person-plus-fill"></i> ลงทะเบียน</button>
+                  <button type="button" class="d-none btn btn-secondary shadow my-btn" id="refresh_table_ptresgist_btn" >Refresh</button>
+
+                </div>
+                
+              </div>
+            </div>
+            
+          </div>
+               
+          
+
+          <div class="row mt-4 justify-content-center">
+            <div class="col-sm-10 mb-3 mb-sm-0 ">
+                <div class="card bg-secondary bg-opacity-10 shadow">
+                  <div class="card-body">
+                    <div class="col-12"  id="table_patient_regist">
+
+                    </div>
+                          
+                  </div>
+                </div>
+            </div>
+
+          </div>
+            
+
+          
+        </div>
+        <div class="tab-pane fade show" id="nav-appointment" role="tabpanel" aria-labelledby="nav-appointment-tab" tabindex="0">
+          <center><p class="mt-2">ค้นหารายชื่อผู้ป่วยตามการนัดหมาย(ค่าเริ่มต้นวันนี้)</p></center>
+
+          <div class="row justify-content-center ">
+              <div class="col-sm-10 mb-3 mb-sm-0 ">
+                  <div class="card bg-secondary bg-opacity-10 shadow">
+                      <div class="card-body">
+                          <div class="row">
+                              <div class="col">
+                                  <label class="form-label">รูปแบบ</label>
+                                  <select class="form-select" id="filtertype_table_appointment">
+                                      <option value="1" selected>วันนี้</option>
+                                      <option value="2">ระบุวันนัด</option>
+                                      <option value="3">ทุกการนัด</option>
+                                  </select>
+                              </div>
+                              <div class="col">
+                                  <label class="form-label">วันที่นัด</label>
+                                  <input type="date" class="form-control" id="datefilter_table_appointment" disabled>
+                              </div>
+                              <div class="col">
+                                  <label class="form-label">ค้นหา</label>
+                                  <input type="search" class="form-control" id="search_input_table_appointment" placeholder="ชื่อ หรือ HN" >
+                              </div>
+                          </div>
+                              
+                      </div>
+                  </div>
+              </div>
+              
+          </div>
+
+          <div class="row mt-2 justify-content-center" >
+            <div class="col-sm-10 mb-3 mb-sm-0 ">
+              <div class="col-md-4 mt-2">
+                <div>
+                  <button type="button" class="btn btn-secondary shadow my-btn" onclick="reportTableAppointment()"><i class="bi bi-file-earmark-spreadsheet-fill"></i> Download</button>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+
+          <div class="row mt-4 justify-content-center">
+            <div class="col-sm-10 mb-3 mb-sm-0 ">
+                <div class="card bg-secondary bg-opacity-10 shadow">
+                  <div class="card-body">
+                    <div class="col-12"  id="table_appointment">
+
+                    </div>
+                          
+                  </div>
+                </div>
+            </div>
+
+          </div>
+
+      
+        </div>
+      </div>
+
+    </div>
+
+    
+
+  </div>
+
+  <div class="row mt-4">
+    <center><div class="col-10">golfguitar@gmail.com</div></center>
+  </div>
+
+ 
+  
+  
+
+
+</div>
+
+

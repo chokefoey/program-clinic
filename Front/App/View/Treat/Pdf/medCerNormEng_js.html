@@ -2,54 +2,10 @@
 
 <script>
 
-  function makePdfMedCerNormEng(){
-    console.log(clinicInfo) // global var
-
-    const providerInfo = {}
-    providerInfo.fullName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
-    providerInfo.license = document.getElementById('user_license_config').textContent 
-
-    const patientId = document.getElementById('patient_id_treat').textContent
-    const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();  
-    console.log(patientRegistInfo)
-
-    const opdVisitInfo = {}
-      opdVisitInfo.wt = document.getElementById('wt_treat').value 
-      opdVisitInfo.ht = document.getElementById('ht_treat').value 
-      opdVisitInfo.sbp = document.getElementById('sbp_treat').value 
-      opdVisitInfo.dbp = document.getElementById('dbp_treat').value 
-      opdVisitInfo.pr = document.getElementById('pr_treat').value
-
-    const medcerNormInfo = {}
-      medcerNormInfo.underlyingYes = document.getElementById('medcer_norm_underlying_check').checked ? logo_check : logo_uncheck
-      medcerNormInfo.underlyingNo = document.getElementById('medcer_norm_underlying_check').checked ? logo_uncheck : logo_check
-      medcerNormInfo.underlyingDetail = document.getElementById('medcer_norm_underlying_detail').value
-
-      medcerNormInfo.traumaYes = document.getElementById('medcer_norm_trauma_check').checked ? logo_check : logo_uncheck
-      medcerNormInfo.traumaNo = document.getElementById('medcer_norm_trauma_check').checked ? logo_uncheck : logo_check
-      medcerNormInfo.traumaDetail = document.getElementById('medcer_norm_trauma_detail').value
-
-      medcerNormInfo.admitYes = document.getElementById('medcer_norm_admit_check').checked ? logo_check : logo_uncheck
-      medcerNormInfo.admitNo = document.getElementById('medcer_norm_admit_check').checked ? logo_uncheck : logo_check
-      medcerNormInfo.admitDetail = document.getElementById('medcer_norm_admit_detail').value
-    
-      medcerNormInfo.healthyYes = document.getElementById('medcer_norm_health_condition').value === 'ปกติ(Normal)' ? 'ปกติ' : 'ผิดปกติ'
-      medcerNormInfo.comment = document.getElementById('medcer_norm_doc_comment').value 
-
-      medcerNormInfo.otherhxYes = document.getElementById('medcer_norm_otherhx_check').checked ? logo_check : logo_uncheck
-      medcerNormInfo.otherhxNo = document.getElementById('medcer_norm_otherhx_check').checked ? logo_uncheck : logo_check
-      medcerNormInfo.otherhxDetail = document.getElementById('medcer_norm_otherhx_detail').value
-
-      medcerNormInfo.doctorName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
-      
-  
-
-    runPdfMakeMedCerNormEng(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,medcerNormInfo);
-
-  }
 
 
-function runPdfMakeMedCerNormEng(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,medcerNormInfo){
+
+function makePdfMedCerNormEng(patientInfo,clinicInfo,medcerNormInfo){
    
   const date = new Date().toDateString();
 
@@ -116,7 +72,7 @@ function runPdfMakeMedCerNormEng(clinicInfo,providerInfo,patientRegistInfo,opdVi
       
       
     },
-    watermark: { text: clinicInfo.hosName, color: 'blue', opacity: 0.1, bold: true, italics: false },
+    watermark: { text: clinicInfo.name, color: 'blue', opacity: 0.1, bold: true, italics: false },
     // background: function(currentPage, pageSize) {
     //   return [{
     //     image:'bg',

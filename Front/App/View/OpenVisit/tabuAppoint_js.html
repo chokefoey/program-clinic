@@ -1,0 +1,188 @@
+
+<script>
+
+
+ 
+
+    function showTableAppointment(tabledata){
+        // ตั้งค่าแสดงวันเริ่มต้น
+        // document.getElementById("datefilter_table_appointment").value = getCurrentDate();  
+
+        // Define the custom formatter function
+        let mergeFormatter = function(cell, formatterParams, onRendered){
+            const data = cell.getRow().getData();
+            return data.firstName + " " + data.lastName; // Merge name and surname
+        };
+
+        let thaiDateFormatter = function(cell, formatterParams, onRendered){
+            try {
+                const data = cell.getRow().getData();
+                
+                const thaiDateStr = toThaiDateString(new Date(data.appointmentData.description.startDate)) 
+                return thaiDateStr
+
+            } catch(er){
+
+            }
+            
+        };
+
+        
+        
+        const currentDay = getCurrentDate();  // eg 2024-02-02
+        // console.log(currentDay) 
+
+        
+        elements.tableAppointment = new Tabulator("#table_appointment", {
+            data:tabledata,           //load row data from array
+            index:"opdVisitId", //set the index field to the "age" field.
+            layout:"fitColumns",      //fit columns to width of table
+            // layout:"fitDataStretch",
+            // layout:"fitDataFill",
+            responsiveLayout:"hide",  //hide columns that don't fit on the table
+            addRowPos:"top",          //when adding a new row, add it to the top of the table
+            
+            pagination:"local",       //paginate the data
+            paginationSize:10,         //allow 7 rows per page of data
+            paginationCounter:"rows", //display count of paginated rows in footer
+            movableColumns:true,      //allow column order to be changed
+            // initialSort:[             //set the initial sort order of the data
+            //     {column:"appointDate", dir:"dsc"},
+            // ],
+
+            placeholder:"ไม่พบการนัดหมาย", //display message to user on empty table
+
+            initialFilter:[
+                {field:"appointDate", type:"like", value:currentDay}
+            ],
+        
+            columns:[
+                {formatter:"rownum", hozAlign:"center", width:40,download:false},
+                {title:"VID", field:"opdVisitId", visible:false}, 
+                
+                {title:"วันนัด", field:"appointDate", width:90, visible:false},
+                {title:"วันนัด", field:"appointDate", width:120,formatter:thaiDateFormatter }, 
+                {title:"เวลานัด", field:"appointTime", width:60, formatter:timeFormatterTabu }, 
+                
+
+                {title:"วันที่มา", field:"visitDate", width:120, visible:false},
+                {title:"เวลาที่มา", field:"visitTime" , width:100, formatter:timeFormatterTabu, visible:false},
+                
+                
+                {title:"ชื่อ", field:"firstName", visible:false , download:true},
+                {title:"นามสกุล", field:"lastName", visible:false , download:true},
+                {title:"ชื่อ-นามสกุล", field:"fullName", formatter:mergeFormatter, download:false}, // Display the merged result
+                {title:"HN", field:"hn" },
+
+                {title:"ห้องตรวจ", field:"appointmentData.description.roomName" },
+                {title:"แพทย์", field:"appointmentData.description.doctorName" , visible:true},
+                {title:"สถานะ", field:"opdStatus", visible:true },
+
+                {title:"appointmentData", field:"appointmentData", visible:false },
+                    
+
+                { title: "", width:180, formatter: function(cell, formatterParams, onRendered) {
+                    // Create the buttons
+                    let appointButton = document.createElement('button');
+                        appointButton.innerHTML = "<i class='bi bi-eye'></i> ดูการนัด";
+                        appointButton.classList.add('btn', 'btn-warning','p-1', 'btn-sm', 'shadow');
+
+                    let openVisitButton = document.createElement('button');
+                        openVisitButton.innerHTML = "<i class='bi bi-file-earmark-plus-fill'></i> เปิด visit";
+                        openVisitButton.classList.add('btn', 'btn-primary','p-1', 'btn-sm', 'shadow');
+
+                    // Append buttons to the cell
+                    let container = document.createElement('div');
+                        container.classList.add('button-container');
+                        container.appendChild(appointButton);
+                        container.appendChild(openVisitButton);
+                        cell.getElement().appendChild(container);
+
+
+                    // Add event listeners to the buttons
+                    appointButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // Prevent triggering the cellClick event
+                        const rowData = cell.getData();
+                        // console.log(rowData)
+                        const patientId = rowData.patientId
+                        const opdVisitId = rowData.opdVisitId
+                        
+                        // console.log(patientId)
+                        // console.log(opdVisitId)
+                        openModalAppointment(patientId,opdVisitId);
+                        
+                    });
+
+
+                    openVisitButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // Prevent triggering the cellClick event
+                        const rowData = cell.getData();
+                        // console.log(rowData)
+
+                        const patientId = rowData.patientId
+                        // console.log(patientId)
+                        
+                        // alert('Delete button clicked for row id: ' + rowData.patientId);
+                        openModalPatientSendRoom(patientId)
+                    });
+
+                    return container;
+                } },
+
+            ],
+
+
+        });
+
+        
+
+        // elements.tableAppointment.on("cellClick", function(e, cell){
+        //     const rowData = cell.getData();
+        //     console.log(rowData)
+        //     // const patientId = row.getData().patientId
+        //     // console.log(patientId)
+        
+        //     const fieldName = cell.getColumn().getField();
+        //     console.log(fieldName)
+
+        //     if ( fieldName == "appointment" ){
+        //         console.log("openshowEditForm " + rowData.patientId)
+                
+        //         // openPatientEditModal(rowData)
+        //         openModalAppointment(rowData)
+
+        //     } else if ( fieldName == "treat" ){
+        //         // console.log("opensendTreatForm " + rowData.patientId )
+        //         // openModalCustomerFormEdit(customerInfo)
+
+        //         const opdVisitData = rowData
+        //         console.log(opdVisitData)
+
+        //         const opdVisitId = rowData.opdVisitId
+        //         // console.log(opdVisitId)
+
+        //         const patientId = rowData.patientId
+        //         // console.log(patientId)
+
+                
+        //     }
+
+        // });
+
+        elements.tableAppointment.on("dataLoaded", function(data){
+            //data - all data loaded into the table
+            searchTableAppointment()
+
+        });
+
+
+    };
+
+    
+
+
+
+
+
+
+</script>

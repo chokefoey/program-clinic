@@ -1,0 +1,276 @@
+<script>
+
+  function openPatientAddModal(){ 
+    // console.log("fddfdfdf")
+
+    new bootstrap.Modal(document.getElementById('patient_info_modal'), {keyboard: false }).show()
+
+    document.getElementById('back_to_appointmentmodal_btn').classList.add("d-none")
+    
+
+    document.getElementById('identity_patient_regist_form').reset();
+    document.getElementById('contact_patient_regist_form').reset();
+    document.getElementById('address_patient_regist_form').reset();
+    document.getElementById('medical_patient_regist_form').reset();
+    document.getElementById('other_patient_regist_form').reset();
+
+    document.getElementById('add_pt_regist_btn').classList.remove("d-none")
+    document.getElementById('edit_pt_regist_btn').classList.add("d-none")
+    document.getElementById('delete_pt_regist_btn').classList.add("d-none")
+    
+    clearInputRequired("identity_patient_regist_form");
+    clearInputRequired("contact_patient_regist_form");
+    clearInputRequired("address_patient_regist_form");
+    clearInputRequired("medical_patient_regist_form");
+    clearInputRequired("other_patient_regist_form");
+    
+  };
+
+
+  function addPatientRegist(){
+    // console.log("sdsdsd")
+    // รับค่าจาก form ต่างๆ
+    const identityData = getFormData('#identity_patient_regist_form');
+    const contactData = getFormData('#contact_patient_regist_form');
+    const addressData = getFormData('#address_patient_regist_form');
+    const medicalData = getFormData('#medical_patient_regist_form');
+    const otherData = getFormData('#other_patient_regist_form');
+    const userStamp = {
+      userId: document.getElementById("user_id_status").textContent,
+      userName: document.getElementById("user_fullname_status").textContent,
+
+    }
+    
+    patientRegistInfo = {identityData,contactData,addressData,medicalData,otherData,userStamp}
+    console.log(patientRegistInfo)
+
+    google.script.run.withSuccessHandler((res)=>{
+      console.log(res)
+
+      if ( res[0].result === "Correct"){
+        // loadingEnd() 
+
+        const patientId = res[0].newId
+        const dateStamp = res[0].dateStamp
+        const timeStamp = res[0].timeStamp
+        const newPatientInfo = {patientId,dateStamp,timeStamp,...patientRegistInfo}
+        console.log(newPatientInfo) 
+
+        // add data add row
+        elements.tablePatientRegist.addRow([newPatientInfo], true);
+        // elements.tableAppointment.addRow([newPatientInfo], true); 
+
+        // reset form
+        document.getElementById('identity_patient_regist_form').reset();
+        document.getElementById('contact_patient_regist_form').reset();
+        document.getElementById('address_patient_regist_form').reset();
+        document.getElementById('medical_patient_regist_form').reset();
+        document.getElementById('other_patient_regist_form').reset();
+
+        let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('patient_info_modal'))  
+        modal1.hide();  // modal1.show();
+          
+
+        // แจ้งเตือนเมื่อบันทึกเสร็จ
+        Swal.fire({
+          icon:'success',
+          title: identityData.firstName + " " + identityData.lastName ,
+          html:"<h5 align='center'>" + "ทำรายการต่อ?" +"</h5>",
+          showConfirmButton: true,
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "เปิด visit",
+          denyButtonText: `นัดหมาย`,
+          cancelButtonText: `ยกเลิก`
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            const patientId = res[0].newId
+            // const row = elements.tablePatientRegist.getRow(patientId); //return row component with index of 1
+            // const rowData = row.getData();
+            openModalPatientSendRoom(patientId);
+
+          } else if (result.isDenied) {
+            // const id = res[0].newId
+            // const rowData = 
+            const patientId = res[0].newId
+            const opdVisitId = "" ;
+            openModalAppointment(patientId,opdVisitId);
+              
+          }
+        });
+ 
+      } else if ( res[0].result === "Incorrect") {
+        Swal.fire({ icon:'error',title:'ไม่สำเร็จ', html:"<h5 align='center'>"+ res[0].detail +"</h5>"})
+      
+      }
+
+
+    }).addPatientRegist(patientRegistInfo)
+
+  };
+
+
+
+
+
+
+
+  
+  function openPatientEditModal(patientId){
+    // console.log(patientId)  
+
+    new bootstrap.Modal(document.getElementById('patient_info_modal'), {keyboard: false }).show()
+    document.getElementById('add_pt_regist_btn').classList.add("d-none")
+    document.getElementById('edit_pt_regist_btn').classList.remove("d-none")
+    document.getElementById('delete_pt_regist_btn').classList.remove("d-none")
+    
+    clearInputRequired("identity_patient_regist_form");
+    clearInputRequired("contact_patient_regist_form");
+    clearInputRequired("address_patient_regist_form");
+    clearInputRequired("medical_patient_regist_form");
+    clearInputRequired("other_patient_regist_form");
+
+    document.getElementById('id_pt_regist').value = patientId 
+
+    const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();
+
+
+    // const identityData = {}
+    document.getElementById('pn_pt_regist').value = patientRegistInfo.identityData.prefixName
+    document.getElementById('fn_pt_regist').value = patientRegistInfo.identityData.firstName
+    document.getElementById('ln_pt_regist').value = patientRegistInfo.identityData.lastName
+    document.getElementById('gender_pt_regist').value = patientRegistInfo.identityData.gender
+    document.getElementById('hosnumber_pt_regist').value = patientRegistInfo.identityData.hn
+    document.getElementById('cid_pt_regist').value = patientRegistInfo.identityData.cid 
+    document.getElementById('birthday_pt_regist').value = patientRegistInfo.identityData.birthDay
+    document.getElementById('age_pt_regist').value = patientRegistInfo.identityData.age
+
+    // const addressData = {}
+    document.getElementById('phonenumber1_pt_regist').value = patientRegistInfo.contactData.phoneNumber1
+    document.getElementById('phonenumber1owner_pt_regist').value = patientRegistInfo.contactData.phoneNumber1owner
+    document.getElementById('phonenumber2_pt_regist').value = patientRegistInfo.contactData.phoneNumber2
+    document.getElementById('phonenumber2owner_pt_regist').value = patientRegistInfo.contactData.phoneNumber2owner
+    document.getElementById('phonenumber3_pt_regist').value = patientRegistInfo.contactData.phoneNumber3
+    document.getElementById('phonenumber3owner_pt_regist').value = patientRegistInfo.contactData.phoneNumber3owner
+    document.getElementById('email_pt_regist').value = patientRegistInfo.contactData.email
+    document.getElementById('line_pt_regist').value = patientRegistInfo.contactData.line
+
+    // const addressData = {}
+    document.getElementById('houseno_pt_regist').value = patientRegistInfo.addressData.houseNo
+    document.getElementById('moo_pt_regist').value = patientRegistInfo.addressData.moo
+    document.getElementById('soi_pt_regist').value = patientRegistInfo.addressData.soi
+    document.getElementById('road_pt_regist').value = patientRegistInfo.addressData.road
+    document.getElementById('tumbon_pt_regist').value = patientRegistInfo.addressData.tumbon
+    document.getElementById('amphoe_pt_regist').value = patientRegistInfo.addressData.amphoe
+    document.getElementById('province_pt_regist').value = patientRegistInfo.addressData.province
+    document.getElementById('zipcode_pt_regist').value = patientRegistInfo.addressData.zipcode
+
+    // const medicalData = {}
+    document.getElementById('underlying_pt_regist').value = patientRegistInfo.medicalData.underlying
+    document.getElementById('drug_allergy_pt_regist').value = patientRegistInfo.medicalData.drugAllergy
+    document.getElementById('orthonumber_pt_regist').value = patientRegistInfo.medicalData.orthoNumber
+    document.getElementById('healthwelfare_pt_regist').value = patientRegistInfo.medicalData.healthWelfare
+
+    // const otherData = {}
+    document.getElementById('comment_pt_regist').value = patientRegistInfo.otherData.comment
+    document.getElementById('other_pt_regist').value = patientRegistInfo.otherData.other
+    document.getElementById('user_id_config').textContent = patientRegistInfo.otherData.userStamp
+
+ 
+
+  };
+
+
+
+
+
+  function editPatientRegist(){
+    const patientId = document.getElementById("id_pt_regist").value
+    // console.log(patientId)
+    
+    // รับค่าจาก form ต่างๆ
+    const identityData = getFormData('#identity_patient_regist_form');
+    const contactData = getFormData('#contact_patient_regist_form');
+    const addressData = getFormData('#address_patient_regist_form');
+    const medicalData = getFormData('#medical_patient_regist_form');
+    const otherData = getFormData('#other_patient_regist_form');
+    const userStamp = {
+      userId: document.getElementById("user_id_status").textContent,
+      userName: document.getElementById("user_fullname_status").textContent,
+
+    }
+
+    patientRegistInfo = {identityData,contactData,addressData,medicalData,otherData,userStamp}
+    // console.log(patientRegistInfo)
+
+ 
+    google.script.run.withSuccessHandler((res)=>{
+      // console.log(res)
+      
+      const patientId = res[0].dataId
+      // console.log(patientId)
+
+      const dataUpdate = {patientId,...patientRegistInfo}
+      // console.log(dataUpdate)
+
+      elements.tablePatientRegist.updateData([dataUpdate]);
+
+      // loadingEnd();
+      workingEnd()
+
+    }).editPatientRegist(patientId,patientRegistInfo)
+
+     
+
+  };
+
+
+
+
+
+
+  function deletePatientRegist(){
+    const id = document.getElementById('id_pt_regist').value
+    google.script.run.withSuccessHandler((res)=>{
+      console.log(res)
+
+      let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patient_info_modal')) // Returns a Bootstrap modal instance
+      // Showmodal or hidemodal:
+      // modal.show();
+      modal.hide();
+
+      elements.tablePatientRegist.deleteRow(id); //delete row with an id  
+
+      loadingEnd()
+        
+    }).deletePatientRegist(id)
+
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>

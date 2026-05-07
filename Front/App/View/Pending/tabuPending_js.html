@@ -1,415 +1,466 @@
 <script>
 
+    function showTableOpdVisit(tabledata){
+
+        document.getElementById("datefilter_table_pending").value = getCurrentDate();  
+
+        // Define the custom formatter function
+        let mergeFormatter = function(cell, formatterParams, onRendered){
+            const data = cell.getRow().getData();
+            return data.firstName + " " + data.lastName; // Merge name and surname
+        };
+
+        // let thaiDateFormatter = function(cell, formatterParams, onRendered){
+        //     try {
+        //         const date = cell.getRow().getData().visitDate
+
+        //         if (date){
+        //             const thaiDateStr = toThaiDateString(new Date(date)) 
+        //             return thaiDateStr
+
+        //         }
+
+        //     } catch(er){
+
+        //     }
+            
+        // };
+
+ 
+
+        const currentDay = getCurrentDate();  
+
+        
+        elements.tablePending = new Tabulator("#pending_table", {
+            data:tabledata,           //load row data from array
+            index:"opdVisitId", //set the index field to the "age" field.
+            layout:"fitColumns",      //fit columns to width of table
+            // layout:"fitDataStretch",
+            // layout:"fitDataFill",
+            responsiveLayout:"hide",  //hide columns that don't fit on the table
+            addRowPos:"top",          //when adding a new row, add it to the top of the table
+            
+            pagination:"local",       //paginate the data
+            paginationSize:10,         //allow 7 rows per page of data
+            paginationCounter:"rows", //display count of paginated rows in footer
+            movableColumns:true,      //allow column order to be changed
+            initialSort:[             //set the initial sort order of the data
+                {column:"visitTime", dir:"asc"},
+            ],
+
+            initialFilter:[
+                {field:"visitDate", type:"=", value:currentDay}
+            ],
+
+            placeholder:"No Data Available", //display message to user on empty table
+
+        
+            columns:[                 //define the table columns
+                {formatter:"rownum", hozAlign:"center", width:40},
+
+                {title:"VID", field:"opdVisitId", visible:false,download:true},
+                {title:"PID", field:"patientId",visible:false, download:true },
+                {title:"วันที่มา", field:"visitDate", width:120, headerFilter:true, formatter:thaiDateFormatterTabu,download:true}, 
+                
+                {title:"เวลา", field:"visitTime" , width:80, formatter:timeFormatterTabu,download:true},
+                
+                {title:"firstName", field:"firstName", visible:false,download:true },
+                {title:"lastName", field:"lastName", visible:false,download:true },
+                {title:"ชื่อ-นามสกุล", field:"fullName", formatter:mergeFormatter}, // Display the merged result
+                {title:"HN", field:"hn",download:true },
+                {title:"ห้องตรวจ", field:"roomName",download:true },
+                {title:"แพทย์", field:"doctorName",download:true },
+                {title:"สถานะ", field:"opdStatus",width:100, formatter:function(cell, formatterParams){
+                    let value = cell.getValue();
+                    if ( value == "นัดแล้ว"){
+                        return "<span style='color:#7B68EE; '><i class='bi bi-calendar-date'></i> นัดแล้ว</span>";
+                    } else if ( value == "รอตรวจ" ) {
+                        return "<span style='color:#A52A2A; '><i class='bi bi-hourglass-split'></i> รอตรวจ</span>";
+                    } else if ( value == "ตรวจแล้ว" ) {
+                        return "<span style='color:#708090; '><i class='bi bi-capsule'></i> ตรวจแล้ว</span>";
+                    } else if ( value == "จ่ายแล้ว" ) {
+                        return "<span style='color:#FFD700; '><i class='bi bi-currency-exchange'></i> จ่ายแล้ว</span>";
+                    } else if ( value == "ยกเลิกนัด" ) {
+                        return "<span style='color:#D2691E; '><i class='bi bi-x-circle'></i> ยกเลิกนัด</span>";
+                    }
+                }},
+                // {title:"piData", field:"piData" }, 
+                {title:"appointmentData", field:"appointmentData", visible:false },
+                {title:"วันนัด", field:"appointDate" , visible:false},
+                {title:"เวลานัด", field:"appointTime", formatter:timeFormatterTabu , visible:false},  
+
+                {title:"วินิจฉัย1", field:"dxData.dx1", visible:false, download:true },
+
+                
+                { title: "", width:180, formatter: function(cell, formatterParams, onRendered) {
+                    // Create the buttons
+                    let appointButton = document.createElement('button');
+                    appointButton.innerHTML = "<i class='bi bi-calendar-plus'></i> นัดหมาย";
+                    appointButton.classList.add('btn', 'btn-warning','p-1', 'btn-sm', 'shadow'); 
+                
+                    let treatButton = document.createElement('button');
+                    treatButton.innerHTML = "<i class='bi bi-send'></i> เข้าตรวจ";
+                    treatButton.classList.add('btn', 'btn-primary','p-1', 'btn-sm', 'shadow');
+
+                    
+                    // Append buttons to the cell
+                    let container = document.createElement('div');
+                    container.classList.add('button-container');
+                    container.appendChild(appointButton);
+                    container.appendChild(treatButton);
+                    cell.getElement().appendChild(container);
+
+                    // Add event listeners to the buttons
+                    appointButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // Prevent triggering the cellClick event
+                        const rowData = cell.getData();
+                        // console.log(rowData)
+                       
+                        const patientId = rowData.patientId
+                        const opdVisitId = rowData.opdVisitId
+                        // console.log(`patientId ${patientId}`)
+                        // console.log(`opdVisitId ${opdVisitId}`)
+                        openModalAppointment(patientId,opdVisitId)
+                         
+                    });
+
+                    treatButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // Prevent triggering the cellClick event
+                        const rowData = cell.getData();
+                        
+                        // ต้องการหน่วงเวลาเฉยๆ
+                        loadingStart();
+                        setTimeout(()=>{
+                            loadingEnd();
+                        }, 200);
+                        
+                        const opdVisitInfo = rowData
+                        // console.log(opdVisitInfo)
+
+                        const opdVisitId = rowData.opdVisitId
+                        const patientId = rowData.patientId
+                        // console.log(`patientId ${patientId}`)
+                        // console.log(`opdVisitId ${opdVisitId}`)
+
+                        // 1 แสดงหน้า 
+                        showViewById('treat_view_btn');
+
+                        // // 2 ดึงจาก ตาราง tablePatientRegist 
+                        setDataPatientRegistInfo(patientId,opdVisitId);
+
+                        // // 3 ดึงจาก ตาราง tablePending 
+                        setDataOpdvisit(opdVisitId);
+
+                        document.getElementById("sidebar_menu").classList.add('d-none')
+                        document.getElementById("sidebar_menu").classList.remove('d-lg-block')
+                    });
+
+                   
+                    return container;
+                }  },
+
+            ],
+        });
 
 
-
-function showTablePending(tabledata){
-
-    document.getElementById("datefilter_table_pending").value = getCurrentDate();  
-
-    // Modify your tabledata to include the `fullNameSearch` field
-    tabledata.forEach(function(item) {
-        item.fullNameSearch = item.firstName + " " + item.lastName; // Combine first and last name
-    });
-
-
-    // Define the custom formatter function
-    let mergeFormatter = (cell, formatterParams, onRendered)=>{
-        const data = cell.getRow().getData();
-        return data.firstName + " " + data.lastName; // Merge name and surname
     };
 
-    const currentDay = getCurrentDate();  
 
-    elements.tablePending = new Tabulator("#pending_table", {
-        data:tabledata,           //load row data from array
-        index:"opdVisitId", //set the index field to the "age" field.
-        layout:"fitColumns",      //fit columns to width of table
-        // layout:"fitDataStretch",
-        // layout:"fitDataFill",
-        responsiveLayout:"hide",  //hide columns that don't fit on the table
-        addRowPos:"top",          //when adding a new row, add it to the top of the table
-        selectableRows:1,
+
+    function setDataPatientRegistInfo(patientId,opdVisitId){
+        // console.log(patientId)
+        const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData()
+        // console.log(patientRegistInfo); 
+
+        document.getElementById("patient_fname_treat").textContent = patientRegistInfo.identityData.firstName
+        document.getElementById("patient_lname_treat").textContent = patientRegistInfo.identityData.lastName
+
+        document.getElementById("patient_hn_treat").textContent = patientRegistInfo.identityData.hn
+        document.getElementById("patient_id_treat").textContent = patientId
+        document.getElementById("opd_visitid_treat").textContent = opdVisitId
+
+        document.getElementById("patient_cid_treat").textContent = patientRegistInfo.identityData.cid
+        document.getElementById("patient_address_treat").textContent = 
+            " บ้านเลขที่ " + patientRegistInfo.addressData.houseNo + 
+            " หมู่ " + patientRegistInfo.addressData.moo + 
+            " ซ." + patientRegistInfo.addressData.soi + 
+            " ถ." + patientRegistInfo.addressData.road + 
+            " ต." + patientRegistInfo.addressData.tumbon + 
+            " อ." + patientRegistInfo.addressData.amphoe + 
+            " จ." + patientRegistInfo.addressData.province + 
+            " " + patientRegistInfo.addressData.zipcode
         
-        pagination:"local",       //paginate the data
-        paginationSize:10,         //allow 7 rows per page of data
-        paginationCounter:"rows", //display count of paginated rows in footer
-        movableColumns:true,      //allow column order to be changed
-        initialSort:[             //set the initial sort order of the data
-            {column:"visitTime", dir:"asc"},
-        ],
+        document.getElementById("patient_birthday_treat").textContent = patientRegistInfo.identityData.birthDay
+        document.getElementById("patient_gender_treat").textContent = patientRegistInfo.identityData.gender
 
-        initialFilter:[
-            {field:"visitDate", type:"=", value:currentDay}
-        ],
+        const age = calculateAgeWithMonths(patientRegistInfo.identityData.birthDay); // คำนวนอายุ
 
-        placeholder:"No Data Available", //display message to user on empty table
+        document.getElementById("patient_age_treat").textContent = `${age.years} ปี ${age.months} เดือน`
 
-    
-        columns:[                 //define the table columns
-            {formatter:"rownum", hozAlign:"center", width:40},
+        document.getElementById("patient_tel_treat").textContent = patientRegistInfo.contactData.phoneNumber1
+        document.getElementById("patient_ud_treat").textContent = patientRegistInfo.medicalData.underlying
+        document.getElementById("patient_allergy_treat").textContent = patientRegistInfo.medicalData.drugAllergy
+        document.getElementById("patient_note_treat").textContent = patientRegistInfo.otherData.comment
 
-            {title:"VID", field:"opdVisitId", visible:false,download:true},
-            {title:"PID", field:"patientId",visible:false, download:true },
-            {title:"วันที่มา", field:"visitDate", headerFilter:true, formatter:thaiDateFormatterTabu,download:true}, 
-            
-            {title:"เวลา", field:"visitTime" , formatter:timeFormatterTabu,download:true},
-            
-            {title:"ชื่อผู้ป่วย", field:"firstName", visible:false,download:true },
-            {title:"สกุลผู้ป่วย", field:"lastName", visible:false,download:true },
-            
-            // Add the field for searching but keep it hidden
-            {title:"ชื่อ-สกุล (ค้นหา)", field:"fullNameSearch", visible:false, headerFilter:"input",download:true },
-            {title:"ชื่อ-สกุล", field:"fullName",responsive:0, formatter:mergeFormatter,download:false}, // Display the merged result
-            
+        document.getElementById("selected_patient_view_treat").classList.remove('d-none')
+        document.getElementById("non_selected_patient_view_treat").classList.add('d-none')
 
 
-            {title:"HN", field:"incrementHn",download:true },
-            // {title:"CID", field:"cid",download:true },
-
-            {title:"ห้องตรวจ", field:"roomName",download:true }, 
-            {title:"แพทย์", field:"doctorName",download:true },
-            {title:"สถานะ", field:"opdStatus",download:true, formatter:(cell, formatterParams)=>{
-                let value = cell.getValue();
-                // return `<span style='color:#D2691E; '>${value}</span>`
-
-                // if ( value == "นัดแล้ว"){
-                //     return "<span style='color:#7B68EE; '><i class='bi bi-calendar-date'></i> นัดแล้ว</span>";
-
-                // } else 
-                if ( value == "รอตรวจ" || value == "ส่งห้องตรวจ" ) {
-                    return `<span style='color:#D2691E; '><i class='bi bi-hourglass-split'></i> ${value}</span>`
-
-                } else if ( value == "ส่งห้องยา") {
-                    return `<span style='color:#D2691E; '><i class="bi bi-capsule"></i> ${value}</span>`
-
-                } else if ( value == "ส่งการเงิน" ) {
-                    return `<span style='color:#D2691E; '><i class="bi bi-currency-dollar"></i> ${value}</span>`
-
-                } else if ( value == "ส่งนัดหมาย" ) {
-                    return `<span style='color:#D2691E; '><i class="bi bi-calendar-day"></i> ${value}</span>`
-
-                } else if ( value == "จำหน่าย" ) {
-                    return `<span><i class="bi bi-house-check"></i> ${value}</span>`
-
-                } else {
-                    return `<span style='color:#D2691E; '>${value}</span>`
-
-                }
-                    
-            }},
-            
-        ],
-    }); 
+    };
 
 
-    elements.tablePending.on("rowClick", (e, row) => {
-        // e - the click event object
-        // row - row component
-        const rowData = row.getData();
-        const patientId = rowData.patientId;
-        const opdVisitId = rowData.opdVisitId;
+    function setDataOpdvisit(opdVisitId){ 
+        // console.log(rowData)
 
-        // Check if ddOptionsInfo is undefined or not a valid array
-        if (!Array.isArray(ddOptionsInfo) || ddOptionsInfo === undefined) {
-            alert("ยังโหลดข้อมูลไม่เสร็จ รอสักครู่");
-            console.log("Error: ddOptionsInfo is not a valid array or is undefined.")
-            return; // Stop further execution of the function
+        const opdVisitInfo = elements.tablePending.getRow(opdVisitId).getData()
+        // console.log(opdVisitInfo)
+
+        // set data pi
+        document.getElementById('bw_treat').value = opdVisitInfo.piData.wt || "";  // short form if value is undefined
+        document.getElementById('ht_treat').value = opdVisitInfo.piData.ht || "";
+        document.getElementById('bt_treat').value = opdVisitInfo.piData.bt || "";
+        document.getElementById('sbp_treat').value = opdVisitInfo.piData.sbp || "";
+        document.getElementById('dbp_treat').value = opdVisitInfo.piData.dbp || "";
+        document.getElementById('pr_treat').value = opdVisitInfo.piData.pr || "";
+        document.getElementById('rr_treat').value = opdVisitInfo.piData.rr || "";
+        document.getElementById('cc_treat').value = opdVisitInfo.piData.cc || "";   
+        document.getElementById('pi_treat').value = opdVisitInfo.piData.pi || "";
+        document.getElementById('ph_treat').value = opdVisitInfo.piData.ph || "";
+
+
+        // set data pe
+        document.getElementById('pe_treat').value = opdVisitInfo.peData.pe || ""; 
+        document.getElementById('oe_treat').value = opdVisitInfo.peData.oe || ""; 
+
+        // set data ix
+        document.getElementById('lab_treat').value = opdVisitInfo.ixData.lab || ""; 
+        document.getElementById('xray_treat').value = opdVisitInfo.ixData.xray || ""; 
+        document.getElementById('us_treat').value = opdVisitInfo.ixData.us || ""; 
+
+
+        // set data dx
+        const dataDx = opdVisitInfo.dxData
+
+        if( dataDx.dx1 == ""){
+            addRowDx("", ""); // ให้เป็นแถวว่าง
 
         } else {
-            loadingStart();
-            setTimeout(() => {
-                loadingEnd();
-
-                // 1. Show view 1 แสดงหน้า 
-                showViewById('treat_view_btn');
-
-                // 2. Get data from tablePatientRegist มาแสดง
-                setDataPatientRegistInfo(patientId, opdVisitId);
-
-                // 3. Get data from tablePending  มาแสดง
-                setDataOpdvisitInfo(opdVisitId);
-
-                // Show appointment day in treat view
-                showAppointDayInTreatView();
-
-                document.getElementById('inlineRadio0_HmTreat').checked = true;
-                document.getElementById('input_amountday_forcalculate').value = 'กำหนดเอง';
-
-                document.getElementById('amountdrugmanual_forhm_input').classList.remove('d-none');
-                document.getElementById('amountday_forhm_input').classList.add('d-none');
-                document.getElementById('appointdate_forhm_input').classList.add('d-none');
-
-                document.getElementById("sidebar_menu").classList.add('d-none');
-                document.getElementById("sidebar_menu").classList.remove('d-lg-block');
-
-                document.getElementById('re_dx_history_btn').classList.remove("invisible");
-                document.getElementById('re_tx_history_btn').classList.remove("invisible");
-                document.getElementById('re_hm_history_btn').classList.remove("invisible");
-
-                setFormInputAndMenuByUserLogin();
-
-            }, 50);
+            
+            // Dynamically add rows based on the data object
+            for (let i = 1; i <= Object.keys(dataDx).length / 2; i++) {
+                addRowDx(dataDx[`dx${i}`], dataDx[`icd${i}`]);
+                
+            }
 
         }
 
-    });
+        // set data tx
+        const dataTx = opdVisitInfo.txData
+
+        if( dataTx == ""  ){
+            addRowTx("", "", ""); // ให้เป็นแถวว่าง
+
+        } else {
+            
+            // Dynamically add rows based on the data object
+            for (let i = 1; i <= Object.keys(dataTx).length / 3; i++) {
+                addRowTx(dataTx[`tx${i}`], dataTx[`dose${i}`], dataTx[`price${i}`]);
+                
+            }
+
+        }
+
+        // set data hm
+        const dataHm = opdVisitInfo.hmData
+
+        if( dataHm == ""  ){
+            addRowHm("", "", "", ""); // ให้เป็นแถวว่าง
+
+        } else {
+            
+            // Dynamically add rows based on the data object
+            for (let i = 1; i <= Object.keys(dataHm).length / 4; i++) {
+                addRowHm(dataHm[`hm${i}`], dataHm[`dose${i}`], dataHm[`amount${i}`], dataHm[`price${i}`]);
+                
+            }
+
+        }
+
+
+        // set data summary
+        document.getElementById('total_price_sum_treat').value = opdVisitInfo.summaryData.totalPrice || ""; 
+        document.getElementById('pay_type_treat').value = opdVisitInfo.summaryData.payType || ""; 
+        document.getElementById('pay_remain_treat').value = opdVisitInfo.summaryData.payRemain || ""; 
+        document.getElementById('pay_channel_treat').value = opdVisitInfo.summaryData.payChannel || ""; 
+        document.getElementById('social_security_treat').value = opdVisitInfo.summaryData.socialSecurity || ""; 
+        document.getElementById('doctor_note_treat').value = opdVisitInfo.summaryData.doctorNote || ""; 
+        document.getElementById('tx_plan_treat').value = opdVisitInfo.summaryData.txPlan || ""; 
+
+
+         // set dropdown option 
+        addDropdownOptions(ddOptionsInfo,"dx","datalistOptions_dx_treat")  // ddOptionsInfo global var
+        addDropdownOptions(ddOptionsInfo,"tx","datalistOptions_tx_treat")  // ddOptionsInfo global var
+        addDropdownOptions(ddOptionsInfo,"drug","datalistOptions_hm_treat")  // ddOptionsInfo global var
+
+
+    };
 
 
 
-    elements.tablePending.on("tableBuilt", ()=>{
-        searchTablePending()
-        document.getElementById('section_pending_view').classList.remove('d-none')
-        document.getElementById('placeholder_pending_view').classList.add('d-none')
-
-
-    });
-
-
-};
 
 
 
+    // Function to add a row with given dx and icd values
+    function addRowDx(dx, icd) {
+        // Get the template and table body
+        const template = document.getElementById("input_dx_template_treat").content;
+        const tableBody = document.getElementById("table_dx_treat").querySelector("tbody");
+            
+        const clone = document.importNode(template, true);
+        const inputs = clone.querySelectorAll("input");
+        inputs[0].value = dx; // dx value
+        inputs[1].value = icd; // icd value
+        tableBody.appendChild(clone);
 
+    };
+
+
+    function addRowTx(tx, dose, price) {
+        // Get the template and table body
+        const template = document.getElementById("input_tx_template_treat").content;
+        const tableBody = document.getElementById("table_tx_treat").querySelector("tbody");
+            
+        const clone = document.importNode(template, true);
+        const inputs = clone.querySelectorAll("input");
+        inputs[0].value = tx; // tx value
+        inputs[1].value = dose; // dose value
+        inputs[2].value = price; // price value
+        tableBody.appendChild(clone);
+
+    };
+
+
+    function addRowHm(tx, dose, amount, price) {
+        // Get the template and table body
+        const template = document.getElementById("input_hm_template_treat").content;
+        const tableBody = document.getElementById("table_hm_treat").querySelector("tbody");
+            
+        const clone = document.importNode(template, true);
+        const inputs = clone.querySelectorAll("input");
+        inputs[0].value = tx; // tx value
+        inputs[1].value = dose; // dose value
+        inputs[2].value = amount; // amount value
+        inputs[3].value = price; // price value
+        tableBody.appendChild(clone);
+
+    };
 
  
 
+    function getPatientRegistInfo(patientId,opdVisitId){
+        // const patientId = "240511-040959"
 
-
-function searchTablePending(){
-    // ค้นหาภายใต้วันและข้อความค้น
-    const dateInput = document.getElementById('datefilter_table_pending').value
-    // console.log(dateInput)
-    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
-    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
-    // console.log(searchInput)
-   
-    // ค้นหาทั้งตาราง
-    elements.tablePending.setFilter([
-        {field:"visitDate",type: "like",value: dateInput}, // search with and 
-        {field:"visitDate",type: "!=",value: ""}, // search with and // เอาเฉพาะ visit ที่ส่งเข้าห้องตรวจ
-        // {field:"opdStatus",type: "like",value: statusInput}, // search with and
-        [   
-            {field:"hn",type: "like",value: searchInput}, // or
-            {field:"cid",type: "like",value: searchInput}, // or
-            {field:"fullNameSearch",type: "like",value: searchInput}, // or
-            // {field:"firstName",type: "like",value: searchInput}, // or
-            // {field:"lastName",type: "like",value: searchInput}, // or
-
-        ]
-    ]);
-
-    
-    showSideBarStatusForPending();
-    showSideBarStatusForReport();
-
-    showDashboardPending();
-
-};
-
-
-
-
-function filterPendingTotal(){
-    console.log("filterPendingTotal")
-    searchTablePending();
-
-};
-
-     
-function filterPendingWaiting(){
-    // ค้นหาภายใต้วันและข้อความค้น
-    const dateInput = document.getElementById('datefilter_table_pending').value
-    // console.log(dateInput)
-    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
-    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
-    // console.log(searchInput)
-   
-
-    // ค้นหาทั้งตาราง
-    elements.tablePending.setFilter([
-        {field:"visitDate",type: "like",value: dateInput}, // search with and 
-        {field:"visitDate",type: "!=",value: ""}, // search with and // เอาเฉพาะ visit ที่ส่งเข้าห้องตรวจ
-        {field:"opdStatus",type: "like",value: "ส่งห้องตรวจ"}, // search with and
-        [   
-            {field:"hn",type: "like",value: searchInput}, // or
-            {field:"cid",type: "like",value: searchInput}, // or
-            {field:"fullNameSearch",type: "like",value: searchInput}, // or
- 
-        ]
-    ]);
-
-
-};
-
-
-function filterPendingFinish(){
-    console.log("filterPendingFinish")
-    
-    // ค้นหาภายใต้วันและข้อความค้น
-    const dateInput = document.getElementById('datefilter_table_pending').value
-    // console.log(dateInput)
-    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
-    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
-    // console.log(searchInput)
-   
-    // ค้นหาทั้งตาราง
-    elements.tablePending.setFilter([
-        { field: "visitDate", type: "like", value: dateInput }, // AND
-        { field: "visitDate", type: "!=", value: "" }, // AND
-        // Group the OR conditions
-        [
-            { field: "opdStatus", type: "like", value: "ส่งห้องยา" }, // OR
-            { field: "opdStatus", type: "like", value: "ส่งการเงิน" }, // OR
-            { field: "opdStatus", type: "like", value: "ส่งนัดหมาย" }, // OR
-        ],
-        // Another OR group
-        [
-            { field: "hn", type: "like", value: searchInput }, // OR
-            { field: "cid", type: "like", value: searchInput }, // OR
-            { field: "fullNameSearch", type: "like", value: searchInput } // OR
-        ]
-    ]);
-
-
-};
-
-
-
-
-function filterPendingDischarge(){
-    console.log("filterPendingDischarge")
-     
-    // ค้นหาภายใต้วันและข้อความค้น
-    const dateInput = document.getElementById('datefilter_table_pending').value
-    // console.log(dateInput)
-    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
-    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
-    // console.log(searchInput)
-   
-    // ค้นหาทั้งตาราง
-    elements.tablePending.setFilter([
-        { field: "visitDate", type: "like", value: dateInput }, // AND
-        { field: "visitDate", type: "!=", value: "" }, // AND
-        { field: "opdStatus", type: "like", value: "จำหน่าย" }, // OR
+        loadingStart();
          
-        // Another OR group
-        [
-            { field: "hn", type: "like", value: searchInput }, // OR
-            { field: "cid", type: "like", value: searchInput }, // OR
-            { field: "fullNameSearch", type: "like", value: searchInput } // OR
-        ]
-    ]);
+        google.script.run.withSuccessHandler((result)=>{
+            console.log(result)
+
+            loadingEnd();
+
+            const allData = JSON.parse(result[0].allData); // ทำ string ให้เป็น object
+            console.log(allData)
+
+            const patientRegistInfo = {...result[0],allData}
+            console.log(patientRegistInfo)
+
+            // return patientRegistInfo
+            document.getElementById("selected_patient_view_treat").classList.remove('d-none')
+            document.getElementById("non_selected_patient_view_treat").classList.add('d-none')
+
+            showTreatmentView(patientRegistInfo,opdVisitId);
+
+          
+        }).getPatientRegistInfoById(patientId)
 
 
-};
+    };
 
 
-function filterPendingPharmacy(){
-    console.log("filterPendingPharmacy")
-    // elements.tablePending.setFilter([
-    //     // {field:"visitDate",type: "like",value: dateInput}, // search with and 
-    //     // {field:"visitDate",type: "!=",value: ""}, // search with and // เอาเฉพาะ visit ที่ส่งเข้าห้องตรวจ
-    //     // {field:"opdStatus",type: "like",value: statusInput}, // search with and
-    //     [   
-    //         {field:"opdStatus",type: "like",value: "ส่งห้องยา"}, // or
-    //         // {field:"opdStatus",type: "like",value: "ส่งห้องยา"}, // or
-    //         // {field:"opdStatus",type: "like",value: "ส่งการเงิน"}, // or
-            
+    function showTreatmentView(patientRegistInfo,opdVisitId){
+      showViewById('treat_view_btn');
 
-    //     ]
-    // ]);
+       // ดึงข้อมูล general data จาก sheet PatientRegist
+        // const patientRegistInfo = getPatientRegistInfoById(patientId);
+        // console.log(patientRegistInfo)
 
-    // ค้นหาภายใต้วันและข้อความค้น
-    const dateInput = document.getElementById('datefilter_table_pending').value
-    // console.log(dateInput)
-    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
-    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
-    // console.log(searchInput)
-   
-    // ค้นหาทั้งตาราง
-    elements.tablePending.setFilter([
-        { field: "visitDate", type: "like", value: dateInput }, // AND
-        { field: "visitDate", type: "!=", value: "" }, // AND
-        { field: "opdStatus", type: "like", value: "ส่งห้องยา" }, // AND
-        
-        // Another OR group
-        [
-            { field: "hn", type: "like", value: searchInput }, // OR
-            { field: "cid", type: "like", value: searchInput }, // OR
-            { field: "fullNameSearch", type: "like", value: searchInput } // OR
-        ]
-    ]);
+      document.getElementById("patient_fname_treat").textContent = patientRegistInfo.firstName
+      document.getElementById("patient_lname_treat").textContent = patientRegistInfo.lastName
 
+      document.getElementById("patient_hn_treat").textContent = patientRegistInfo.patientId
+      document.getElementById("opd_visitid_treat").textContent = opdVisitId
 
-
-};
-
-
-function filterPendingFinance(){
-    console.log("filterPendingFinance")
-    // elements.tablePending.setFilter([
-    //     // {field:"visitDate",type: "like",value: dateInput}, // search with and 
-    //     // {field:"visitDate",type: "!=",value: ""}, // search with and // เอาเฉพาะ visit ที่ส่งเข้าห้องตรวจ
-    //     // {field:"opdStatus",type: "like",value: statusInput}, // search with and
-    //     [   
-    //         {field:"opdStatus",type: "like",value: "ส่งการเงิน"}, // or
-    //         // {field:"opdStatus",type: "like",value: "ส่งห้องยา"}, // or
-    //         // {field:"opdStatus",type: "like",value: "ส่งการเงิน"}, // or
-            
-
-    //     ]
-    // ]);
-
-    // ค้นหาภายใต้วันและข้อความค้น
-    const dateInput = document.getElementById('datefilter_table_pending').value
-    // console.log(dateInput)
-    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
-    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
-    // console.log(searchInput)
-   
-    // ค้นหาทั้งตาราง
-    elements.tablePending.setFilter([
-        { field: "visitDate", type: "like", value: dateInput }, // AND
-        { field: "visitDate", type: "!=", value: "" }, // AND
-        { field: "opdStatus", type: "like", value: "ส่งการเงิน" }, // AND
-        
-        // Another OR group
-        [
-            { field: "hn", type: "like", value: searchInput }, // OR
-            { field: "cid", type: "like", value: searchInput }, // OR
-            { field: "fullNameSearch", type: "like", value: searchInput } // OR
-        ]
-    ]);
-
-};
-        
-
-function filterPendingAppointment(){
-    console.log("filterPendingAppointment")
+      document.getElementById("patient_cid_treat").textContent = patientRegistInfo.allData.cid
+      document.getElementById("patient_address_treat").textContent = 
+        " บ้านเลขที่ " + patientRegistInfo.allData.addressFull.houseNo + 
+        " หมู่ " + patientRegistInfo.allData.addressFull.moo + 
+        " ซ." + patientRegistInfo.allData.addressFull.soi + 
+        " ถ." + patientRegistInfo.allData.addressFull.road + 
+        " ต." + patientRegistInfo.allData.addressFull.tumbon + 
+        " อ." + patientRegistInfo.allData.addressFull.amphoe + 
+        " จ." + patientRegistInfo.allData.addressFull.province + 
+        " " + patientRegistInfo.allData.addressFull.zipcode
     
-    // ค้นหาภายใต้วันและข้อความค้น
-    const dateInput = document.getElementById('datefilter_table_pending').value
-    // console.log(dateInput)
-    // Removes spaces from the beginning and end of the input and between word eg. " John   Doe   Smith "  i want this  "John Doe Smith"
-    const searchInput = document.getElementById('search_input_table_pending').value.trim().replace(/\s\s+/g, ' ');
-    // console.log(searchInput)
-   
-    // ค้นหาทั้งตาราง
-    elements.tablePending.setFilter([
-        { field: "visitDate", type: "like", value: dateInput }, // AND
-        { field: "visitDate", type: "!=", value: "" }, // AND
-        { field: "opdStatus", type: "like", value: "ส่งนัดหมาย" }, // AND
-        
-        // Another OR group
-        [
-            { field: "hn", type: "like", value: searchInput }, // OR
-            { field: "cid", type: "like", value: searchInput }, // OR
-            { field: "fullNameSearch", type: "like", value: searchInput } // OR
-        ]
-    ]);
+        document.getElementById("patient_birthday_treat").textContent = patientRegistInfo.allData.birthDay
+        document.getElementById("patient_gender_treat").textContent = patientRegistInfo.allData.gender
 
-};
+        const age = calculateAgeWithMonths(patientRegistInfo.allData.birthDay);
+
+        document.getElementById("patient_age_treat").textContent = `${age.years} ปี ${age.months} เดือน`
+
+        document.getElementById("patient_tel_treat").textContent = patientRegistInfo.allData.phoneNumber
+        document.getElementById("patient_ud_treat").textContent = patientRegistInfo.allData.underlying
+        document.getElementById("patient_allergy_treat").textContent = patientRegistInfo.allData.drugAllergy
+        document.getElementById("patient_note_treat").textContent = patientRegistInfo.allData.comment
+
+ 
+    
+    };
+
+    
+    // คำนวนอายุ จากวันเกิด
+    function calculateAgeWithMonths(birthDate) {
+        const today = new Date();
+        const birthDateObj = new Date(birthDate);
+
+        let ageYears = today.getFullYear() - birthDateObj.getFullYear();
+        let ageMonths = today.getMonth() - birthDateObj.getMonth();
+        
+        // Adjust age if birth month is after current month or birth month is the same but birth day is after current day
+        if (ageMonths < 0 || (ageMonths === 0 && today.getDate() < birthDateObj.getDate())) {
+            ageYears--;
+            ageMonths += 12; // Add 12 months to adjust for negative ageMonths
+        }
+
+        return { years: ageYears, months: ageMonths };
+    }
+
+
+
+    function setFilterPendingTable(date){
+        console.log(date)
+        elements.tablePending.setFilter([
+            {field:"visitDate", type:"=", value:date}, 
+        ]);
+    }
+
+
+
+
+
+    
+
+        
+
 
 
 

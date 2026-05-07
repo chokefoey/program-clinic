@@ -1,139 +1,62 @@
 
 
 <div class="container mt-4" id="login_view">
-
-  <!-- line progress bar  -->
-  <div class="row">
-    <div class="col">
-      <div class="row sticky-top">
-        <div class="" id="progressbar_refresh_data">
-          <div class="line" >
-              <div class="dot dot1"></div>
-              <div class="dot dot2"></div>
-              <div class="dot dot3"></div>
-              <div class="dot dot4"></div>
-              <div class="dot dot5"></div>
-          </div>  
-        </div>
-      </div>
-    </div>  
-  </div>
-
-  <!-- FORM LOGIN -->
   <div class=" col-md-6 mt-4 ">
     
-    <!-- FORM LOGIN -->
     <form method="post" id="form_login">
-      
-      <div class="container">
-        <div class="row mt-2 bg-info bg-opacity-50 p-0 rounded-top shadow-sm">
-          <center>
-            <div class="col-md mt-3 mb-1">
-              <div class="flip-container">
-                <div class="flipper">
-                  <img class="front" src="" id="logo1_app" alt="Logo">
-                  <div class="back p-2">
-                    <span><i class="bi bi-person-fill-lock"></i></span>
-                    <span>&nbsp;Login</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </center>
-
-          <center>
-            <div class="col-md">
-                <h5 class="mt-2 text-white">
-                  <span id="program_name"></span>
-                </h5>
-            </div>
-
-            
-          </center>
-        </div>
-        
-
-        <div class="row bg-info bg-opacity-25 rounded-bottom shadow-lg mb-5">
-          
-          <div class="mt-3 input-group">
-            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-            <input type="text" class="form-control" placeholder="Username" name="username" id="username_login_input" disabled>
-          </div>
-            
-          <div class="mt-3 input-group">
-            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
-            <input type="password" class="form-control" placeholder="Password" name="password" id="password_login_input" disabled>
-          </div>
-
-          <div class="row mt-2">
-            <div class="col-md">
-              <div class="form-check form-switch text-start mb-3">
-                <input class="pointer form-check-input" type="checkbox" role="switch" id="show_password_check" onchange="showPassword()">
-                <label class="pointer form-check-label link-warning text-info" for="show_password_check">Show password</label>
-              </div>
-            </div>
-          </div>
-        
-          <!-- <center>
-            <button type="submit" class="btn btn-info shadow text-white" style="--bs-btn-padding-y: .5rem; --bs-btn-padding-x: 3.5rem; --bs-btn-font-size: .75rem;" id="enter_login_button">ENTER</button>
-          </center> -->
-
-          <div class="container text-center">
-            <div class="row mt-2 justify-content-center">
-                <div class="col-md-12">
-                  <button type="submit" class="btn btn-info text-white w-100 mb-3" id="enter_login_button" disabled>ENTER</button>
- 
-                </div>
-            </div>
-          </div>
-
-
-
-          
-          <div class="row mt-2">
-            <center>
-              <div class="col mt-2">
-                <p>
-                  <span class="pointer link-warning text-info" data-bs-toggle="modal" data-bs-target="#modal_registration">ลงทะเบียนผู้ใช้งานใหม่</span>&nbsp;
-                  <span class="pointer link-warning text-info" data-bs-toggle="modal" data-bs-target="#modal_forgetpass">ลืมรหัสผ่าน</span>
-                </p>
-                
-              </div>
-            </center>
-          </div>
-            
-        </div>
-
-
-        <center>
-          <div class="col mt-2" id="show_version">
-              <p class="text-info" id="version"></p>
-          </div>
-        </center>
-
+      <div class="bg-info bg-opacity-50 p-3 rounded-top shadow-sm">
+        <center><h1><i class="bi bi-person-fill-lock"></i></h1></center>
       </div>
 
-      
+      <div class="bg-info bg-opacity-25 p-3 rounded-bottom shadow-lg mb-5">
+        <div class="input-group mb-3">
+          <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+          <input type="text" class="form-control" placeholder="Username" name="username" id="username_login_input" >
+        </div>
+        <div class="input-group mb-2">
+          <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+          <input type="password" class="form-control" placeholder="Password" name="password" id="password_login_input" >
+        </div>
+        <div class="form-check form-switch text-start mb-3">
+          <input class="pointer form-check-input" type="checkbox" role="switch" id="show_password_check" onchange="showPassword()">
+          <label class="pointer form-check-label link-warning text-info" for="show_password_check">Show password</label>
+        </div>
+        <center>
+          <button type="submit" class="btn btn-info shadow text-white" style="--bs-btn-padding-y: .5rem; --bs-btn-padding-x: 3.5rem; --bs-btn-font-size: .75rem;" id="enter_login_button">ENTER</button>
+        </center>
+        <center>
+          <div class="col mt-2">
+            <p>
+              <span class="pointer link-warning text-info" data-bs-toggle="modal" data-bs-target="#modal_registration">ลงทะเบียนผู้ใช้งานใหม่</span>&nbsp;
+              <span class="pointer link-warning text-info" data-bs-toggle="modal" data-bs-target="#modal_forgetpass">ลืมรหัสผ่าน</span>
+            </p>
+             
+          </div>
+        </center>
+          
+      </div>
 
     </form>
 
-    
+    <center>
+      <div class="col mt-2" id="show_version">
+          <p class="text-info" id="version"></p>
+      </div>
+    </center>
 
 
   </div>
 
 
-
   <!-- Modal Registration -->
-  <div class="modal fade" id="modal_registration" data-bs-keyboard="false" tabindex="-1" data-bs-focus="false">
-    
+  <div class="modal fade" id="modal_registration" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true" data-bs-focus="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
-        <div class="modal-header bg-secondary bg-opacity-10">
-          <h1 class="modal-title fs-5" >ลงทะเบียนผู้ใช้งาน(Registration)</h1>
+        <div class="modal-header bg-info bg-opacity-50">
+          <h1 class="modal-title fs-5" >Registration</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body bg-secondary bg-opacity-10">
+        <div class="modal-body bg-info bg-opacity-10">
           <div class=" row mt-2">
             <div class="row justify-content-md-center">
               <center>
@@ -141,11 +64,8 @@
               </center>
             </div>
             <div class="col-md-12">
-              <label class="form-label">ภาพโปรไฟล์(Optional)</label>
-              <input class="form-control text-primary" type="file" id="user_pic_regist_input"/>
-              <div id="passwordHelpBlock" class="form-text">
-                (รองรับประเภทไฟล์ jpg, png ขนาด < 100KB)
-              </div>
+              <label class="form-label">ภาพโปรไฟล์(Optional)(รองรับ jpg,png ขนาด < 100KB)</label>
+              <input class="form-control" type="file" id="user_pic_regist_input"/>
             </div>
             <!-- <div class="col-md-2">
               <label class="form-label">xxx</label>
@@ -166,34 +86,34 @@
 
           <form class="row g-3 mt-2" id="user_add_form">
             <div class="col-md-4">
-              <label class="form-label">ชื่อ</label>
-              <input type="text" class="form-control text-primary" id="first_name_user_add" required>
+              <label class="form-label">First name</label>
+              <input type="text" class="form-control" id="first_name_user_add" required>
             </div>
             <div class="col-md-4">
-              <label class="form-label">นามสกุล</label>
-              <input type="text" class="form-control text-primary" id="last_name_user_add" required>
+              <label class="form-label">Last name</label>
+              <input type="text" class="form-control" id="last_name_user_add" required>
             </div>
             <div class="col-md-4">
               <label class="form-label">ตำแหน่ง</label>
-              <select class="form-select text-primary" aria-label="Default select example" id="user_position_add" required>
+              <!-- <input type="text" class="form-control" id="user_posiion_add" required> -->
+              <select class="form-select" aria-label="Default select example" id="user_posiion_add" required>
                 <option value="" selected> </option>
-                <option value="doctor">Doctor</option>
-                <option value="nurse">Nurse</option>
-                <option value="pt">PT</option>
-                <option value="ot">OT</option>
-                <option value="other">Other</option> 
+                <option value="Doctor">Doctor</option>
+                <option value="Nurse">Nurse</option>
+                <option value="PT">PT</option>
+                <option value="OT">OT</option>
               </select>
             </div>
 
             <div class="col-md-4">
               <label class="form-label">Username</label>
-              <input type="text" class="form-control text-primary" id="user_name_user_add" required>
+              <input type="text" class="form-control" id="user_name_user_add" required>
             </div>
             
             <div class="col-md-4">
               <label class="form-label">Password</label>
               <div class="input-group">
-                <input type="password" class="form-control text-primary" id="pass_word_user_add" required>
+                <input type="password" class="form-control" id="pass_word_user_add" required>
                 <span class="input-group-text">
                   <i class="pointer bi bi-eye" onclick="showHidePasswordRegist()" id="eye_open_pwd1"></i>
                   <i class="pointer d-none bi bi-eye-slash" onclick="showHidePasswordRegist()" id="eye_close_pwd1"></i>
@@ -203,7 +123,7 @@
             <div class="col-md-4">
               <label class="form-label">Re-enter Password</label>
               <div class="input-group">
-                <input type="password" class="form-control text-primary" id="repeatpass_word_user_add" required>
+                <input type="password" class="form-control" id="repeatpass_word_user_add" required>
                 <span class="input-group-text">
                   <i class="pointer bi bi-eye" onclick="showHidePasswordRegist()" id="eye_open_pwd2"></i>
                   <i class="pointer d-none bi bi-eye-slash" onclick="showHidePasswordRegist()" id="eye_close_pwd2"></i>
@@ -212,98 +132,84 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">เลขใบประกอบ</label>
-              <input type="text" class="form-control text-primary" id="license_user_add" required>
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" id="email_adress_user_add" required>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">อีเมล์</label>
-              <input type="email" class="form-control text-primary" id="email_adress_user_add" required>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">เบอร์โทร</label>
-              <input type="text" class="form-control text-primary" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');" id="user_phone_add" required>
+              <label class="form-label">Phone</label>
+              <input type="text" class="form-control" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');" id="user_phone_add" required>
             </div>
             <div class="col-md-4">
               <label class="form-label">จังหวัด</label>
-              <select class="form-select text-primary" id="room_area_user_add" required>
-                <!-- <option selected></option>
-                <option value="snk">SNK</option>
-                <option value="npm">NPM</option>
-                <option value="nbp">NBP</option>
-                <option value="nki">NKI</option>
-                <option value="lei">LEI</option>
-                <option value="udn">UDN</option>
-                <option value="bkn">BKN</option>
-                <option value="other">Other</option> -->
-                <option value="clinic">clinic</option>
-              </select>
+              <input class="form-control" list="datalistOption_userProvince" id="room_area_user_add" required> 
+              <datalist id="datalistOption_userProvince"> 
+                <option value="SNK">
+                <option value="NPM">
+                <option value="NBP">
+                <option value="NKI">
+                <option value="LEI">
+                <option value="UDN">
+                <option value="BKN">
+              </datalist>
             </div>
             <div class="col-md-4">
               <label class="form-label">หน่วยบริการ</label>
-              <input class="form-control text-primary" type="search" list="datalistOptions_user_hos" id="user_hos_add" required>
+              <input class="form-control" list="datalistOptions_user_hos" id="user_hos_add" required>
               <datalist id="datalistOptions_user_hos">
                 <option value="สกลนคร/รพศ.สกลนคร">
                 <option value="อุดรธานี/รพศ.อุดรธานี">
-                <option value="other">
+                 
               </datalist>
             </div>
 
             <div class="d-none col-md-12">
               <label class="form-label">แนบเอกสาร(Optional)</label>
-              <input class="form-control text-primary" type="file" id="user_regist_file1_input"/>
+              <input class="form-control" type="file" id="user_regist_file1_input"/>
             </div>
 
             <div class="col-12">
               <div class="form-check">
                 <input class="form-check-input pointer" type="checkbox" value="yes" id="invalidCheck1" required>
                 <label class="form-check-label pointer" for="invalidCheck1">
-                  ยอมรับเงื่อนไข
+                  Agree to terms and conditions1
+                </label>
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <div class="form-check">
+                <input class="form-check-input pointer" type="checkbox" value="yes" id="invalidCheck2" required>
+                <label class="form-check-label pointer" for="invalidCheck2">
+                  Agree to terms and conditions2
                 </label>
               </div>
             </div>
 
-            <div class="accordion accordion-flush" id="accordionFlushExample">
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed bg-secondary bg-opacity-25" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                    อ่านเงื่อนไข
-                  </button>
-                </h2>
-                <div id="flush-collapseOne" class="accordion-collapse collapse bg-secondary bg-opacity-10" data-bs-parent="#accordionFlushExample">
-                  <div class="accordion-body">
-                    <p>1.ท่านยินยอมให้ทางแอดมินเก็บข้อมูลที่ใช้ในการลงทะเบียนของท่าน</p>
-                    <p>2.การอนุมัติหรือไม่อนุมัติ ถือเป็นสิทธิ์ขาดของผู้ดูแลระบบ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า</p>
-                    <p>3.ท่านจะต้องเก็บรักษาชื่อผู้ใช้(Username)และรหัส(Password)ในการเข้าระบบของท่านเป็นความลับ เพื่อป้องกันการเข้าใช้งานโดยผู้อื่น</p>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-            
           </form>
 
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="user_regist_btn">ลงทะเบียน</button>
+          </div>
+
+
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="user_regist_btn">ลงทะเบียน</button>
-        </div>
+          
       </div>
     </div>
   </div>
 
   <!-- Modal Forgot your password -->
-  <div class="modal fade" id="modal_forgetpass"  ata-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"  data-bs-focus="false">
+  <div class="modal fade" id="modal_forgetpass" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" data-bs-focus="false">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header bg-secondary bg-opacity-10">
+        <div class="modal-header bg-info bg-opacity-50">
           <h1 class="modal-title fs-5" id="staticBackdropLabel">Forgot your password</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body bg-secondary bg-opacity-10">
+        <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label">กรุณากรอก Email ที่ได้ลงทะเบียนไว้แล้วกดขอรหัสผ่าน</label>
-            <input type="email" class="form-control text-primary" id="email_adress_user_forget" placeholder="name@example.com">
+            <label class="form-label">กรุณากรอก Email address ที่ได้ลงทะเบียนไว้</label>
+            <input type="email" class="form-control" id="email_adress_user_forget" placeholder="name@example.com">
           </div>
         </div>
         <div class="modal-footer">
@@ -314,7 +220,7 @@
   </div>
 
   <!-- Modal input OTP  -->
-  <div class="modal fade" id="modal_inputotp" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"   data-bs-focus="false">
+  <div class="modal fade" id="modal_inputotp" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" data-bs-focus="false">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <!-- <div class="modal-header bg-info bg-opacity-50">
@@ -361,23 +267,6 @@
 
 
 
-
-</div>
-
-
-<!-- Text in lower right -->
-<div class="position-fixed bottom-0 end-0 p-3">
-  <!-- <p class="mb-0">
-    <span>Version: </span>
-    <span>19.2.1</span>
-  </p> -->
-
-   
-   
-  <p class="mb-0">
-    <span><i class="bi bi-c-circle"></i></span>
-    <span>by golfguitar@gmail.com</span>
-  </p>
 </div>
 
 

@@ -2,36 +2,40 @@
 <script>
 
 
-// ***************************************************************************
-// CLICK EVENT TREAT VIEW
-// ***************************************************************************
 
 function clickEventHandlerTreatView(e){
   if (e.target.classList.contains("add-input-dx-treat") ){
     // console.log('add-input-dx-treat')
-    const rowInput = document.getElementsByClassName('input-dx-row-treat').length
-    console.log(rowInput)
+    const rowInput = document.getElementsByClassName('add-input-dx-treat').length
+    // console.log(rowInput)
 
     if( rowInput > 4){
-      // alert("row is over than 5")
-      Swal.fire({ icon: 'error',title: 'จำกัด 5 รายการ',})
-
+      alert("row is over than 5")
     } else {
       addRowInputDxTreat()
-
-      // clickLastIcd10Option()
-
     }
   }
   if (e.target.classList.contains("remove-input-dx-treat") ){
-    const rowInput = document.getElementsByClassName('input-dx-row-treat').length
-    console.log(rowInput)
-
+    const rowInput = document.getElementsByClassName('add-input-dx-treat').length
+    // console.log(rowInput)
     if( rowInput > 1){
-      e.target.closest('.input-dx-row-treat').remove()
+      Swal.fire({
+        title: "ยืนยันการลบ?",
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: "ยืนยัน",
+        denyButtonText: `ยกเลิก`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          e.target.closest('.input-line').remove()
+          
+        } else if (result.isDenied) {
+
+        }
+      })
       
     } else {
-      // Swal.fire({ icon: 'error',title: 'ต้องลงวินิจฉัยอย่างน้อย 1 อย่าง',})
+      alert("row must at least 1 ต้อง ลง Dx อย่างน้อย 1 อย่าง")
       document.getElementById("form_table_dx_treat").reset();
       
     }
@@ -39,107 +43,58 @@ function clickEventHandlerTreatView(e){
   }
   if (e.target.classList.contains("add-input-tx-treat") ){
     // console.log('add-input-tx-treat')
-    const rowInput = document.getElementsByClassName('input-tx-row-treat').length
-    console.log(rowInput)
-
+    const rowInput = document.getElementsByClassName('add-input-tx-treat').length
+    // console.log(rowInput)
     if( rowInput > 9){
-      Swal.fire({ icon: 'error',title: 'จำกัด 10 รายการ',})
-       
+      alert("จำกัด 10 รายการ")
     } else {
       addRowInputTxTreat()
-      
-      // clickLastProcedureOption()
     }
   }
   if (e.target.classList.contains("remove-input-tx-treat") ){
-    const rowInput = document.getElementsByClassName('input-tx-row-treat').length
-    console.log(rowInput)
-
+    const rowInput = document.getElementsByClassName('add-input-tx-treat').length
+    // console.log(rowInput)
     if( rowInput > 1){
-      e.target.closest('.input-tx-row-treat').remove()
+      e.target.closest('.input-line').remove()
 
     } else {
       document.getElementById("form_table_tx_treat").reset();
       
     }
 
-    // sumTotalPriceTreatView()
-    calPriceProcedure()
-
   }
-  
-  if ( e.target.matches("#add_input_hm_row_treat_btn") ){ 
-    const rowInput = document.getElementsByClassName('input-hm-row-treat').length
-    console.log(rowInput)
-
+  if (e.target.classList.contains("add-input-hm-treat") ){
+    // console.log('add-input-hm-treat')
+    const rowInput = document.getElementsByClassName('add-input-hm-treat').length
+    // console.log(rowInput)
     if( rowInput > 9){
-      Swal.fire({ icon: 'error',title: 'จำกัด 10 รายการ',})
-       
+      alert("จำกัด 10 รายการ")
     } else {
       addRowInputHmTreat()
-
     }
   }
   if (e.target.classList.contains("remove-input-hm-treat") ){
-    const rowInput = document.getElementsByClassName('input-hm-row-treat').length
-    console.log(rowInput)
-
+    const rowInput = document.getElementsByClassName('add-input-hm-treat').length
+    // console.log(rowInput)
     if( rowInput > 1){
-      e.target.closest('.input-hm-row-treat').remove()
+      e.target.closest('.input-line').remove()
 
     } else {
       document.getElementById("form_table_hm_treat").reset();
       
     }
 
-    calPriceHomemed()
-
-    // sumTotalPriceTreatView()
-
   }
-  if (e.target.matches("#treat_view_save_btn") || e.target.matches("#treat_view_saveandclose_btn") || e.target.matches("#treat_view_save_and_send_btn")  ) {
+  if (e.target.matches("#treat_view_save_btn") ){
+    // console.log("treat_view_save_btn")
+    if( document.getElementById('patient_hn_treat').textContent == '' ){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
-    removeEmptyRowsDxTreat();
-    removeEmptyRowsTxTreat();
-    removeEmptyRowsHmTreat();
-
-
-    // Check if the patient is selected
-    if (document.getElementById('patient_id_treat').textContent === '') {
-      Swal.fire({ icon: 'error', title: 'กรุณาระบุเลือกผู้ป่วย' });
+    } else {
+      saveDataTreatView();
+      
     }
-    else {
-      // Check the procedure price and drug fields
-      const procedureCheck = checkTableTxEmpty();
-      const drugCheck = checkTableHmEmpty();
-
-      if (procedureCheck !== true) {
-        Swal.fire({ icon: 'error', title: procedureCheck });
-
-      } else if (drugCheck !== true) {
-        Swal.fire({ icon: 'error', title: drugCheck });
-          
-      } else {
-
-        showAlertBeforeSaveTreatView();
-        // If all conditions are met, proceed to save data
-        // saveDataTreatView();
-
-        // // กรณี save and close ให้ปิดหน้าต่างไปก่อน เพื่อความรวดเร็ว
-        // if ( e.target.matches("#treat_view_saveandclose_btn") ){
-
-        //   const myTimeout = setTimeout(()=>{
-        //     closeTreatView()
-        //     loadingEnd()
-
-        //   }, 2000); // 2 วินาทีแล้วปิดหน้าต่าง
-        //   // closeTreatView()
-
-        // }
-          
-      }
-
-    }
+    
   }
   if (e.target.matches("#treat_view_delete_btn") ){
     // console.log("กดกด")
@@ -151,7 +106,7 @@ function clickEventHandlerTreatView(e){
       denyButtonText: `ยกเลิก`
     }).then((result) => {
       if (result.isConfirmed) {
-        // console.log("ลบ")
+        console.log("ลบ")
         deleteOpdVisit();
         
       } else if (result.isDenied) {
@@ -160,48 +115,28 @@ function clickEventHandlerTreatView(e){
     })
   }
   if (e.target.matches("#open_modal_receipt_btn") ){
-    removeEmptyRowsDxTreat();
-    removeEmptyRowsTxTreat();
-    removeEmptyRowsHmTreat();
+    if( document.getElementById('patient_hn_treat').textContent == ''){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
-        // Check if the patient is selected
-    if (document.getElementById('patient_id_treat').textContent === '') {
-      Swal.fire({ icon: 'error', title: 'กรุณาระบุเลือกผู้ป่วย' });
-    }
-    else {
-      // Check the procedure price and drug fields
-      const procedureCheck = checkTableTxEmpty();
-      const drugCheck = checkTableHmEmpty();
-
-      if (procedureCheck !== true) {
-        Swal.fire({ icon: 'error', title: procedureCheck });
-
-      } else if (drugCheck !== true) {
-        Swal.fire({ icon: 'error', title: drugCheck });
-          
-      } else {
-
-        makePdfReceiptTh();
-          
-      }
+    } else {
+      openModalReceipt();
 
     }
     
   }
   if (e.target.matches("#open_modal_medcernorm_btn") ){
-    if( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
+    if( document.getElementById('patient_hn_treat').textContent == ''){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
     } else {
       openModalMedcerNorm();
-      console.log("openModalMedcerNorm")
 
     }
     
   }
   if (e.target.matches("#open_modal_medcerdrive_btn") ){
-    if( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
+    if( document.getElementById('patient_hn_treat').textContent == ''){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
     } else {
       openModalMedcerDrive();
@@ -210,8 +145,8 @@ function clickEventHandlerTreatView(e){
     
   }
   if (e.target.matches("#open_modal_medcersick_btn") ){
-    if( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
+    if( document.getElementById('patient_hn_treat').textContent == ''){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
     } else {
       openModalMedcerSick();
@@ -219,195 +154,25 @@ function clickEventHandlerTreatView(e){
     }
     
   }
-  if (e.target.matches("#open_modal_opdcard_btn") ){
-    if( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
-
-    } else {
-      // openModalOpdCard();
-      // makePdfOpdCardTh()
-      makePdfOpdCard()
-
-    }
-    
-  }
-   
-  if (e.target.matches("#print_sticker_drug_btn") ){
-    if( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
-
-    } else {
-      makePdfStickerDrug();
-      // console.log('print_sticker_drug_btn')
-
-    }
-    
-  }
   if (e.target.matches("#open_modal_refer_btn") ){
-    const referInHosp = getValueOfChoiceById("referto_hosp_treat")
-    if ( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
-
-    } else if ( referInHosp === "" ){
-      Swal.fire({ 
-        icon: 'error',title: 'กรุณาเลือก รพ.ปลายทาง',
-        html: "<h5 align='center'>ไปที่ Summary -> เลือกส่งต่อไปที่</h5>"
-      })
+    if( document.getElementById('patient_hn_treat').textContent == ''){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
     } else {
       openModalRefer();
 
     }
+    
   }
-  if (e.target.matches("#open_modal_history_treat_btn") ){
+  if (e.target.matches("#openmodal_history_treat_btn") ){
     // console.log("กดกดกดก")
     resetFormHistory()
     const patientId = document.getElementById('patient_id_treat').textContent
     openModalHistoryTreat(patientId);
 
   }
-  if (e.target.matches("#open_modal_appointment_btn") ){
-    const patientId = document.getElementById('patient_id_treat').textContent
-    const opdVisitId = document.getElementById('opd_visitid_treat').textContent
-    console.log(`patientId ${patientId}`)
-    console.log(`opdVisitId ${opdVisitId}`)
-
-
-    document.getElementById('openvisit_event_btn').classList.add("d-none")
-    
-    openModalAppointment(patientId,opdVisitId);
-    console.log("openModalAppointment")
-
-  }
-  if (e.target.matches("#open_modal_changeroom_btn") ){
-    console.log("open_modal_changeroom_btn")
-    const patientId = document.getElementById('patient_id_treat').textContent
-    const opdVisitId = document.getElementById('opd_visitid_treat').textContent
-    console.log(`patientId ${patientId}`)
-    console.log(`opdVisitId ${opdVisitId}`)
-
-    document.getElementById('send_treat_room_btn').classList.add('d-none')
-    document.getElementById('change_treat_room_btn').classList.remove('d-none')
-
-    openModalPatientSendRoom(patientId,opdVisitId)
-
-    // openModalAppointment(patientId,opdVisitId);
-    // console.log("openModalAppointment")
-
-  }
-  if (e.target.matches("#inlineRadio0_HmTreat") ){
-    console.log("inlineRadio0_HmTreat")
-    document.getElementById('amountdrugmanual_forhm_input').classList.remove('d-none')
-    document.getElementById('amountday_forhm_input').classList.add('d-none')
-    document.getElementById('appointdate_forhm_input').classList.add('d-none')
-
-
-    // Select all elements with the class 'input-amount-homemed'
-    const elements = document.querySelectorAll('.input-amount-homemed');
-
-    // Loop through each selected element
-    elements.forEach((element)=>{
-      // Disable the input element
-      element.disabled = false;
-
-      // Add the 'text-black' class
-      element.classList.add('text-black');
-      element.classList.remove('text-success');
-      element.classList.remove('text-danger');
-
-    });
-
-    document.getElementById('input_amountday_forcalculate').value = 'กำหนดเอง'
-     
-  }
-  if (e.target.matches("#inlineRadio1_HmTreat") ){
-    console.log("inlineRadio1_HmTreat")
-    document.getElementById('amountdrugmanual_forhm_input').classList.add('d-none')
-    document.getElementById('amountday_forhm_input').classList.remove('d-none')
-    document.getElementById('appointdate_forhm_input').classList.add('d-none')
-
-    // Select all elements with the class 'input-amount-homemed'
-    const elements = document.querySelectorAll('.input-amount-homemed');
-
-    document.getElementById('input_amountday_forhm').focus();
-    document.getElementById('input_amountday_forcalculate').value = document.getElementById('input_amountday_forhm').value.trim();
-
-    calculateHomemedAmount()
-    
-  }
-  if (e.target.matches("#inlineRadio2_HmTreat") ){
-    console.log("inlineRadio2_HmTreat")
-    document.getElementById('amountdrugmanual_forhm_input').classList.add('d-none')
-    document.getElementById('amountday_forhm_input').classList.add('d-none')
-    document.getElementById('appointdate_forhm_input').classList.remove('d-none')
-
-    // Select all elements with the class 'input-amount-homemed'
-    const elements = document.querySelectorAll('.input-amount-homemed');
-
-    document.getElementById('input_amountday_forcalculate').value = document.getElementById('appointmentday_amount_treat').value.trim();
-    calculateHomemedAmount()
-     
-  }
-  if (e.target.matches("#openmodal_add_icd10_treatview_btn") ){
-    console.log("openmodal_add_icd10_treatview_btn")
-    // document.getElementById('delete_option_btn').classList.add("d-none")
-    openModalDropDownOptions();
-
-    elements["dd_option_category"].setChoiceByValue("icd10"); // set ค่าของ choice js
-    elements["dd_option_category"].disable()  // enable();  disblechoice disble choice
-
-    document.getElementById('dd_option_name').value = "การวินิฉัย"
-
-    document.getElementById('option_val1_name').textContent = "ชื่อโรคภาษาอังกฤษ เช่น Pneumonia"
-    document.getElementById('option_val2_name').textContent = "/ชื่อโรคภาษาไทย เช่น ปอดอักเสบ"
-    document.getElementById('option_val3_name').textContent = "/icd10 เช่น J189"
-
-    document.getElementById("dd_option_val2").closest("div").classList.remove("d-none");
-    document.getElementById("dd_option_val3").closest("div").classList.remove("d-none");
-
-    // document.getElementById('dd_option_category').setAttribute("disabled", "");
-     
-  }
-  if (e.target.matches("#openmodal_add_dose_treatview_btn") ){
-    console.log("openmodal_add_dose_treatview_btn")
-    // document.getElementById('delete_option_btn').classList.add("d-none")
-    openModalDropDownOptions();
-
-    elements["dd_option_category"].setChoiceByValue("dose"); // set ค่าของ choice js
-    elements["dd_option_category"].disable()  // enable();  disblechoice disble choice
-    // document.getElementById('dd_option_category').setAttribute("disabled", "");
-
-    document.getElementById('dd_option_name').value = "วิธีการใช้ยา"
-
-    document.getElementById('option_val1_name').textContent = "code เช่น 12pt"
-    document.getElementById('option_val2_name').textContent = "/ชื่อเต็ม เช่น รับประทาน 1 เม็ด 2 เวลา หลังอาหารเช้า-เย็น"
-    document.getElementById('option_val3_name').textContent = "/จำนวนต่อวัน เช่น 2 (ถ้าไม่ทราบให้ใส่ 0)"
-
-    document.getElementById("dd_option_val2").closest("div").classList.remove("d-none");
-    document.getElementById("dd_option_val3").closest("div").classList.remove("d-none");
-     
-  }
-   
-  
-  
    
 
-};
-
-
-
-
-function openModalProcedureAdd(){ 
-  // console.log("openModalProcedureAdd")
-  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('procedureinfo_modal'))  
-  modal.show(); // modal.hide();
-
-  
-  document.getElementById("add_procedure_btn").classList.remove("d-none");
-  document.getElementById("edit_procedure_btn").classList.add("d-none");
-  document.getElementById("delete_procedure_btn").classList.add("d-none");
-
-   
 
 };
 
@@ -415,30 +180,27 @@ function openModalProcedureAdd(){
 
 function openModalHistoryTreat(patientId){ 
   // console.log("history_modal")
-  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('history_modal'))  
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('history_modal')) // Returns a Bootstrap modal instance
   modal.show(); // modal.hide();
 
   
-  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData(); 
+  const patientInfo = elements.tablePatientRegist.getRow(patientId).getData(); 
   // console.log(patientInfo)
 
-  document.getElementById('fullname_history').textContent = `${patientRegistInfo.identityData.firstName} ${patientRegistInfo.identityData.lastName}`
-  document.getElementById('hn_history').textContent = patientRegistInfo.incrementHn
+  document.getElementById('fullname_history').textContent = `${patientInfo.identityData.firstName} ${patientInfo.identityData.lastName}`
+  document.getElementById('hn_history').textContent = patientInfo.identityData.hn
   document.getElementById('patient_id_history').textContent = patientId
   
-
-  // To get all data in the Tabulator table
-  const tablePendingData = elements.tablePending.getData(); 
-  // console.log(tablePendingData)
-
-  showTableHistory(tablePendingData);
-
-
   // elements.tableHistory.setFilter([
-  //   {field:"visitDate",type: "!=",value: ""}, // search with and
-  //   {field:"patientId",type: "like",value: patientId}, // search with and
-     
+  //   {field:"patientId", type:"=", value:patientId},   
+      
   // ]);
+
+  elements.tableHistory.setFilter([
+    {field:"visitDate",type: "!=",value: ""}, // search with and
+    {field:"patientId",type: "like",value: patientId}, // search with and
+     
+  ]);
 
 
 };
@@ -446,146 +208,39 @@ function openModalHistoryTreat(patientId){
 
 
 
-function addEventHandlerEnterTreatView(){
-  // Get all elements with the class 'myInput'
-    const inputFieldsTableDx = document.querySelectorAll('.input-dx-treat');
 
-    // Attach keypress event listener to each input field
-    inputFieldsTableDx.forEach(input => {
-      input.addEventListener('keypress', handleKeyPressTableDx);
-    });
-
-
-    // Get all elements with the class 'myInput'
-    const inputFieldsTableTx = document.querySelectorAll('.input-tx-treat');
-
-    // Attach keypress event listener to each input field
-    inputFieldsTableTx.forEach(input => {
-      input.addEventListener('keypress', handleKeyPressTableTx);
-    });
-
-
-    // Get all elements with the class 'myInput'
-    const inputFieldsTableHm = document.querySelectorAll('.input-hm-treat');
-
-    // Attach keypress event listener to each input field
-    inputFieldsTableHm.forEach(input => {
-      input.addEventListener('keypress', handleKeyPressTableHm);
-    });
-
-}
-
-
-// ***************************************************************************
-// INPUT EVENT TREAT VIEW
-// ***************************************************************************
 
 
 
 function inputEventHandlerTreatView(e){
-  if (e.target.matches(".input-dx-treat") ){
-    // Get all elements with the class 'myInput'
-    const inputFieldsTableDx = document.querySelectorAll('.input-dx-treat');
+  // Get all elements with the class 'myInput'
+  const inputFieldsTableDx = document.querySelectorAll('.input-dx-treat');
 
-    // Attach keypress event listener to each input field
-    inputFieldsTableDx.forEach(input => {
-      input.addEventListener('keypress', handleKeyPressTableDx);
-    });
+  // Attach keypress event listener to each input field
+  inputFieldsTableDx.forEach(input => {
+    input.addEventListener('keypress', handleKeyPressTableDx);
+  });
 
-    
-  }
-  if (e.target.matches(".input-tx-treat") ){
-    // Get all elements with the class 'myInput'
-    const inputFieldsTableTx = document.querySelectorAll('.input-tx-treat');
 
-    // Attach keypress event listener to each input field
-    inputFieldsTableTx.forEach(input => {
-      input.addEventListener('keypress', handleKeyPressTableTx);
-    });
-    
-  }
-  if (e.target.matches(".input-hm-treat") ){
-    console.log('input event ที่ช่อง hm')
 
-    calPriceHomemed(); 
-    // setHomemedTypeTreat();
-    setHomemedType('input-hm-treat', 'homemed-type-treat');
+  // Get all elements with the class 'myInput'
+  const inputFieldsTableTx = document.querySelectorAll('.input-tx-treat');
 
-    // Get all elements with the class 'myInput'
-    const inputFieldsTableHm = document.querySelectorAll('.input-hm-treat');
+  // Attach keypress event listener to each input field
+  inputFieldsTableTx.forEach(input => {
+    input.addEventListener('keypress', handleKeyPressTableTx);
+  });
 
-    // Attach keypress event listener to each input field
-    inputFieldsTableHm.forEach(input => {
-      input.addEventListener('keypress', handleKeyPressTableHm);
-    });
-    
-  }
-  if (e.target.matches(".input-hm-dose-treat") ){
-    console.log('เกิด input event ที่ช่อง input-hm-dose-treat')
-    // console.log(e.target.value)
-    calculateHomemedAmount();
-    calPriceHomemed();
 
-    // Get all elements with the class 'myInput'
-    const inputFieldsTableHm = document.querySelectorAll('.input-hm-treat');
 
-    // Attach keypress event listener to each input field
-    inputFieldsTableHm.forEach(input => {
-      input.addEventListener('keypress', handleKeyPressTableHm);
-    });
-    
-  }
-  if (e.target.matches(".input-amount-homemed") ){
-    console.log('เกิด input event ที่ช่อง input-amount-homemed')
-    // console.log(e.target.value)
+  // Get all elements with the class 'myInput'
+  const inputFieldsTableHm = document.querySelectorAll('.input-hm-treat');
 
-    // Clear background color by removing specific classes
-    e.target.classList.remove('bg-success', 'bg-danger');
+  // Attach keypress event listener to each input field
+  inputFieldsTableHm.forEach(input => {
+    input.addEventListener('keypress', handleKeyPressTableHm);
+  });
 
-    // Remove leading zeros except for a single zero
-    e.target.value = e.target.value.replace(/^0+(?!$)/, '');
-
-    sumTotalPriceTreatView()
-    
-  }
-  if (e.target.matches(".input-price-procedure") ){
-
-    calPriceProcedure()
-    // sumTotalPriceTreatView()
-    
-  }
-  if (e.target.matches(".input-price-homemed") ){
-    // Get all input fields with the class 'sum-input'
-    // const inputs = document.querySelectorAll('.input-price-homemed');
-    // let total = 0;
-    
-    sumTotalPriceTreatView()
-    
-  }
-  if (e.target.matches("#wt_treat")  ||  e.target.matches("#ht_treat")){
-    // console.log("wt_treat")
-    const weight = document.getElementById('wt_treat').value
-    const height = document.getElementById('ht_treat').value
-
-    const bmi = calculateBMI(weight, height)
-
-    document.getElementById('bmi_treat').value = bmi
-    
-
-  }
-  if (e.target.matches("#input_amountday_forhm") ){
-    console.log("input_amountday_forhm")
-
-    // Remove leading zeros except for a single zero
-    e.target.value = e.target.value.replace(/^0+(?!$)/, '');
-
-    document.getElementById('input_amountday_forcalculate').value = e.target.value
-
-    calculateHomemedAmount()
-    
-    
-
-  }
 
 
 };
@@ -594,8 +249,8 @@ function inputEventHandlerTreatView(e){
 
 function clickEventHandlerReceiptModal(e){
   if (e.target.matches("#makepdf_receipt_th_btn") ){
-    if( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
+    if( document.getElementById('patient_hn_treat').textContent == ''){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
     } else {
       makePdfReceiptTh();
@@ -607,13 +262,11 @@ function clickEventHandlerReceiptModal(e){
 };
 
 
-
-
 function clickEventHandlerMedcerNormModal(e){
   if (e.target.matches("#makepdf_medcer_norm_th_btn") ){
     console.log("makepdf_medcer_norm_th_btn")
-    if( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
+    if( document.getElementById('patient_hn_treat').textContent == ''){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
     } else {
       makePdfMedCerNormTh();
@@ -659,8 +312,8 @@ function clickEventHandlerMedcerNormModal(e){
 function clickEventHandlerMedcerDriveModal(e){
   if (e.target.matches("#makepdf_medcer_drive_th_btn") ){
     console.log("makepdf_medcer_drive_th_btn")
-    if( document.getElementById('patient_id_treat').textContent == ''){
-      Swal.fire({ icon: 'error',title: 'กรุณาระบุเลือกผู้ป่วย',})
+    if( document.getElementById('patient_hn_treat').textContent == ''){
+      alert("กรุณาระบุเลือกผู้ป่วย")
 
     } else {
       makePdfMedcerDriveTh();
@@ -702,9 +355,13 @@ function clickEventHandlerMedcerDriveModal(e){
 
     makePdfMedCertDriveEng(rowData,clinicInfo,medcerDriveInfo)
 
+    
+
 
   }
 
+
+  
 
 
 };
@@ -722,65 +379,16 @@ function clickEventHandlerMedcerSickModal(e){
   
 };
 
-function inputEventHandlerMedcerSickModal(e){
-  if (e.target.matches("#since_date_treat") || e.target.matches("#to_date_treat") ){
-    // console.log("makepdf_medcer_sick_th_btn")
-
-    // Define the two dates
-    const date1 = new Date(document.getElementById('since_date_treat').value);
-    const date2 = new Date(document.getElementById('to_date_treat').value);
-
-    // Calculate the time difference in milliseconds
-    const timeDiff = date2 - date1;
-
-    // Convert the time difference from milliseconds to days
-    const dayDiff = timeDiff / (1000 * 60 * 60 * 24) 
-
-    // console.log(dayDiff); // Output: 2
-
-    document.getElementById('total_date_treat').value = dayDiff + 1
- 
-    
-  }
-  
-};
-
-
-
-function clickEventHandlerReferModal(e){
-  if (e.target.matches("#makepdf_refer_th_btn") ){
-    console.log("makepdf_refer_th_btn")
-
-    makePdfReferTh();
- 
-    
-  }
-  
-};
-
-
-
-
-
- 
-
 
 
 document.getElementById('treat_view').addEventListener("click", clickEventHandlerTreatView)
-document.getElementById('treat_view').addEventListener("input", inputEventHandlerTreatView)
-
 document.getElementById('receipt_modal').addEventListener("click", clickEventHandlerReceiptModal)
 document.getElementById('medcer_norm_modal').addEventListener("click", clickEventHandlerMedcerNormModal)
 document.getElementById('medcer_drive_modal').addEventListener("click", clickEventHandlerMedcerDriveModal)
 document.getElementById('medcer_sick_modal').addEventListener("click", clickEventHandlerMedcerSickModal)
-document.getElementById('medcer_sick_modal').addEventListener("input", inputEventHandlerMedcerSickModal)
 
-document.getElementById('medcer_sick_modal').addEventListener("click", clickEventHandlerMedcerSickModal)
-document.getElementById('refer_modal').addEventListener("click", clickEventHandlerReferModal)
+document.getElementById('treat_view').addEventListener("input", inputEventHandlerTreatView)
 
-
-
- 
 
 
 

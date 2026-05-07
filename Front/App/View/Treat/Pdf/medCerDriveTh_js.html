@@ -13,24 +13,6 @@ function openModalMedcerDrive(){
 
 
 function makePdfMedcerDriveTh(){
-  console.log(clinicInfo) // global var
-
-
-  const providerInfo = {}
-  providerInfo.fullName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
-  providerInfo.license = document.getElementById('user_license_config').textContent 
-
-  const patientId = document.getElementById('patient_id_treat').textContent
-  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();
-  console.log(patientRegistInfo)
-
-  const opdVisitInfo = {}
-    opdVisitInfo.wt = document.getElementById('wt_treat').value 
-    opdVisitInfo.ht = document.getElementById('ht_treat').value 
-    opdVisitInfo.sbp = document.getElementById('sbp_treat').value 
-    opdVisitInfo.dbp = document.getElementById('dbp_treat').value 
-    opdVisitInfo.pr = document.getElementById('pr_treat').value
-
   const medcerDriveInfo = {}
     medcerDriveInfo.underlyingYes = document.getElementById('underlying_check').checked ? logo_check : logo_uncheck
     medcerDriveInfo.underlyingNo = document.getElementById('underlying_check').checked ? logo_uncheck : logo_check
@@ -53,27 +35,21 @@ function makePdfMedcerDriveTh(){
     medcerDriveInfo.otherhxDetail = document.getElementById('otherhx_detail').value
 
     medcerDriveInfo.healthyYes = document.getElementById('healthy_check').checked ? 'ผิดปกติ' : 'ปกติ'
-    medcerDriveInfo.comment = document.getElementById('medcer_drive_favorite').value + " " + document.getElementById('medcer_drive_comment').value
+    medcerDriveInfo.comment = document.getElementById('medcer_drive_comment').value
   
+  const patientId = document.getElementById('patient_hn_treat').textContent
+  const row = elements.tablePatientRegist.getRow(patientId); //return row component with index of 1
+  const patientInfo = row.getData();
+  console.log(patientInfo)
 
-  runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,medcerDriveInfo);
+  runMakePdfMedCertDriveTh(patientInfo,clinicInfo,medcerDriveInfo);
 
 };
 
 
 
-function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdVisitInfo,medcerDriveInfo){
-  const currentDate = toThaiDateString(new Date())
-  const currentYear = new Date().getFullYear() + 543;
-
-  const dateStamp = toThaiDateString(new Date());
-  const timeStamp = getCurrentTime();
-
-  const visitDate = document.getElementById('date_visit_treat').textContent
-  const visitTime = document.getElementById('time_visit_treat').textContent
-
-  const fileName = patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName + ' CID ' + patientRegistInfo.identityData.cid
-  const medCerId = generateUniqueId();
+function runMakePdfMedCertDriveTh(patientInfo,clinicInfo,medcerDriveInfo){
+  const date = toThaiDateString(new Date())
 
   pdfMake.fonts = {
     THSarabunNew:{
@@ -162,9 +138,9 @@ function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdV
           },
           {
             text: [
-              {text: clinicInfo.hosName + '\n', bold: false, fontSize: 14 },
-              {text: clinicInfo.hosAddress + '\n' , fontSize: 14},
-              {text: 'โทร: '  + clinicInfo.hosPhone + ', FB: ' + clinicInfo.faceBook + ', LineID: ' + clinicInfo.lineId, fontSize: 14},
+              {text: clinicInfo.name + '\n', bold: false, fontSize: 14 },
+              {text: clinicInfo.address + '\n' , fontSize: 14},
+              {text: clinicInfo.phone + '\n' , fontSize: 14},
                
             ],
             alignment: 'right',
@@ -187,7 +163,7 @@ function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdV
        
       {
         text: [
-          'วันที่ ' + visitDate + '\n',
+          'วันที่ ' + date + '\n',
           ],
         style: ['quote', 'small'],
         bold: false,
@@ -208,10 +184,10 @@ function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdV
       {
         text: [
           {text: 'ข้าพเจ้า นาย/นาง/นางสาว ' , fontSize: 16},
-          {text: patientRegistInfo.identityData.firstName + ' ' , bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
-          {text: patientRegistInfo.identityData.lastName + ' ', bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
+          {text: patientInfo.firstName + ' ' , bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
+          {text: patientInfo.lastName + ' ', bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
           {text: 'เลขประจำตัวประชาชน ' , fontSize: 16},
-          {text:  patientRegistInfo.identityData.cid + '\n' , bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
+          {text:  patientInfo.cid + '\n' , bold: true, fontSize: 16,decoration: 'underline',decorationStyle:'dotted'},
         ],
         margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
@@ -314,28 +290,28 @@ function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdV
       {
         text: [
           {text: '( 1 ) ข้าพเจ้า นายแพทย์/แพทย์หญิง ', fontSize: 16},
-          {text: providerInfo.fullName + ' ', bold: true, style:'textinput'}, 
+          {text: patientInfo.doctorTx + ' ', bold: true, style:'textinput'},
           {text: ' ใบอนุญาตประกอบเวชกรรมเลขที่ ', fontSize: 16},
-          {text: providerInfo.license + '\n', bold: true, style:'textinput'},
+          {text: patientInfo.doctorId  + '\n', bold: true, style:'textinput'},
         ],
         margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
       {
         text: [
           {text: 'สถานพยาบาลชื่อ ', fontSize: 16},
-          {text: clinicInfo.hosName + ' ', style:'textinput'},
+          {text: clinicInfo.name + ' ', style:'textinput'},
           {text: 'ที่อยู่ ', fontSize: 16},
-          {text: clinicInfo.hosAddress  + '\n', style:'textinput'},
+          {text: clinicInfo.address + '\n', style:'textinput'},
         ],
         margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
       {
         text: [
           {text: 'ได้ตรวจรักษารักษา นาย/นาง/นางสาว ', fontSize: 16},
-          {text: patientRegistInfo.identityData.firstName + ' ', style:'textinput'},
-          {text: patientRegistInfo.identityData.lastName + ' ', style:'textinput'},
+          {text: patientInfo.firstName + ' ', style:'textinput'},
+          {text: patientInfo.lastName + ' ', style:'textinput'},
           {text: ' แล้วเมื่อวันที่ '  + ' ' , fontSize: 16},
-          {text: visitDate  + '\n', style:'textinput'},
+          {text: date  + '\n', style:'textinput'},
         ],
         margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
@@ -352,19 +328,19 @@ function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdV
       {
         text: [
           {text: 'น้ำหนักตัว ', fontSize: 16},
-          {text: opdVisitInfo.wt , style:'textinput'},
+          {text: patientInfo.wt , style:'textinput'},
           {text: ' กก. ' + ' ', fontSize: 16},
 
           {text: ' ความสูง ', fontSize: 16},
-          {text: opdVisitInfo.ht , style:'textinput'},
+          {text: patientInfo.ht , style:'textinput'},
           {text: ' เซนติเมตร. ' , fontSize: 16},
           
           {text: ' ความดันโลหิต. ' , fontSize: 16},
-          {text: opdVisitInfo.sbp + "/" + opdVisitInfo.dbp , style:'textinput'},
+          {text: patientInfo.bp , style:'textinput'},
           {text: ' มม.ปรอท. ' , fontSize: 16},
 
           {text: ' ชีพจร. ' , fontSize: 16},
-          {text: opdVisitInfo.pr  , style:'textinput'},
+          {text: patientInfo.pr , style:'textinput'},
           {text: ' ครั้ง/นาที. ' , fontSize: 16},
           
         ],
@@ -437,7 +413,7 @@ function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdV
       },
       {
         text: [
-          {text: 'หมายเหตุ       (1) ต้องเป็นแพทย์ซึ่งได้ขึ้นทะเบียนรับใบอนุญาตประกอบวิชาชีพเวชกรรม' + '\n' , fontSize: 10},
+          {text: 'หมายเหต    (1) ต้องเป็นแพทย์ซึ่งได้ขึ้นทะเบียนรับใบอนุญาตประกอบวิชาชีพเวชกรรม' + '\n' , fontSize: 10},
         ],
         margin: [0,10,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
@@ -453,42 +429,12 @@ function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdV
         ],
         margin: [40,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
-      // {
-      //   text: [
-      //     {text: 'รหัสอ้างอิง ' + medCerId , },
-      //     {text: ' วันที่พิมพ์: ' },
-      //     {text:  dateStamp, },
-      //     {text: 'เวลา ' + timeStamp + ' น.', },
-      //   ],
-      //   fontSize: 12,
-      //   margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
-      //   alignment: 'right'
-      // },
        
     ],
-
-
-    footer: function (currentPage, pageCount) {
-      return {
-        text: [
-          {text: 'รหัสอ้างอิง ' + medCerId , },
-          {text: ' วันที่พิมพ์: ' },
-          {text:  dateStamp, },
-          {text: 'เวลา ' + timeStamp + ' น.', },
-          
-        ],
-        fontSize: 12,
-        alignment: 'right',
-        margin: [0,0,40,0], // [ซ้าย,บน,ขวา,ล่าง]
-        
-      };
-    },
 
     defaultStyle:{
       font: "THSarabunNew",
     },
-
-    
     styles: {
       textinput: {
         fontSize: 16,
@@ -497,12 +443,10 @@ function runMakePdfMedCertDriveTh(clinicInfo,providerInfo,patientRegistInfo,opdV
         decorationStyle:'dotted'
       },
       
-    },
+    }
   }
 
-  // สั่งให้สร้าง pdf พร้อมกับ download
-  pdfMake.createPdf(docDefinition).open()
-  pdfMake.createPdf(docDefinition).download( fileName +'.pdf');
+  pdfMake.createPdf(docDefinition).open();
 
 };
 

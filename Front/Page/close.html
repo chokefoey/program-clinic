@@ -31,8 +31,6 @@
         font-family: 'Sarabun', serif;
         background-color: DimGrey;
       }
-
-      
       
  
 
@@ -44,23 +42,22 @@
 
     <!-- ตั้งค่า app app control ที่ซ่อนไว้ -->
     <div class="row d-none">
-      <h5>App controller: <br>
-        👨‍🦽‍➡️ ภาพ logoApp: <span class="text-danger" id="logo_app_config"><?=logoApp?></span> <br>
+      <h5>App controller: 
+        <span id="loading_img"><?=loadingImg?></span>
+        
       </h5>
     </div>
 
     <div class="container mt-4" id="close_view">
 
       <center>
-        <img class="mt-4 rounded-circle shadow-lg" id="logo_app" src="" width="180" height="180">
+        <img class="mt-4 rounded-circle shadow-lg" src="https://lh3.googleusercontent.com/d/1FeMKOWqyshLdarXuYzLRvc3NduzWA3p6" width="180" height="180">
       </center>
 
       <center>
         <h3 class="mt-4 text-white"><?=message?></h3>
         <h5 class="text-white"><?=closePeriod?></h5>
         <h6 class="text-white">ขออภัยในความไม่สะดวก</h6>
-        <h6 class="text-white">Sorry. We're under construction</h6>
-        
          
       </center>
 
@@ -69,8 +66,6 @@
 
  
     <script>
-
-      document.getElementById('logo_app').src = document.getElementById('logo_app_config').innerHTML
 
 
 

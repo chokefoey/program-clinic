@@ -4,160 +4,42 @@
 
 function openModalReceipt(){
   console.log("openModalReceipt")
-  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('receipt_modal'))  
-  modal.show(); // modal.hide(); modal.show();
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('receipt_modal')) // Returns a Bootstrap modal instance
+  // Show or hide:
+  modal.show();
+  // modal.hide();
 
-  document.getElementById('df_price_receipt').value = document.getElementById('sum_df_price_treat').value
-  document.getElementById('procedure_price_receipt').value = document.getElementById('sum_procedure_price_treat').value
-  document.getElementById('hm_price_receipt').value = document.getElementById('sum_homemed_price_treat').value
-  document.getElementById('total_price_receipt').value = document.getElementById('total_price_sum_treat').value
-
-  
 };
- 
-
-
-function getArrDataTxTreatByClass() {
-  // Select all elements with the class '.input-tx-treat'
-  const inputsTx = document.querySelectorAll('.input-tx-treat');
-
-  // Create an array to hold the values
-  const txArray = Array.from(inputsTx).map(input => {
-    // If Choice.js is applied, get the selected value
-    if (input.choicesInstance) {
-      return input.choicesInstance.getValue(true); // Get the value
-    } else {
-      return input.value; // Fallback to the input's raw value
-    }
-  });
-
-  // console.log(txArray);
-
-  // Initialize an array to store the transformed values
-  let tranformTxArr = [];
-
-  for (let i = 0; i < txArray.length; i += 3) {
-    // Check if txArray[i] is undefined
-    if (txArray[i] === undefined || txArray[i + 2] === undefined) {
-      tranformTxArr = []; // Reset tranformTxArr to an empty array
-      break;             // Exit the loop
-    }
-
-    // Add values to the transformed array
-    tranformTxArr.push(txArray[i] + " " + txArray[i + 1]); // Add the original element at index 0, 3, 6,...
-    tranformTxArr.push("-");     // Replace index 1 with value at index 2
-    tranformTxArr.push("-");                // Insert "1"
-    tranformTxArr.push(txArray[i + 2]);     // Add index 2 again
-  }
-
-  // Log the transformed array
-  console.log(tranformTxArr);
-
-  return tranformTxArr;
-}
-
-
-
-
-
-
-
-function getArrDataHmTreatByClass() {
-  const inputsHm = document.querySelectorAll('.input-hm-treat');
-  const hmArray = Array.from(inputsHm).map(input =>
-    input.choicesInstance ? input.choicesInstance.getValue(true) : input.value || ""
-  );
-
-  if (hmArray.length === 0 || hmArray.some(val => !val)) return [];
-
-  for (let i = 0; i < hmArray.length; i += 4) {
-    if (typeof hmArray[i] !== 'string') return [];
-    const splitValue = hmArray[i].split("/")[2] || "";
-    if (hmArray[i + 1] === undefined) return [];
-    hmArray[i + 1] = splitValue;
-  }
-
-  return hmArray.every(val => !val) ? [] : hmArray;
-}
-
-
-
-
-
-
 
 
 function makePdfReceiptTh(){
-  // console.log("makePdfReceiptTh") 
-  const patientId = document.getElementById('patient_id_treat').textContent
-  const patientRegistInfo = elements.tablePatientRegist.getRow(patientId).getData();  
-  // console.log(patientRegistInfo)
+  console.log("makePdfReceiptTh")
+
+  const patientId = document.getElementById('patient_hn_treat').textContent
+  const row = elements.tablePatientRegist.getRow(patientId); //return row component with index of 1
+  const rowData = row.getData();
+  console.log(rowData)
   
-  // console.log(clinicInfo) // global var
-
-  const tranformTxArr = getArrDataTxTreatByClass();
-  const hmArray = getArrDataHmTreatByClass()
-
-  const mergedArray = tranformTxArr.concat(hmArray);
-  console.log(mergedArray);
-
-
-  const payInfo = {} 
-    payInfo.dfPrice = document.getElementById('sum_df_price_treat').value
-    payInfo.procedurePrice = document.getElementById('sum_procedure_price_treat').value
-    payInfo.hmPrice = document.getElementById('sum_homemed_price_treat').value
-    payInfo.totalPrice = document.getElementById('total_price_sum_treat').value
-    payInfo.totalStringPrice = arabicNumberToText(document.getElementById('total_price_sum_treat').value)
-
-
-    payInfo.cash = document.getElementById('pay_channel_treat').value == 'เงินสด' ? logo_check : logo_uncheck
-    payInfo.promptpay = document.getElementById('pay_channel_treat').value == 'พร้อมเพย์' ? logo_check : logo_uncheck
-    payInfo.bank = document.getElementById('pay_channel_treat').value == 'บัญชีธนาคาร' ? logo_check : logo_uncheck
-    payInfo.credit = document.getElementById('pay_channel_treat').value == 'รูดบัตร'? logo_check : logo_uncheck
-
-
-  const providerInfo = {}
-    providerInfo.fullName = document.getElementById('first_name_config').textContent + " " + document.getElementById('last_name_config').textContent
-    providerInfo.license = document.getElementById('user_license_config').textContent 
-
-  runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,mergedArray);
+ 
+  const payInfo = {}
+    payInfo.cash = document.getElementById('pay_route1').checked ? logo_check : logo_uncheck
+    payInfo.promptpay = document.getElementById('pay_route2').checked ? logo_check : logo_uncheck
+    payInfo.bank = document.getElementById('pay_route3').checked ? logo_check : logo_uncheck
+    payInfo.credit = document.getElementById('pay_route4').checked ? logo_check : logo_uncheck
+  
+ 
+  runMakePdfReceiptTh(rowData,clinicInfo,payInfo);
 
 };
 
 
 
-//**************************************************************************************
-// สร้าง PDF
-//**************************************************************************************
 
-function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,mergedArray){
-  // console.log("create_doc_receipt_btn")
-  const dateStamp = toThaiDateString(new Date());
-  const timeStamp = getCurrentTime();
-   
-  const fileName = patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName + ' CID ' + patientRegistInfo.identityData.cid
-  const receiptId = generateUniqueId();
+function runMakePdfReceiptTh(patientInfo,clinicInfo,payInfo){
+  console.log("create_doc_receipt_btn")
 
-
-  // Grouping the flat array into structured rows (4 elements per row)
-  const groupedArray = [];
-  for (let i = 0; i < mergedArray.length; i += 4) {
-    groupedArray.push([
-      mergedArray[i],     // Description
-      mergedArray[i + 1], // Unit Price
-      mergedArray[i + 2], // Quantity
-      mergedArray[i + 3], // Total Price
-    ]);
-  }
-
-  // Remove commas and convert strings to numbers using parseFloat
-  // payInfo.dfPrice + payInfo.procedurePrice
-  const sum = parseFloat(payInfo.dfPrice.replace(/,/g, '')) + parseFloat(payInfo.procedurePrice.replace(/,/g, ''));
-
-  // Format the result to two decimal places and include commas
-  const formattedSum = sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-  console.log(formattedSum);  // Outputs: 5,000.00
+  const date = toThaiDateString(new Date())
+  const fileName = patientInfo.firstName + ' ' + patientInfo.lastName + ' CID ' + patientInfo.cid
 
   pdfMake.fonts = {
     THSarabunNew:{
@@ -173,7 +55,7 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
     pageSize: 'A4',
     info: {
       title: fileName,
-      author: clinicInfo.hosName,
+      author: clinicInfo.name,
       subject: 'ใบเสร็จรับเงิน',
       keywords: 'ใบเสร็จรับเงิน receipt',
       },
@@ -198,7 +80,7 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
         url: logo_uncheck,
       },
       qrcode:{
-        url: qrcode_pay_receipt,
+        url: qrcode_test,
       },
 
       cash:{
@@ -223,7 +105,7 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
     //     height: pageSize.height
     //   }]
     // },
-    watermark: { text: clinicInfo.hosName, color: 'blue', opacity: 0.1, bold: true, italics: false },
+    watermark: { text: clinicInfo.name, color: 'blue', opacity: 0.1, bold: true, italics: false },
 
     
     
@@ -242,13 +124,13 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
           },
           {
             text: [
-              {text: clinicInfo.hosName + '\n', bold: false, fontSize: 14,margin: [0,0,0,0],},
-              {text: clinicInfo.hosAddress + '\n' , fontSize: 14},
-              {text: 'โทร: '  + clinicInfo.hosPhone + ', FB: ' + clinicInfo.faceBook + ', LineID: ' + clinicInfo.lineId, fontSize: 14},
+              {text: clinicInfo.name + '\n', bold: false, fontSize: 14,margin: [0,0,0,0],},
+              {text: '123/3 ม.3 ต.เมืองเก่า อ.เมือง จ.สกลนคร 32322' + '\n' , fontSize: 14},
+              {text: 'โทร 099-9999999' + '\n' , fontSize: 14},
                
             ],
             alignment: 'right',
-            margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+            margin: [0,10,0,0], // [ซ้าย,บน,ขวา,ล่าง]
           },
            
         ]
@@ -261,19 +143,19 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
         bold: true,
         // italics: true,
         fontSize: 20,
-        margin: [0,10,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+        margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
       },
       {
         text: [
           {text: 'เลขที่ ', fontSize: 16},
-          {text: receiptId + ' ', bold: true, fontSize: 16}, 
+          {text: clinicInfo.receiptNo + ' ', bold: true, fontSize: 16}, 
         ],
         alignment: 'right',
         margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
       {
         text: [
-          'วันที่ ' + dateStamp + '\n',
+          'วันที่ ' + date + '\n',
           ],
         style: ['quote', 'small'],
         bold: false,
@@ -284,10 +166,10 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
       {
         text: [
           {text: 'ชื่อผู้มารับบริการ ' , fontSize: 16},
-          {text: patientRegistInfo.identityData.firstName + ' ' , bold: true, fontSize: 16},
-          {text: patientRegistInfo.identityData.lastName + ' ', bold: true, fontSize: 16},
+          {text: patientInfo.firstName + ' ' , bold: true, fontSize: 16},
+          {text: patientInfo.lastName + ' ', bold: true, fontSize: 16},
           {text: 'เลขประจำตัวประชาชน ' , fontSize: 16},
-          {text:  patientRegistInfo.identityData.cid + '\n' , bold: true, fontSize: 16},
+          {text:  patientInfo.cid + '\n' , bold: true, fontSize: 16},
         ],
         margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
@@ -312,18 +194,76 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
               {text: 'จำนวน(หน่วย)', style: 'tableHeader'},
               {text: 'ราคา(บาท)', style: 'tableHeader'},
             ],
-
-             // Data rows (dynamically generated from groupedArray)
-            ...groupedArray.map((item, index) => [
-              { text: index + 1, alignment: "right" },    // Column 1: Row Number
-              { text: item[0] || "", alignment: "left" }, // Column 2: Item Description
-              { text: item[1] || "", alignment: "right" }, // Column 3: Unit Price
-              { text: item[2] || "", alignment: "right" }, // Column 4: Quantity
-              { text: item[3] || "", alignment: "right" }, // Column 5: Total Price
-            ]),
-             
-             
-             
+            [
+              {text: '1', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '2', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '3', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '4', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '5', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '6', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '7', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '8', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '9', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
+            [
+              {text: '10', bold: true, italics: true, color: 'gray', alignment: 'right'}, 
+              {text: 'nothing interesting here', italics: true, color: 'gray'}, 
+              {text: '100.00', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '2', italics: true, color: 'gray', alignment: 'right'}, 
+              {text: '200.00', italics: true, color: 'gray', alignment: 'right'}
+            ],
             [
               {
                 colSpan: 5,
@@ -333,7 +273,7 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
                   {text: ' ', alignment: 'right'},
                   {text: ' ', alignment: 'right'},
                   {text: 'รวมเป็นเงินทั้งสิ้น', bold: true, fontSize: 12, alignment: 'right'},
-                  {text: formatMoney(payInfo.totalPrice) , bold: true, fontSize: 12, alignment: 'right'},
+                  {text: patientInfo.priceTotal , bold: true, fontSize: 12, alignment: 'right'},
                   {text: 'บาท', bold: true, fontSize: 12, alignment: 'right'},
                 ],
               },
@@ -347,7 +287,7 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
                   {text: ' ', alignment: 'right'},
                   {text: ' ', alignment: 'right'},
                   {text: 'ส่วนลด', bold: true, fontSize: 12, alignment: 'right'},
-                  {text: patientRegistInfo.priceDiscount , bold: true, fontSize: 12, alignment: 'right'},
+                  {text: patientInfo.priceDiscount , bold: true, fontSize: 12, alignment: 'right'},
                   {text: 'บาท', bold: true, fontSize: 12, alignment: 'right'},
                 ],
               },
@@ -361,8 +301,8 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
                   {text: ' ', alignment: 'right'},
                   {text: ' ', alignment: 'right'},
                   {text: ' ', alignment: 'right'},
-                  {text: 'คงเหลือ', bold: true, fontSize: 14, alignment: 'right'}, 
-                  {text: formatMoney(payInfo.totalPrice)  , bold: true, fontSize: 14, alignment: 'right'},
+                  {text: 'คงเหลือ', bold: true, fontSize: 14, alignment: 'right'},
+                  {text: patientInfo.priceLast , bold: true, fontSize: 14, alignment: 'right'},
                   {text: 'บาท', bold: true, fontSize: 14, alignment: 'right'},
                 ],
               },
@@ -379,9 +319,9 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
       {
         text: [
           {text: 'รวมยอดที่ต้องชำระ ' , bold: true, fontSize: 18 },
-          {text: formatMoney(payInfo.totalPrice), bold: true, fontSize: 18 },
+          {text: patientInfo.priceLast, bold: true, fontSize: 18 },
           {text: ' บาท ' , bold: true, fontSize: 18 },
-          {text: '(' + payInfo.totalStringPrice + ')', bold: true, fontSize: 18 },
+          {text: '(' + patientInfo.priceString + ')', bold: true, fontSize: 18 },
         ],
         margin: [0,10,0,0], // [ซ้าย,บน,ขวา,ล่าง]
       },
@@ -425,15 +365,15 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
           },
           
           { 
-            image: clinicInfo.qrCodeReciept == '' ? 'logo' : 'qrcode'  ,width: 90,height: 90, alignment: 'center' 
+            image: 'qrcode',width: 90,height: 90, alignment: 'center'
           },
         ],
         
       },
       {
         columns: [
-                  {text: 'ลงชื่อ..............................................ผู้มารับบริการ' + '\n' + patientRegistInfo.identityData.firstName + ' ' + patientRegistInfo.identityData.lastName, alignment: 'center' }, 
-                  {text: 'ลงชื่อ..............................................ผู้รับเงิน' + '\n' + providerInfo.fullName + ' ' + providerInfo.license  , alignment: 'center' }, 
+                  {text: 'ลงชื่อ..............................................ผู้มารับบริการ' + '\n' + patientInfo.firstName + ' ' + patientInfo.lastName, alignment: 'center' }, 
+                  {text: 'ลงชื่อ..............................................ผู้รับเงิน' + '\n' + patientInfo.doctorTx  , alignment: 'center' }, 
                   
                   
                    
@@ -450,23 +390,6 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
        
     ],
 
-
-    footer: function (currentPage, pageCount) {
-      return {
-        text: [
-          {text: 'รหัสอ้างอิง ' + receiptId , },
-          {text: ' วันที่พิมพ์: ' },
-          {text:  dateStamp, },
-          {text: 'เวลา ' + timeStamp + ' น.', },
-          
-        ],
-        fontSize: 12,
-        alignment: 'right',
-        margin: [0,0,40,0], // [ซ้าย,บน,ขวา,ล่าง]
-        
-      };
-    },
-
     defaultStyle:{
       font: "THSarabunNew",
     },
@@ -478,33 +401,12 @@ function runMakePdfReceiptTh(patientRegistInfo,clinicInfo,payInfo,providerInfo,m
         alignment: 'center',
         margin: [0, 0, 0, 0]
       },
-      textinput: {
-        fontSize: 12,
-        bold: false,
-        italics: true, 
-        color: 'gray', 
-        // alignment: 'left, // *** ห้ามใส่ alignment มันจะขึ้น syntax error
-        // decoration: 'underline',
-        // decorationStyle:'dotted'
-      },
-      // numberinput: {
-      //   fontSize: 12,
-      //   bold: false,
-      //   italics: true, 
-      //   color: 'gray', 
-      //   alignment: 'left,
-      //   // decoration: 'underline',
-      //   // decorationStyle:'dotted'
-      // },
        
     }
   }
 
-  // สั่งให้สร้าง pdf พร้อมกับ download
   pdfMake.createPdf(docDefinition).open()
-  pdfMake.createPdf(docDefinition).download( fileName +'.pdf');
-  // Specify the file name when calling the download method
-  // pdfMake.createPdf(docDefinition).download('customFileName.pdf');
+  // pdfMake.createPdf(docDefinition).download(fileName+'.pdf');
 
 };
 

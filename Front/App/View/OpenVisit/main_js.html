@@ -1,0 +1,320 @@
+<script>
+
+  $.Thailand({
+    $district: $('#tumbon_pt_regist'), // input ของตำบล
+    $amphoe: $('#amphoe_pt_regist'), // input ของอำเภอ
+    $province: $('#province_pt_regist'), // input ของจังหวัด
+    $zipcode: $('#zipcode_pt_regist'), // input ของรหัสไปรษณีย์
+  });
+
+
+
+ 
+
+
+  // ค้นหาเลขที่จัดฟัน
+  function searchOrthoNumber(){
+    // console.log("searchOrthoNumber")
+    if( document.getElementById('orthonumber_pt_regist').value != ""){
+      alert("มีเลขจัดฟันแล้ว")
+
+    } else {
+      document.getElementById('spinner_search_ortho_num').classList.remove("d-none")
+      document.getElementById('loading_text_search_ortho_num').classList.remove("d-none")
+
+      document.getElementById('text_search_ortho_num').classList.add("d-none")
+
+      google.script.run.withSuccessHandler((res)=>{
+          console.log(res)
+          document.getElementById('orthonumber_pt_regist').value = res
+
+          document.getElementById('spinner_search_ortho_num').classList.add("d-none")
+          document.getElementById('loading_text_search_ortho_num').classList.add("d-none")
+
+          document.getElementById('text_search_ortho_num').classList.remove("d-none")
+
+      }).searchOrthoNumber()
+
+    }
+
+  };
+
+ 
+ 
+
+ 
+  
+
+
+  function openModalPatientSendRoom(patientId){
+    let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('send_patient_modal')) // Returns a Bootstrap modal instance
+      // Showmodal or hidemodal:
+      modal.show();
+      // modal.hide();
+
+      const row = elements.tablePatientRegist.getRow(patientId);  
+      const rowData = row.getData(); 
+       
+
+      document.getElementById('patient_id_sendroom').textContent = patientId
+
+      document.getElementById('patient_fname_sendroom').textContent = rowData.identityData.firstName
+      document.getElementById('patient_lname_sendroom').textContent = rowData.identityData.lastName
+      document.getElementById('hn_sendroom').textContent = rowData.identityData.hn
+      document.getElementById('oldvisit_id_sendroom').textContent = rowData.opdVisitId
+
+  };
+
+  
+
+ 
+
+
+  function getDataPatientRegist() {
+    return new Promise((resolve, reject) => {
+      google.script.run.withSuccessHandler((output) => {
+        console.log(output);
+
+        loadTablePatientsRegist(output);
+        // loadTablePatientsRegistForCalendar(output);
+
+        loadingEnd();
+
+        resolve(output);
+      }).withFailureHandler((error) => {
+        console.error(error);
+        reject(error);
+      }).getDataPatientRegist();
+    });
+  }
+
+
+  
+
+
+
+
+
+  // ค้นหาทั้งตาราง PatientRegist
+  function searchDataPatientRegist(searchInput){
+    const currentSearchInput = document.getElementById("searchinput_openvisit").value
+    if ( searchInput == "" || currentSearchInput == ""){
+      elements.tablePatientRegist.setFilter([[
+        {field:"patientId", type:"=", value:"xxxx"},
+        
+      ]])
+
+    } else {
+      
+      elements.tablePatientRegist.setFilter([[
+        {field:"identityData.hn",type: "like",value: currentSearchInput},
+        {field:"identityData.firstName",type: "like",value: currentSearchInput},
+        {field:"identityData.lastName",type: "like",value: currentSearchInput},
+  
+      ]])
+    }
+    
+  };
+
+
+
+
+ 
+
+
+
+  function sendPatientToTreat(){
+    loadingStart();
+
+    const visitDate = getCurrentDate();
+    const visitTime = getCurrentTime();
+    const oldVisitId = document.getElementById("oldvisit_id_sendroom").textContent
+    const opdStatus = "รอตรวจ"
+
+    // ส่งไปหลังบ้าน
+    const patientInfo = {}
+      patientInfo.visitDate =  visitDate
+      patientInfo.visitTime =  visitTime
+      patientInfo.patientId = document.getElementById("patient_id_sendroom").textContent
+      patientInfo.firstName = document.getElementById("patient_fname_sendroom").textContent
+      patientInfo.lastName = document.getElementById("patient_lname_sendroom").textContent
+      patientInfo.hn = document.getElementById("hn_sendroom").textContent
+      patientInfo.roomName = document.getElementById("target_room").value
+      patientInfo.doctorName = document.getElementById("target_doctor").value
+      patientInfo.opdStatus = opdStatus
+
+      patientInfo.userStamp = {
+        "userId": document.getElementById("user_id_status").textContent,
+        "userName": document.getElementById("user_fullname_status").textContent,
+
+      }
+
+
+      console.log(patientInfo)
+    
+    // กำหนดสถานะ เพื่อส่งไป update ตาราง appointment หน้าบ้านและ sheet หลังบ้าน
+    const dataObj = {}
+      dataObj.opdStatus = 'มาตามนัด'
+
+      
+
+    
+
+    google.script.run.withSuccessHandler((res)=>{
+      console.log(res[0])
+
+      document.getElementById('target_room').value = "" 
+      document.getElementById('target_doctor').value = "" 
+
+      const opdVisitId = res[0].newId
+      const dateStamp = res[0].dateStamp
+      const timeStamp = res[0].timeStamp
+
+
+      // ส่งไปตารางหน้าบ้าน
+      const opdVisitInfo = {opdVisitId,dateStamp,timeStamp,...patientInfo} 
+      opdVisitInfo.piData = "";
+      opdVisitInfo.peData = "";
+      opdVisitInfo.ixData = "";
+      opdVisitInfo.dxData = "";
+      opdVisitInfo.txData = "";
+      opdVisitInfo.hmData = "";
+      opdVisitInfo.summaryData = "";
+      opdVisitInfo.appointmentData = "";
+      opdVisitInfo.appointDate = "";
+      opdVisitInfo.appointTime = "";
+
+      // console.log(opdVisitInfo) 
+
+      elements.tablePending.addRow([opdVisitInfo], true); // เพิ่ม visit ใหม่
+      elements.tableAppointment.addRow([opdVisitInfo], true); // เพิ่ม visit ใหม่
+ 
+      let modal1 = bootstrap.Modal.getOrCreateInstance(document.getElementById('send_patient_modal')) 
+      // modal1.show();
+      modal1.hide();
+      
+      loadingEnd();
+
+    }).sendPatientToTreat(patientInfo)
+
+
+    // ส่งไป update สถานะว่า ผป มาตามนัด
+    if( oldVisitId != ""){
+      google.script.run.withSuccessHandler((res)=>{
+      // console.log(res)
+      // update สถานะ visit เดิมว่ามาตามนัด
+      elements.tableAppointment.updateData([{opdVisitId:oldVisitId, opdStatus:dataObj.opdStatus}]); 
+
+    }).editAppointmentDataByVid(oldVisitId,dataObj) 
+
+    }
+    
+
+  };
+
+
+
+
+  function searchTableAppointment(){
+    const filterType = document.getElementById("filtertype_table_appointment").value
+
+    let dateInput;
+
+    // Get the input element
+    const dateElement = document.getElementById('datefilter_table_appointment');
+
+    // Check conditions
+    if ( filterType == 1) {
+        // Condition 1: If the input is disabled, use the current date
+        dateInput = getCurrentDate();
+    } else if ( filterType == 3 ) {
+        // Condition 2: If the input is not disabled but empty, use a default date (or handle as needed)
+        dateInput = ""; // Default date (example)
+    } else {
+        // Condition 3: If the input is not disabled and has a value, use its current value
+        dateInput = dateElement.value;
+    }
+    
+    // document.getElementById('datefilter_table_appointment').disabled ?
+    // const dateInput =  getCurrentDate()
+    // const dateInput = 
+    //   document.getElementById('datefilter_table_appointment').value == "" ? 
+    //   getCurrentDate() : document.getElementById('datefilter_table_appointment').value
+    //   document.getElementById('datefilter_table_appointment').disabled ?
+    // console.log(dateInput)
+
+    // const dateSelect =  document.getElementById('datefilter_table_appointment').value // วันที่เลือกขณะนั้น
+    // console.log(dateSelect)
+
+    const searchInput = document.getElementById('search_input_table_appointment').value
+    // console.log(searchInput)
+
+    // ค้นหาทั้งตาราง searchtable
+    elements.tableAppointment.setFilter([
+        {field:"appointDate",type: "like",value: dateInput}, // search with and
+        {field:"appointDate",type: "!=",value:""}, // search with and
+        [
+            {field:"hn",type: "like",value: searchInput}, // or
+            {field:"firstName",type: "like",value: searchInput}, // or
+            {field:"lastName",type: "like",value: searchInput}, // or
+        ]
+    ]);
+ 
+
+  };
+
+
+
+      
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+  function reportTableAppointment(){
+    console.log("sdsdsds")
+
+    // elements.tablePatientRegist.download("xlsx", "data.xlsx", {
+    //     documentProcessing:function(workbook){
+    //         //workbook - sheetJS workbook object
+
+    //         //set some properties on the workbook file
+    //         workbook.Props = {
+    //             Title: "SheetJS Tutorial",
+    //             Subject: "Test",
+    //             CreatedDate: new Date(2017,12,19)
+    //         };
+
+    //         return workbook;
+    //     }
+    // }); //download a xlsx file using SheetJS properties
+
+    elements.tableAppointment.download("xlsx", "data.xlsx", {}); //download table data as a XLSX formatted file with a file name of data.xlsx
+
+
+  
+  };
+
+
+
+
+
+
+  
+
+
+ 
+
+
+
+
+
+</script>

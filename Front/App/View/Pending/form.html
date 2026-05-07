@@ -4,235 +4,88 @@
 <div class="col d-none " id="pending_view">
     
     
-    <div class="row mt-4 justify-content-center"> 
-        <center><h3 class="">รอรับบริการ</h3></center>
-    </div>
+    <!-- <img id="myImage" src="https://lh5.googleusercontent.com/d/1hfYqu3UW8_5EeFGv0AT3wpmMPbB3aAjd" width="200" height="100" alt="Default Image"> -->
 
-
-    <!-- placeholder *************  -->
-    <div class="row mt-4 justify-content-center" id="placeholder_pending_view">
-        <div class="text-center">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        </div>
-    </div>
-
-
-    <section class="mt-4" >
-
-
-        <div class="d-none row mt-4 justify-content-center" id="section_pending_view">
-            <div class="col-sm-10 mb-3 mb-sm-0 mt-4">
-                <div class="card bg-secondary bg-opacity-10 shadow">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <label class="form-label">รูปแบบ</label>
-                                <select class="form-select" id="filtertype_table_pending">
-                                    <option value="1" selected>วันนี้</option>
-                                    <option value="2">ทั้งหมด</option>
-                                    <!-- <option value="3">ทุก Visit</option> -->
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">วันที่มา</label>
-                                <input type="text" class="form-control datepicker" id="datefilter_table_pending" disabled>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">ค้นหา</label>
-                                <input type="search" class="form-control" id="search_input_table_pending" placeholder="ชื่อ-สกุล หรือ HN" >
-                            </div>
+    <div class="row mt-4 justify-content-center" >
+        <center><h3 class="">ซักประวัติ</h3></center> 
+        <div class="col-sm-10 mb-3 mb-sm-0 ">
+            <div class="card bg-secondary bg-opacity-10 shadow">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-label">รูปแบบการค้นหา</label>
+                            <select class="form-select" id="filtertype_table_pending">
+                                <option value="1" selected>วันนี้</option>
+                                <option value="2">ระบุวัน</option>
+                                <option value="3">ทุก Visit</option>
+                            </select>
                         </div>
-                            
+                        <div class="col">
+                            <label class="form-label">วันที่มารับบริการ</label>
+                            <input type="date" class="form-control" id="datefilter_table_pending" disabled>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">ค้นหา</label>
+                            <input type="search" class="form-control" id="search_input_table_pending" placeholder="ชื่อ หรือ HN" >
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-        </div>
-
-        <div class="row mt-4 justify-content-center">
-            <div class="col-sm-10 mb-3 mb-sm-0 ">
-                <div class="card bg-secondary bg-opacity-10 shadow">
-                    <div class="card-body">
                         
-                        <div class="row g-2" id="dashboard_pending">
-                            <div class="col">
-                                <div class="pointer box card mb-1 bg-secondary bg-opacity-25" style="max-width: 540px;" onclick="filterPendingTotal();" >  
-                                    <div class="row g-0">
-                                        <div class="col-md-4">
-                                            <h1 class="p-3"><i class="bi bi-people-fill"></i></h1>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                            <h5 class="card-title">ทั้งหมด</h5>
-                                            <p class="card-text" id="total_dashboard_pending"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col" >
-                                <div class="pointer box card mb-1 text-bg-warning bg-opacity-25" style="max-width: 540px;" onclick="filterPendingWaiting();">
-                                    <div class="row g-0" >
-                                        <div class="col-md-4">
-                                            <h1 class="p-3"><i class="bi bi-hourglass-top"></i></h1>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                            <h5 class="card-title">รอตรวจ</h5>
-                                            <p class="card-text" id="waiting_dashboard_pending"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="pointer box card mb-1 text-black text-bg-primary bg-opacity-25" style="max-width: 540px;" onclick="filterPendingFinish();" >
-                                    <div class="row g-0">
-                                        <div class="col-md-4">
-                                            <h1 class="p-3"><i class="bi bi-emoji-smile"></i></h1>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                            <h5 class="card-title">ตรวจเสร็จ</h5>
-                                            <p class="card-text"  id="finish_dashboard_pending"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="pointer box card mb-1 text-black bg-danger-subtle bg-opacity-25" style="max-width: 540px;" onclick="filterPendingDischarge();">
-                                    <div class="row g-0">
-                                        <div class="col-md-4">
-                                            <h1 class="p-3"><i class="bi bi-house"></i></h1>
-                                        </div>
-                                        <div class="col-md-8">
-                                        <div class="card-body">
-                                            <h5 class="card-title">จำหน่าย</h5>
-                                            <p class="card-text" id="discharge_dashboard_pending"></p>
-                                        </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                            
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="row mt-4 justify-content-center">
+        <div class="col-10" >
+            <div class="form-check form-check-inline ">
+                <span class="text-primary">เลือกสถานะ</span>
+            </div>
+            <div class="form-check form-check-inline ">
+                <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="" checked>
+                <label class="form-check-label pointer" for="inlineRadio1">ทั้งหมด</label>
+            </div>
+            <div class="form-check form-check-inline pointer">
+                <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="รอตรวจ">
+                <label class="form-check-label pointer" for="inlineRadio3">รอตรวจ</label>
+            </div>
+            <div class="form-check form-check-inline pointer">
+                <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="ตรวจแล้ว">
+                <label class="form-check-label pointer" for="inlineRadio4">ตรวจแล้ว</label>
+            </div>
+            <div class="form-check form-check-inline pointer">
+                <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio5" value="จ่ายแล้ว">
+                <label class="form-check-label pointer" for="inlineRadio5">จ่ายแล้ว</label>
+            </div>
+            <div class="form-check form-check-inline pointer">
+                <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="นัดแล้ว">
+                <label class="form-check-label pointer" for="inlineRadio2">นัดแล้ว</label>
+            </div>
+
+        </div>
+         
+    </div>
+
+    <div class="row mt-4 justify-content-center">
+        <div class="col-sm-10 mb-3 mb-sm-0 ">
+            <div class="card bg-secondary bg-opacity-10 shadow">
+                <div class="card-body">
+                    <div class="col-12"  id="pending_table">
+
                     </div>
+                        
                 </div>
             </div>
         </div>
 
-        <div class="row mt-4 justify-content-center">
-            <div class="col-sm-10 mb-3 mb-sm-0 ">
-                <div class="card bg-secondary bg-opacity-10 shadow">
-                    <div class="card-body">
-                        <div class="row g-2" id="dashboard_pending">
-                            <div class="col">
-                                <div class="pointer box card mb-1 text-dark-emphasis text-bg-primary bg-opacity-25" style="max-width: 540px;" onclick="filterPendingPharmacy();">  
-                                    <div class="row g-0">
-                                        <div class="col-md">
-                                            <h5 class="p-2">
-                                                <span><i class="bi bi-capsule"></i></span>
-                                                <span>รอรับยา</span>
-                                                <span id="pharmacy_dashboard_pending"></span>
-                                            </h5>
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col" >
-                                <div class="pointer box card mb-1 text-dark-emphasis text-bg-primary bg-opacity-25" style="max-width: 540px;" onclick="filterPendingFinance();" >
-                                    <div class="row g-0" >
-                                        <div class="col-md">
-                                            <h5 class="p-2">
-                                                <span><i class="bi bi-currency-dollar"></i></span>
-                                                <span>รอชำระเงิน</span>
-                                                <span id="finance_dashboard_pending"></span>
-                                            </h5>
-                                        </div>
-                                         
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="pointer box card mb-1 text-dark-emphasis text-bg-primary bg-opacity-25" style="max-width: 540px;" onclick="filterPendingAppointment();"  >
-                                    <div class="row g-0">
-                                        <div class="col-md">
-                                            <h5 class="p-2">
-                                                <span><i class="bi bi-calendar-day"></i></span>
-                                                <span>รอนัดหมาย</span>
-                                                <span id="appointment_dashboard_pending"></span>
-                                            </h5>
-                                        </div>
-                                         
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                            
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- <div class="row mt-4 justify-content-center">
-            <div class="col-10" >
-                <div class="form-check form-check-inline ">
-                    <span class="text-primary">เลือกสถานะ</span>
-                </div>
-                <div class="form-check form-check-inline ">
-                    <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="" checked>
-                    <label class="form-check-label pointer" for="inlineRadio1">ทั้งหมด</label>
-                </div>
-                <div class="form-check form-check-inline pointer">
-                    <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="รอตรวจ">
-                    <label class="form-check-label pointer" for="inlineRadio3">รอตรวจ</label>
-                </div>
-                <div class="form-check form-check-inline pointer">
-                    <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="ตรวจแล้ว">
-                    <label class="form-check-label pointer" for="inlineRadio4">ตรวจแล้ว</label>
-                </div>
-                <div class="form-check form-check-inline pointer">
-                    <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio5" value="จ่ายแล้ว">
-                    <label class="form-check-label pointer" for="inlineRadio5">จ่ายแล้ว</label>
-                </div>
-                <div class="form-check form-check-inline pointer">
-                    <input class="form-check-input pointer inlineRadioOptionsPending" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="นัดแล้ว">
-                    <label class="form-check-label pointer" for="inlineRadio2">นัดแล้ว</label>
-                </div>
-
-            </div>
-            
-        </div> -->
-
-        <div class="row mt-4 justify-content-center">
-            <div class="col-sm-10 mb-3 mb-sm-0 ">
-                <div class="card bg-secondary bg-opacity-10 shadow">
-                    <div class="card-body">
-                        <div class="col-12"  id="pending_table">
-
-                        </div>
-                            
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-
-    </section>
+    </div>
 
     
      
  
     
 
-    <div class="row mt-4 mb-3 justify-content-center">
+    <div class="row mt-4">
         <center><div class="col-10">golfguitar@gmail.com</div></center>
     </div>
 

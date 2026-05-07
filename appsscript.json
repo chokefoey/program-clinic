@@ -1,23 +1,16 @@
 {
   "timeZone": "Asia/Bangkok",
-  "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8",
   "dependencies": {
-    "libraries": [
-      {
-        "userSymbol": "USER",
-        "libraryId": "1tG1ErlQ2KqvMXjdc1FjxaKK6L8-k6wfestEV1Vzys4XSjkyHRGRGvvwP",
-        "version": "68"
-      },
-      {
-        "userSymbol": "CRUUDS",
-        "libraryId": "1JFhRmOJwCDSTDKL_9lX_4iQ47bW-BcWVFQ-e4lW_VOvd0N8xA6eqNP9S",
-        "version": "17"
-      }
-    ]
+    "libraries": [{
+      "userSymbol": "CRUDS",
+      "libraryId": "1QumKuaNeZC6dH5RI3aw5vDH9g6yvSKxhjAPUvjfqSpx5snhO-NHVD5T_",
+      "version": "29"
+    }]
   },
   "webapp": {
-    "executeAs": "USER_DEPLOYING",
-    "access": "ANYONE_ANONYMOUS"
-  }
+    "access": "ANYONE_ANONYMOUS",
+    "executeAs": "USER_DEPLOYING"
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
 }

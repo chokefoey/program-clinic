@@ -1,0 +1,309 @@
+
+
+<script>
+
+
+function openModalMedcerSick(){
+  console.log("openModalMedcerSick")
+  let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('medcer_sick_modal')) // Returns a Bootstrap modal instance
+  // Show or hide:
+  modal.show();
+  // modal.hide();
+
+};
+
+
+
+function makePdfMedCertSickTh(){
+  const medcerSickInfo = {}
+    medcerSickInfo.comment = document.getElementById('medcer_sick_comment_tx').value  
+    
+  const patientId = document.getElementById('patient_hn_treat').textContent
+  const row = elements.tablePatientRegist.getRow(patientId); //return row component with index of 1
+  const patientInfo = row.getData();
+  console.log(patientInfo)
+
+  runPdfMakeMedCertSick(patientInfo,clinicInfo,medcerSickInfo)
+
+};
+
+
+function runPdfMakeMedCertSick(patientInfo,clinicInfo,medcerSickInfo){
+  const date = toThaiDateString(new Date())
+
+  pdfMake.fonts = {
+    THSarabunNew:{
+      normal: "https://Pichit-Raetai.github.io/font/THSarabunNew.ttf",
+      bold: "https://Pichit-Raetai.github.io/font/THSarabunNew Bold.ttf",
+      italics: "https://Pichit-Raetai.github.io/font/THSarabunNew Italic.ttf",
+      bolditalics: "https://Pichit-Raetai.github.io/font/THSarabunNew BoldItalic.ttf",
+      
+    }
+
+  }
+  const docDefinition = {
+    pageSize: 'A4',
+    
+    images: {
+      // bg: {
+      //   url: 'https://lh5.googleusercontent.com/d/1FeMKOWqyshLdarXuYzLRvc3NduzWA3p6',
+      //   // width: 100,
+      //   // height: 100,
+      //   // margin: [100,100,100,100], // [ซ้าย,บน,ขวา,ล่าง]
+      //   // width: 150,
+      //   // height: 150
+
+      // },
+      logo:{
+        url: logo_clinic,
+      }
+      
+      
+    },
+    // background: function(currentPage, pageSize) {
+    //   return [{
+    //     image:'bg',
+    //     width: pageSize.width,
+    //     height: pageSize.height
+    //   }]
+    // },
+    watermark: { text: clinicInfo.name, color: 'blue', opacity: 0.1, bold: true, italics: false },
+
+    
+    
+    content: [
+      // {
+      //   image: 'logo',
+      //   width: 100,
+      //   height: 100
+      // },
+      {
+        columns: [
+          {
+            image: 'logo',
+            width: 65,
+            height: 65
+          },
+          {
+            text: [
+              {text: clinicInfo.name + '\n', bold: false, fontSize: 14,margin: [0,0,0,0],},
+              {text: clinicInfo.address + '\n' , fontSize: 14},
+              {text: clinicInfo.phone + '\n' , fontSize: 14},
+               
+            ],
+            alignment: 'right',
+            margin: [0,10,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+          },
+           
+
+        ]
+
+      },
+      {
+        text: 'ใบรับรองแพทย์ป่วย',
+        style: 'header',
+        alignment: 'center',
+        bold: true,
+        // italics: true,
+        fontSize: 20,
+        margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      // {
+      //   text: 'คลินิกนายแพทย์พิชิตเวชกรรม',
+      //   style: 'header',
+      //   alignment: 'right',
+      //   bold: false,
+      //   fontSize: 16,
+      // },
+      // {
+      //   text: '123/3 ม.3 ต.เมืองเก่า อ.เมือง จ.สกลนคร 32322',
+      //   style: 'header',
+      //   alignment: 'right',
+      //   bold: false,
+      //   fontSize: 16,
+      // },
+       
+      {
+        text: [
+          'วันที่ ' + date + '\n',
+          ],
+        style: ['quote', 'small'],
+        bold: false,
+        fontSize: 16,
+        alignment: 'center',
+        margin: [0,0,0,10], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      
+      
+      {
+        text: [
+          {text: 'ข้าพเจ้า นายแพทย์/แพทย์หญิง ', fontSize: 16},
+          {text: patientInfo.doctorTx + ' ', style:'textinput'},
+          {text: ' ใบอนุญาตประกอบเวชกรรมเลขที่ ', fontSize: 16},
+          {text: patientInfo.doctorId  + '\n', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'สถานพยาบาลชื่อ ', fontSize: 16},
+          {text: clinicInfo.name  + ' ', style:'textinput'},
+          {text: 'ที่อยู่ ', fontSize: 16},
+          {text: clinicInfo.address + '\n', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ได้ตรวจรักษารักษา นาย/นาง/นางสาว ', fontSize: 16},
+          {text: patientInfo.firstName + ' ', style:'textinput'},
+          {text: patientInfo.lastName + ' ', style:'textinput'},
+          {text: ' อายุ '  + ' ' , fontSize: 16},
+          {text: patientInfo.age  , style:'textinput'},
+          {text: ' ปี '  + '\n' , fontSize: 16},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ที่อยู่ ', fontSize: 16},
+          {text: document.getElementById("patient_address_treat").textContent + ' ', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+            'มีรายละเอียดดังนี้' + '\n',
+          ],
+         
+        bold: false,
+        fontSize: 16,
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'อาการที่มา ', fontSize: 16},
+          {text: patientInfo.cc + ' ', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'น้ำหนัก ', fontSize: 16},
+          {text: patientInfo.wt + ' ', style:'textinput'},
+          {text: 'กก, ', fontSize: 16},
+          {text: 'ส่วนสูง ', fontSize: 16},
+          {text: patientInfo.ht + ' ', style:'textinput'},
+          {text: 'ซม, ', fontSize: 16},
+          {text: 'BT ', fontSize: 16},
+          {text: patientInfo.bt + ' ', style:'textinput'},
+          {text: 'องศา, ', fontSize: 16},
+          {text: 'BP ', fontSize: 16},
+          {text: patientInfo.bp + ' ', style:'textinput'},
+          {text: 'mmHg, ', fontSize: 16},
+          {text: 'PR ', fontSize: 16},
+          {text: patientInfo.pr + ' ', style:'textinput'},
+          {text: 'ครั้ง/นาที, ', fontSize: 16},
+          {text: 'RR ', fontSize: 16},
+          {text: patientInfo.rr + ' ', style:'textinput'},
+          {text: 'ครั้ง/นาที, ', fontSize: 16},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ตรวจร่างกาย ', fontSize: 16},
+          {text: patientInfo.pe + ' ', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'วินิจฉัยเบื้องต้น ', fontSize: 16},
+          {text: patientInfo.dx + ' ', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'การรักษา ', fontSize: 16},
+          {text: patientInfo.tx + ' ', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'ความเห็นแพทย์ฺ ', fontSize: 16},
+          {text: medcerSickInfo.comment + ' ', style:'textinput'},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      {
+        text: [
+          {text: 'เห็นควรหยุดพัก ตั้งแต่วันที่ ', fontSize: 16},
+          {text: patientInfo.dayOffStart  + ' ', style:'textinput'},
+          {text: 'ถึงวันที่ ', fontSize: 16},
+          {text: patientInfo.dayOffEnd  + ' ', style:'textinput'},
+          {text: 'รวมทั้งสิ้น ', fontSize: 16},
+          {text: patientInfo.dayOffTotal  + ' ', style:'textinput'},
+          {text: 'วัน ', fontSize: 16},
+        ],
+        margin: [0,0,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+      },
+      
+       
+       
+      {
+        text: [
+          {text: 'ลงชื่อ...........................................' , fontSize: 16},
+          {text: 'แพทย์ผู้ตรวจร่างกาย ' , fontSize: 16},
+        ],
+        margin: [0,40,0,0], // [ซ้าย,บน,ขวา,ล่าง]
+        alignment: 'right'
+      },
+      {
+        text: [
+          {text: '( ' + patientInfo.doctorTx + ' ,นพ )', fontSize: 16},
+        ],
+        margin: [0,0,100,0], // [ซ้าย,บน,ขวา,ล่าง]
+        alignment: 'right'
+      },
+       
+       
+    ],
+
+    defaultStyle:{
+      font: "THSarabunNew",
+    },
+    styles: {
+      textinput: {
+        fontSize: 16,
+        bold: true,
+        decoration: 'underline',
+        decorationStyle:'dotted'
+      },
+      
+    },
+    // styles: {
+    //   header: {
+    //     fontSize: 18,
+    //     bold: true,
+    //     alignment: 'right',
+    //     margin: [0, 190, 0, 80]
+    //   },
+    //   subheader: {
+    //     fontSize: 14
+    //   },
+    //   superMargin: {
+    //     margin: [20, 0, 40, 0],
+    //     fontSize: 15
+    //   }
+    // }
+  }
+
+  pdfMake.createPdf(docDefinition).open();
+
+};
+
+
+</script>

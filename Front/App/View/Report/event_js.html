@@ -7,28 +7,29 @@
       loadDashboardView()
       
     }
-    if (e.target.matches("#download_report_opdvisit_btn") ){
+    if (e.target.matches("#download_report_visit_btn") ){
       // console.log("dsds")
       if ( document.getElementById("date_start_report").value == "" || document.getElementById("date_end_report").value == ""){
-        // alert("กรุณา ระบุช่วงเวลา") 
-        Swal.fire({ icon:'error',title:'กรุณาระบุช่วงวันที่' })
+        alert("กรุณา ระบุช่วงเวลา")
     
       } else {
-        loadingStart()
-        downloadReportOpdVisitByDate() 
+        downloadReportByVisitDate()
 
       }
       
     }
-    if (e.target.matches("#show_income_btn") ){
-      // console.log("show_income_btn")
-      showIncome();
-      
+
+  };
+
+
+
+  function inputEventHandlerReportView(e){
+    if (e.target.matches("#date_start_report") || e.target.matches("#date_end_report")){
+      // console.log("dsdsdsd")
+      // loadDashboardView()
+      setFilterDateReport()
       
     }
-
-
-
     
 
   };
@@ -36,150 +37,25 @@
 
 
 
+  function setFilterDateReport(){
+    // document.getElementById("filtertype_table_pending").value = 3 ;
+    // document.getElementById('inlineRadio1').checked
 
-  function showIncome() {
-    // Retrieve data from the table
-    const data = elements.tablePending.getData();
+    const dataStart = document.getElementById("date_start_report").value
+    const dataEnd = document.getElementById("date_end_report").value
 
-    if (!data || !data.length) {
-        console.error("No data available");
-        return;
-    }
-
-    // Get user inputs for filtering
-    const dateStart = new Date(document.getElementById("date_start_income_report").value);
-    const dateEnd = new Date(document.getElementById("date_end_income_report").value);
-    const doctorName = document.getElementById("doctor_name_income_report").value;
-
-    // Validate date inputs
-    if (isNaN(dateStart.getTime()) || isNaN(dateEnd.getTime())) {
-        console.error("Invalid date range");
-        return;
-    }
-    if (dateEnd < dateStart) {
-        console.error("End date cannot be before start date");
-        return;
-    }
-
-    // Filter data by date range
-    const filteredDataByDate = data.filter(item => {
-        const itemDate = new Date(item.visitDate);
-        return itemDate >= dateStart && itemDate <= dateEnd;
-    });
-    if (!filteredDataByDate.length) {
-        console.log("No data found for the given date range");
-        showTableIncome([]); // Show empty table if no data for the date range
-        return;
-    }
-
-    // Filter data by doctor's name
-    let filteredByDoctor = filteredDataByDate.filter(item => item.doctorName === doctorName);
-
-    // If no data is found for the doctor, assign an empty array
-    if (!filteredByDoctor.length) {
-        console.log("No data found for the selected doctor");
-        filteredByDoctor = []; // Set to an empty array
-    }
-
-    // Display the filtered data (either the filtered data or an empty array)
-    showTableIncome(filteredByDoctor);
-
-    // If no data, no need to calculate totals
-    if (!filteredByDoctor.length) {
-        console.log("No income data to display");
-        // Optionally, you can clear the UI fields here if necessary
-        document.getElementById("procedure_income_report").textContent = "0.00";
-        document.getElementById("df_income_report").textContent = "0.00";
-        document.getElementById("homemed_income_report").textContent = "0.00";
-        document.getElementById("total_income_report").textContent = "0.00";
-        return;
-    }
-
-    // Helper function to calculate and format totals
-    const calculateTotal = (field) => {
-        return filteredByDoctor.reduce((sum, item) => {
-            return sum + (Number(item.summaryData[field]) || 0);
-        }, 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    };
-
-    // Calculate and display totals
-    const totalProcedure = calculateTotal('sumProcedurePrice');
-    const totalDf = calculateTotal('sumDfPrice');
-    const totalHomemedPrice = calculateTotal('sumHomemedPrice');
-    const totalIncome = calculateTotal('totalPrice');
-
-    // Log the formatted values
-    console.log("Total Procedure Income:", totalProcedure);
-    console.log("Total DF Income:", totalDf);
-    console.log("Total Homemed Price Income:", totalHomemedPrice);
-    console.log("Total Income:", totalIncome);
-
-    // Update the UI with the totals
-    document.getElementById("procedure_income_report").textContent = totalProcedure;
-    document.getElementById("df_income_report").textContent = totalDf;
-    document.getElementById("homemed_income_report").textContent = totalHomemedPrice;
-    document.getElementById("total_income_report").textContent = totalIncome;
-  };
-
-
-
-
-
-
-
-
-
-
-  function inputEventHandlerReportView(e){
-    // if ( e.target.matches("#date_end_income_report")  ){
-    //   console.log("dsdsdsd")
-    //   document.getElementById("doctor_name_options").value = $(".doctor-name-options").val('ไม่ระบุ').trigger('change');
-
-    //   // Set the value (e.g., id = 2) for single select
-    //   // $(".doctor-name-options").val(2).trigger('change');
-
-      
-    // }
-    // if ( e.target.matches("#doctor_name_income_report")  ){
-    //   console.log("dsdsdsd")
-    //   // document.getElementById("doctor_name_options").value = $(".doctor-name-options").val('ไม่ระบุ').trigger('change');
-
-    //   // Set the value (e.g., id = 2) for single select
-    //   // $(".doctor-name-options").val(2).trigger('change');
-
-      
-    // }
-
-  
+    // ค้นหาทั้งตาราง searchtable
+    elements.tablePending.setFilter([
+        {field:"visitDate",type: ">=",value:dataStart}, // search with and
+        {field:"visitDate",type: "<=",value:dataEnd}, // search with and
+        // [
+        //     {field:"hn",type: "like",value: searchInput}, // or
+        //     {field:"firstName",type: "like",value: searchInput}, // or
+        //     {field:"lastName",type: "like",value: searchInput}, // or
+        // ]
+    ]);
 
   };
-
-
-
-  
-
-
-
-
-  // function setFilterDateReport(){
-  //   // document.getElementById("filtertype_table_pending").value = 3 ;
-  //   // document.getElementById('inlineRadio1').checked
-
-  //   const dataStart = document.getElementById("date_start_report").value
-  //   const dataEnd = document.getElementById("date_end_report").value
-
-  //   // ค้นหาทั้งตาราง searchtable
-  //   elements.tablePending.setFilter([
-  //       {field:"visitDate",type: ">=",value:dataStart}, // search with and
-  //       {field:"visitDate",type: "<=",value:dataEnd}, // search with and
-  //       // [
-  //       //     {field:"hn",type: "like",value: searchInput}, // or
-  //       //     {field:"firstName",type: "like",value: searchInput}, // or
-  //       //     {field:"lastName",type: "like",value: searchInput}, // or
-  //       // ]
-  //   ]);
-
-  // };
 
 
 

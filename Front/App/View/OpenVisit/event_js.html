@@ -1,0 +1,161 @@
+<script>
+
+  function clickEventHandlerOpenvisitView(e){
+    if (e.target.matches("#refresh_table_ptresgist_btn") ){
+        // console.log('refresh_table_ptresgist_btn')
+        workingStart('กำลังโหลดข้อมูล');
+        getDataPatientRegist();
+        getDataOpdVisits();
+    }
+
+  };
+
+
+
+  function clickEventHandlerSendPatientModal(e){
+    if (e.target.matches("#send_pt_to_treat_btn") ){
+      sendPatientToTreat();
+      // if( document.getElementById('target_room').value == "" || document.getElementById('target_doctor').value == "" ){
+      //   alert("กรุณาเลือกห้องและแพทย์")
+
+      // } else {
+      //   sendPatientToTreat();
+
+      // }
+      
+    }
+    
+
+  };
+
+
+  
+
+
+  function clickEventHandlerPatientInfoModal(e){
+    if (e.target.matches("#add_pt_regist_btn") ){
+      // console.log('fgfgf')
+      const form1 = checkInputRequired("identity_patient_regist_form")   // ถ้าถูกต้องให้ return true ไม่ถูกต้อง false และ highlight
+      const form2 = checkInputRequired("contact_patient_regist_form")   // ถ้าถูกต้องให้ return true ไม่ถูกต้อง false และ highlight
+
+      if ( form1 == false || form2 == false){
+          Swal.fire({ icon:'error', title:'ไม่ถูกต้อง', html:"<h5 align='center'>กรุณากรอกให้ครบ</h5>"});
+
+          // document.getElementById('identity_patient_regist_form').addEventListener("input", (e)=>{
+          //   if (e.target.matches('.form-control[required], .form-select[required]')){
+          //       checkInputRequired("patient_regist_form")
+          //   }
+          // });
+
+      } else {
+        loadingStart();
+        addPatientRegist();
+
+      }
+
+    }
+ 
+    if (e.target.matches("#edit_pt_regist_btn") ){
+      // console.log('edit_pt_regist_btn')
+      loadingStart()
+      editPatientRegist()
+
+    }
+    if (e.target.matches("#delete_pt_regist_btn") ){
+      // console.log('delete_pt_regist_btn')
+
+      Swal.fire({
+        title: "ยืนยันการลบ?",
+        showDenyButton: true,
+        confirmButtonText: "ยืนยัน",
+        denyButtonText: `ยกเลิก`
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          loadingStart()
+          deletePatientRegist()
+        }  
+      });
+      
+
+    }
+
+    
+
+  };
+
+
+  function inputEventHandlerOpenVistView(e){
+    if (e.target.matches("#searchinput_openvisit")){
+      const searchInput = e.target.value
+      searchDataPatientRegist(searchInput)
+
+    }
+    if (e.target.matches("#appointdatefilter_table_appointment")){
+      console.log(e.target.value)
+      elements.tableAppointment.setFilter([[
+        {field:"appointDate", type:"=", value:e.target.value},
+        
+      ]])
+       
+    }
+    if (e.target.matches("#datefilter_table_appointment") || e.target.matches("#search_input_table_appointment") ){
+      searchTableAppointment();
+
+    }
+    if (e.target.matches("#filtertype_table_appointment") ){
+      // searchTableAppointment()
+      if( e.target.value == 1 ){
+          document.getElementById("datefilter_table_appointment").value = getCurrentDate(); 
+          document.getElementById('datefilter_table_appointment').setAttribute("disabled", "value") 
+          searchTableAppointment();
+
+      } else if( e.target.value == 2) {
+          document.getElementById('datefilter_table_appointment').removeAttribute("disabled")
+          document.getElementById('datefilter_table_appointment').value = ""
+          searchTableAppointment();
+          
+      } else if( e.target.value == 3) {
+          document.getElementById('datefilter_table_appointment').setAttribute("disabled", "value")
+          document.getElementById('datefilter_table_appointment').value = ""
+          searchTableAppointment();
+
+      }
+
+    }
+    
+    
+  
+  };
+
+
+  function inputEventHandlerPatientInfoModal(e){
+    if (e.target.matches("#birthday_pt_regist")){
+      const birthDay = e.target.value
+      console.log(birthDay)
+      const age = calculateAgeWithMonths(birthDay); // คำนวนอายุ
+
+      document.getElementById("age_pt_regist").value = `${age.years}`
+
+
+    }
+
+  }
+
+   
+
+
+
+
+ 
+
+  document.getElementById('patient_info_modal').addEventListener("input", inputEventHandlerPatientInfoModal)
+  document.getElementById('patient_info_modal').addEventListener("click", clickEventHandlerPatientInfoModal)
+  document.getElementById('openvisit_view').addEventListener("click", clickEventHandlerOpenvisitView)
+  document.getElementById('send_patient_modal').addEventListener("click", clickEventHandlerSendPatientModal)
+  document.getElementById("openvisit_view").addEventListener("input",inputEventHandlerOpenVistView);
+
+
+
+
+</script>
